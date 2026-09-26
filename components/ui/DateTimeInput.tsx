@@ -1,19 +1,37 @@
+"use client";
+
 import type { InputHTMLAttributes } from "react";
 import { CalendarIcon } from "./Icons";
 
-export default function DateTimeInput({
-  className = "",
-  ...props
-}: Omit<InputHTMLAttributes<HTMLInputElement>, "type">) {
+// value is "YYYY-MM-DDTHH:mm"; displayed as "DD/MM/YYYY hh:mm am" regardless of browser locale.
+function formatDisplay(value: string) {
+  const match = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/.exec(value);
+  if (!match) return "";
+  const [, y, mo, d, h, mi] = match;
+  const hour = Number(h);
+  const suffix = hour >= 12 ? "pm" : "am";
+  const hour12 = String(hour % 12 === 0 ? 12 : hour % 12).padStart(2, "0");
+  return `${d}/${mo}/${y} ${hour12}:${mi} ${suffix}`;
+}
+
+type DateTimeInputProps = Omit<InputHTMLAttributes<HTMLInputElement>, "type" | "value"> & {
+  value: string;
+};
+
+export default function DateTimeInput({ value, className = "", ...props }: DateTimeInputProps) {
   return (
-    <div className="relative">
+    <div
+      className={`relative flex h-[70px] w-full items-center rounded-md border border-line-date bg-surface px-[17px] text-xl text-ink focus-within:border-focus focus-within:ring-2 focus-within:ring-focus ${className}`}
+    >
+      <span>{formatDisplay(value)}</span>
+      <CalendarIcon className="pointer-events-none absolute right-[15px] top-1/2 -translate-y-1/2 text-ink" />
       <input
         type="datetime-local"
-        lang="en-AU"
-        className={`h-[70px] w-full rounded-md border border-line-date bg-surface px-[17px] pr-14 text-xl text-ink outline-none focus:border-focus focus:ring-2 focus:ring-focus [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:right-0 [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:w-14 [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-0 ${className}`}
+        value={value}
+        onClick={(e) => e.currentTarget.showPicker?.()}
+        className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
         {...props}
       />
-      <CalendarIcon className="pointer-events-none absolute right-[15px] top-1/2 -translate-y-1/2 text-ink" />
     </div>
   );
 }

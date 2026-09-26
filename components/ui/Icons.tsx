@@ -13,9 +13,10 @@ const base = {
 export function CalendarIcon(props: IconProps) {
   return (
     <svg viewBox="0 0 24 24" width="24" height="24" {...base} strokeWidth="2" {...props}>
-      <rect x="4" y="4.5" width="16" height="16" rx="2.5" fill="currentColor" stroke="none" />
+      <rect x="3.5" y="4.5" width="17" height="16" rx="3" strokeWidth="2.4" />
+      <path d="M3.5 9.5h17" strokeWidth="3" />
       <path d="M8 2.5v3.5M16 2.5v3.5" strokeWidth="2.4" />
-      <rect x="6.5" y="9.5" width="5" height="4.5" rx="0.6" fill="#fff" stroke="none" />
+      <rect x="6.8" y="12.5" width="4.4" height="4.4" rx="0.8" fill="currentColor" stroke="none" />
     </svg>
   );
 }
