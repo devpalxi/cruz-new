@@ -22,6 +22,11 @@ Extracted from the Riverside Hotel "Create New Payout" reference screenshots. Al
 | `focus` (`ring-focus`) | `#06b6d4` | Focus border/ring on inputs, selects, combobox |
 | `option-active` | `#c8c8c8` | Native dropdown highlighted option |
 | `icon-dark` | `#1e3946` | Cash / bank card icons |
+| `card` | `#f6f7f7` | Approver page card background |
+| `info` | `#76a9fa` | Status pill (Awaiting Approval) |
+| `success` / `success-soft` / `success-line` | `#4daa9e` / `#edf3f2` / `#cde5e2` | Collapse All button, Match pill |
+| `success-pill` / `success-ink` | `#d6e8e2` / `#2f6b5b` | CLEAR result pill |
+| `danger` | `#ef4b4b` | Cancel button |
 | `header-open` | `#f3f4f6` | Open accordion header |
 | `warn-bg` / `warn-line` / `warn-ink` | `#fffbeb` / `#fde68a` / `#78350f` | Warning badge + alert |
 
@@ -62,7 +67,7 @@ All sizes are rem-based and `html` is set to `font-size: 80%` (12.8px), because 
 | `DateTimeInput` | `components/ui/DateTimeInput.tsx` | White input with calendar icon |
 | `FileDropzone` | `components/ui/FileDropzone.tsx` | Dashed drag-and-drop + Browse |
 | `SearchCombobox` | `components/ui/SearchCombobox.tsx` | Searchable list (title + meta line) |
-| `Button` | `components/ui/Button.tsx` | `primary` / `outline`, disabled state, can render as link |
+| `Button` | `components/ui/Button.tsx` | `primary` / `outline` / `ghost` / `soft` / `danger`, disabled state, can render as link |
 | `Icons` | `components/ui/Icons.tsx` | Inline-only icons (Calendar). Others come from lucide-react / react-icons |
 | `CurrencyInput` | `components/ui/CurrencyInput.tsx` | `$` prefix + AUD suffix input |
 | `AmountCard` | `components/collector/AmountCard.tsx` | White rounded card with icon + title |
@@ -70,6 +75,10 @@ All sizes are rem-based and `html` is set to `font-size: 80%` (12.8px), because 
 | `DetailList` | `components/ui/DetailList.tsx` | Bold label / right-aligned value rows |
 | `WarningBadge` / `WarningAlert` | `components/ui/` | Amber `warn-*` pill and alert box |
 | `CopValidationCard` / `SummaryView` | `components/collector/` | Summary step pieces |
+| `UserMenu` / `BackLink` | `components/layout/` | Approver header nav + back link |
+| `CollapsibleSections` | `components/ui/CollapsibleSections.tsx` | Multi-open sections + Collapse All / Expand All |
+| `StatusPill` / `InsetCard` | `components/ui/` | Coloured pill; grey inset panel |
+| `ApproverPayoutView` + `components/approver/*` | `components/approver/` | Approver payout review page pieces |
 | `PaymentBreakdownForm` | `components/collector/PaymentBreakdownForm.tsx` | Step 2 form |
 
 ## Field states
@@ -89,5 +98,6 @@ All sizes are rem-based and `html` is set to `font-size: 80%` (12.8px), because 
 - `/collector/payout-details` — step 1 (built)
 - `/collector/payment-breakdown` — step 2 (built)
 - `/collector/summary` — step 7 (built; steps 3–6 skipped for now)
+- `/approver/payout` — approver review of a payout (separate from the collector flow)
 - `/collector/[step]` — placeholder for unbuilt steps (email-address, primary-id, secondary-id, bank-account, approval)
 - Stepper items are links; every step navigates to its route

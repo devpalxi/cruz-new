@@ -22,6 +22,14 @@
   --warn-bg: #fffbeb;
   --warn-line: #fde68a;
   --warn-ink: #78350f;
+  --card: #f6f7f7;
+  --info: #76a9fa;
+  --success: #4daa9e;
+  --success-soft: #edf3f2;
+  --success-line: #cde5e2;
+  --success-pill: #d6e8e2;
+  --success-ink: #2f6b5b;
+  --danger: #ef4b4b;
 }
 
 @theme inline {
@@ -45,6 +53,14 @@
   --color-warn-bg: var(--warn-bg);
   --color-warn-line: var(--warn-line);
   --color-warn-ink: var(--warn-ink);
+  --color-card: var(--card);
+  --color-info: var(--info);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-success-line: var(--success-line);
+  --color-success-pill: var(--success-pill);
+  --color-success-ink: var(--success-ink);
+  --color-danger: var(--danger);
   --breakpoint-wide: 87.5rem;
   --font-sans: var(--font-rubik), ui-sans-serif, system-ui, sans-serif;
 }

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { ButtonHTMLAttributes } from "react";
 
-type Variant = "primary" | "outline" | "ghost";
+type Variant = "primary" | "outline" | "ghost" | "soft" | "danger";
 
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: Variant;
@@ -13,6 +13,8 @@ const variants: Record<Variant, string> = {
     "bg-brand text-white hover:opacity-90 disabled:cursor-not-allowed disabled:bg-brand-disabled disabled:opacity-100",
   outline: "border border-line bg-page text-ink hover:bg-surface",
   ghost: "border border-line-soft bg-surface text-ink hover:border-line",
+  soft: "border border-success-line bg-success-soft text-success hover:border-success",
+  danger: "bg-danger text-white hover:opacity-90",
 };
 
 const base =
