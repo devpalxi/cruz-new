@@ -28,7 +28,7 @@ export default function SelectInput({
           </option>
         ))}
       </select>
-      <ChevronDownIcon className="pointer-events-none absolute right-[21px] top-1/2 -translate-y-1/2 text-subtle" />
+      <ChevronDownIcon className="pointer-events-none absolute right-[1.3125rem] top-1/2 -translate-y-1/2 text-subtle" />
     </div>
   );
 }

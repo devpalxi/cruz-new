@@ -34,6 +34,9 @@ Extracted from the Riverside Hotel "Create New Payout" reference screenshots. Al
 
 ## Layout
 
+All sizes are rem-based and `html` is set to `font-size: 80%` (12.8px), because the reference site was measured at 80% browser zoom. Values below are the reference pixels at that measurement; use rem in code (px ÷ 16).
+
+
 - **Header:** 121px tall, `page` background, 1px `line-soft` bottom border, Riverside Hotel logo left-aligned with 20px inset.
 - **Stepper (left):** 30px circles (2px border), 40px vertical connector, 70px row pitch, starts 90px below the header, 80px from the left edge. Hidden below `lg`.
 - **Form column:** 613px wide, horizontally centred on the page, 90px top padding.

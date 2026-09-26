@@ -40,9 +40,9 @@ export default function PayoutDetailsForm() {
   return (
     <form
       onSubmit={(e) => e.preventDefault()}
-      className="flex flex-col gap-[34px]"
+      className="flex flex-col gap-[2.125rem]"
     >
-      <h1 className="text-[40px] font-bold leading-[46px] text-brand">Create New Payout</h1>
+      <h1 className="text-[2.5rem] font-bold leading-[2.875rem] text-brand">Create New Payout</h1>
 
       <FormField label="Payout Date and Time" htmlFor="payout-at">
         <DateTimeInput id="payout-at" value={payoutAt} onChange={(e) => setPayoutAt(e.target.value)} />
@@ -117,11 +117,11 @@ export default function PayoutDetailsForm() {
         />
       </FormField>
 
-      <div className="mt-[17px] flex gap-10">
-        <Button variant="outline" href="/" className="h-[46px] flex-1">
+      <div className="mt-[1.0625rem] flex gap-10">
+        <Button variant="outline" href="/" className="h-[2.875rem] flex-1">
           Back
         </Button>
-        <Button type="submit" disabled={!canContinue} className="h-[46px] flex-1">
+        <Button type="submit" disabled={!canContinue} className="h-[2.875rem] flex-1">
           Next
         </Button>
       </div>

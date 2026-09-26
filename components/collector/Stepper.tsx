@@ -13,17 +13,17 @@ export default function Stepper({ steps, currentIndex }: StepperProps) {
           <li
             key={step}
             aria-current={active ? "step" : undefined}
-            className="relative flex h-[70px] items-start gap-[22px]"
+            className="relative flex h-[4.375rem] items-start gap-[1.375rem]"
           >
             <span
-              className={`z-10 h-[30px] w-[30px] shrink-0 rounded-full border-2 bg-page ${
+              className={`z-10 h-[1.875rem] w-[1.875rem] shrink-0 rounded-full border-2 bg-page ${
                 active ? "border-brand" : "border-line"
               }`}
             />
             {!last && (
-              <span className="absolute left-[14px] top-[30px] h-[40px] w-0.5 bg-line" />
+              <span className="absolute left-[0.875rem] top-[1.875rem] h-[2.5rem] w-0.5 bg-line" />
             )}
-            <span className={`text-xl leading-[30px] ${active ? "text-brand" : "text-muted"}`}>
+            <span className={`text-xl leading-[1.875rem] ${active ? "text-brand" : "text-muted"}`}>
               {step}
             </span>
           </li>

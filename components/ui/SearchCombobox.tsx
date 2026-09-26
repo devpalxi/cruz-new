@@ -71,7 +71,7 @@ export default function SearchCombobox({
       {open && !disabled && (
         <ul
           role="listbox"
-          className="absolute left-0 right-0 top-full z-20 mt-1 max-h-[312px] overflow-y-auto rounded-lg border border-line-soft bg-surface shadow-lg"
+          className="absolute left-0 right-0 top-full z-20 mt-1 max-h-[19.5rem] overflow-y-auto rounded-lg border border-line-soft bg-surface shadow-lg"
         >
           {filtered.length === 0 && <li className="px-5 py-4 text-subtle">{emptyText}</li>}
           {filtered.map((option) => (
@@ -88,7 +88,7 @@ export default function SearchCombobox({
               className="cursor-pointer border-b border-line-soft px-5 py-3 last:border-b-0 hover:bg-page"
             >
               <div className="text-lg font-medium text-ink">{option.title}</div>
-              <div className="text-[15px] text-subtle">{option.meta}</div>
+              <div className="text-[0.9375rem] text-subtle">{option.meta}</div>
             </li>
           ))}
         </ul>

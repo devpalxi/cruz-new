@@ -39,7 +39,7 @@ export default function FileDropzone({ prompt, accept = "image/*", onFile }: Fil
     >
       <CloudUploadIcon className="text-subtle" />
       <p className="mt-2 text-lg text-ink">{fileName ?? prompt}</p>
-      <Button variant="ghost" className="h-[52px] px-6" onClick={() => inputRef.current?.click()}>
+      <Button variant="ghost" className="h-[3.25rem] px-6" onClick={() => inputRef.current?.click()}>
         Browse
       </Button>
       <input

@@ -39,6 +39,10 @@
   --font-sans: var(--font-rubik), ui-sans-serif, system-ui, sans-serif;
 }
 
+html {
+  font-size: 80%;
+}
+
 body {
   background: var(--page);
   color: var(--ink);
