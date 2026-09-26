@@ -34,3 +34,6 @@ export const MACHINES_BY_VENUE: Record<
     { value: "EGM-010", title: "Everi Fortune Coin 2", meta: "ID: EGM-010 | Serial: SN-EVE-5502" },
   ],
 };
+
+// Mock total carried over from step 1 (prototype only)
+export const MOCK_TOTAL_WINNINGS = 1000;

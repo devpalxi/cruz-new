@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { COLLECTOR_STEPS } from "@/lib/collector-data";
 import AppHeader from "@/components/layout/AppHeader";
-import { CloseIcon } from "@/components/ui/Icons";
+import { X } from "lucide-react";
 import Stepper from "./Stepper";
 
 type CollectorShellProps = {
@@ -24,7 +24,7 @@ export default function CollectorShell({ currentStep, children }: CollectorShell
           aria-label="Close and return home"
           className="absolute right-6 top-[2.125rem] rounded p-1 text-ink hover:bg-surface sm:right-12"
         >
-          <CloseIcon />
+          <X size="1.5rem" strokeWidth={2} />
         </Link>
       </div>
     </div>

@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Button from "@/components/ui/Button";
 import DateTimeInput from "@/components/ui/DateTimeInput";
@@ -17,6 +18,7 @@ function nowForInput() {
 }
 
 export default function PayoutDetailsForm() {
+  const router = useRouter();
   const [payoutAt, setPayoutAt] = useState("");
   const [payoutType, setPayoutType] = useState("");
   const [venue, setVenue] = useState("");
@@ -39,7 +41,10 @@ export default function PayoutDetailsForm() {
 
   return (
     <form
-      onSubmit={(e) => e.preventDefault()}
+      onSubmit={(e) => {
+        e.preventDefault();
+        router.push("/collector/payment-breakdown");
+      }}
       className="flex flex-col gap-[2.125rem]"
     >
       <h1 className="text-[2.5rem] font-bold leading-[2.875rem] text-brand">Create New Payout</h1>

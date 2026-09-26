@@ -43,3 +43,9 @@ This Next.js version has breaking changes — check `node_modules/next/dist/docs
   1. **What was built**
   2. **Files changed** (created / modified)
   3. **How to verify manually** (e.g. run `pnpm dev`, open which route, what to click/check)
+
+## Icons
+
+- Use **react-icons** and **lucide-react** for all icons. Search both libraries first.
+- Only if the icon exists in neither, create it inline in `components/ui/Icons.tsx` (SVG, `currentColor`).
+- Size icons in rem (e.g. `size="1.5rem"`), not px — the root font size is 80% (see `docs/design.md`).

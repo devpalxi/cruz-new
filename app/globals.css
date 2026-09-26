@@ -17,6 +17,7 @@
   --subtle: #6b7280;
   --focus: #06b6d4;
   --option-active: #c8c8c8;
+  --icon-dark: #1e3946;
 }
 
 @theme inline {
@@ -35,6 +36,7 @@
   --color-subtle: var(--subtle);
   --color-focus: var(--focus);
   --color-option-active: var(--option-active);
+  --color-icon-dark: var(--icon-dark);
   --breakpoint-wide: 87.5rem;
   --font-sans: var(--font-rubik), ui-sans-serif, system-ui, sans-serif;
 }

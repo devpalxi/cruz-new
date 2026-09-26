@@ -21,6 +21,7 @@ Extracted from the Riverside Hotel "Create New Payout" reference screenshots. Al
 | `subtle` (`text-subtle`) | `#6b7280` | Icons, secondary list text |
 | `focus` (`ring-focus`) | `#06b6d4` | Focus border/ring on inputs, selects, combobox |
 | `option-active` | `#c8c8c8` | Native dropdown highlighted option |
+| `icon-dark` | `#1e3946` | Cash / bank card icons |
 
 ## Typography
 
@@ -60,7 +61,10 @@ All sizes are rem-based and `html` is set to `font-size: 80%` (12.8px), because 
 | `FileDropzone` | `components/ui/FileDropzone.tsx` | Dashed drag-and-drop + Browse |
 | `SearchCombobox` | `components/ui/SearchCombobox.tsx` | Searchable list (title + meta line) |
 | `Button` | `components/ui/Button.tsx` | `primary` / `outline`, disabled state, can render as link |
-| `Icons` | `components/ui/Icons.tsx` | Calendar, CloudUpload, ChevronDown, Close |
+| `Icons` | `components/ui/Icons.tsx` | Inline-only icons (Calendar). Others come from lucide-react / react-icons |
+| `CurrencyInput` | `components/ui/CurrencyInput.tsx` | `$` prefix + AUD suffix input |
+| `AmountCard` | `components/collector/AmountCard.tsx` | White rounded card with icon + title |
+| `PaymentBreakdownForm` | `components/collector/PaymentBreakdownForm.tsx` | Step 2 form |
 
 ## Field states
 
@@ -77,3 +81,4 @@ All sizes are rem-based and `html` is set to `font-size: 80%` (12.8px), because 
 
 - `/` — home, with a button to the collector flow
 - `/collector/payout-details` — step 1 (built)
+- `/collector/payment-breakdown` — step 2 (built)

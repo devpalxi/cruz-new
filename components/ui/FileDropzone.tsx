@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import Button from "./Button";
-import { CloudUploadIcon } from "./Icons";
+import { CloudUpload } from "lucide-react";
 
 type FileDropzoneProps = {
   prompt: string;
@@ -37,7 +37,7 @@ export default function FileDropzone({ prompt, accept = "image/*", onFile }: Fil
         dragging ? "border-focus" : "border-line"
       }`}
     >
-      <CloudUploadIcon className="text-subtle" />
+      <CloudUpload size="3rem" strokeWidth={1.5} className="text-subtle" />
       <p className="mt-2 text-lg text-ink">{fileName ?? prompt}</p>
       <Button variant="ghost" className="h-[3.25rem] px-6" onClick={() => inputRef.current?.click()}>
         Browse
