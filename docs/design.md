@@ -22,6 +22,8 @@ Extracted from the Riverside Hotel "Create New Payout" reference screenshots. Al
 | `focus` (`ring-focus`) | `#06b6d4` | Focus border/ring on inputs, selects, combobox |
 | `option-active` | `#c8c8c8` | Native dropdown highlighted option |
 | `icon-dark` | `#1e3946` | Cash / bank card icons |
+| `header-open` | `#f3f4f6` | Open accordion header |
+| `warn-bg` / `warn-line` / `warn-ink` | `#fffbeb` / `#fde68a` / `#78350f` | Warning badge + alert |
 
 ## Typography
 
@@ -64,6 +66,10 @@ All sizes are rem-based and `html` is set to `font-size: 80%` (12.8px), because 
 | `Icons` | `components/ui/Icons.tsx` | Inline-only icons (Calendar). Others come from lucide-react / react-icons |
 | `CurrencyInput` | `components/ui/CurrencyInput.tsx` | `$` prefix + AUD suffix input |
 | `AmountCard` | `components/collector/AmountCard.tsx` | White rounded card with icon + title |
+| `Accordion` | `components/ui/Accordion.tsx` | Single-open accordion; open header gets `header-open` bg + 3px `line-soft` ring |
+| `DetailList` | `components/ui/DetailList.tsx` | Bold label / right-aligned value rows |
+| `WarningBadge` / `WarningAlert` | `components/ui/` | Amber `warn-*` pill and alert box |
+| `CopValidationCard` / `SummaryView` | `components/collector/` | Summary step pieces |
 | `PaymentBreakdownForm` | `components/collector/PaymentBreakdownForm.tsx` | Step 2 form |
 
 ## Field states
@@ -82,3 +88,4 @@ All sizes are rem-based and `html` is set to `font-size: 80%` (12.8px), because 
 - `/` — home, with a button to the collector flow
 - `/collector/payout-details` — step 1 (built)
 - `/collector/payment-breakdown` — step 2 (built)
+- `/collector/summary` — step 7 (built; steps 3–6 skipped for now)

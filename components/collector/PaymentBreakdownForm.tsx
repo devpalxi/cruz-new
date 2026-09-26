@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { FaBuildingColumns, FaMoneyBill } from "react-icons/fa6";
 import Button from "@/components/ui/Button";
@@ -9,6 +10,7 @@ import { MOCK_TOTAL_WINNINGS } from "@/lib/collector-data";
 import AmountCard from "./AmountCard";
 
 export default function PaymentBreakdownForm() {
+  const router = useRouter();
   const [cash, setCash] = useState(String(MOCK_TOTAL_WINNINGS));
   const [confirmCash, setConfirmCash] = useState("");
   const [bank, setBank] = useState("0");
@@ -21,7 +23,9 @@ export default function PaymentBreakdownForm() {
   return (
     <form
       onSubmit={(e) => {
-        e.preventDefault(); // next step (Email Address) not built yet
+        e.preventDefault();
+        // Steps 3-5 are skipped for now; jump straight to Summary
+        router.push("/collector/summary");
       }}
     >
       <h1 className="mb-[2.125rem] text-[2.5rem] font-bold leading-[2.875rem] text-brand">

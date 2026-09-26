@@ -37,3 +37,37 @@ export const MACHINES_BY_VENUE: Record<
 
 // Mock total carried over from step 1 (prototype only)
 export const MOCK_TOTAL_WINNINGS = 1000;
+
+// Mock summary shown on the Summary step (prototype only)
+export const MOCK_SUMMARY = {
+  payoutId: 768,
+  createdAt: "26/09/2026, 7:23:04 am",
+  payment: [
+    { label: "Cash Amount", value: "500" },
+    { label: "Transfer Amount", value: "500" },
+    { label: "Machine ID", value: "EGM-001" },
+  ],
+  member: [
+    { label: "Membership #", value: "dfdg" },
+    { label: "Email", value: "uat@palxi.com" },
+    { label: "Full Name", value: "dfd fgf" },
+    { label: "Document Type", value: "Drivers Licence" },
+    { label: "Document Number", value: "464613123" },
+    { label: "Street", value: "Conn Street" },
+    { label: "Suburb", value: "Ferntree Gully" },
+    { label: "State", value: "VIC" },
+    { label: "Post Code", value: "3156" },
+    { label: "Country of Issue", value: "Australia" },
+  ],
+  bank: [
+    { label: "Account Name", value: "[CM]aus" },
+    { label: "BSB Number", value: "032-001" },
+    { label: "Account Number", value: "343-546-431" },
+  ],
+  cop: {
+    status: "Close Match",
+    headline: "Close match — flagged for approver.",
+    message:
+      'Entered name "[CM]aus" differs from registered account name. The payee confirmed to proceed.',
+  },
+};
