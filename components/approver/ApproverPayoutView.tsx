@@ -24,13 +24,13 @@ export default function ApproverPayoutView() {
 
   return (
     <div className="rounded-xl bg-card p-5">
-      <h1 className="text-[2.5rem] font-bold leading-[2.875rem] text-brand">Payout #{data.payoutId}</h1>
+      <h1 className="text-[2.25rem] font-bold leading-[2.875rem] text-brand">Payout #{data.payoutId}</h1>
 
       <div className="mt-[1.125rem] flex items-center justify-between">
         <p className="text-lg text-subtle">{data.createdAt}</p>
-        <div className="flex items-center gap-4 text-xl text-subtle">
+        <div className="relative -top-1 flex items-center gap-[1.625rem] text-xl text-subtle">
           Status:
-          <StatusPill tone="info" className="h-[1.875rem]">
+          <StatusPill tone="info" className="h-[1.875rem] px-2.5! text-[0.9375rem]!">
             {data.status}
           </StatusPill>
         </div>
@@ -44,7 +44,7 @@ export default function ApproverPayoutView() {
               title: "Payout Details",
               content: (
                 <>
-                  <DetailList rows={data.payout} />
+                  <DetailList rows={data.payout} labelClassName="font-medium" />
                   <DocketRow />
                 </>
               ),
@@ -54,12 +54,12 @@ export default function ApproverPayoutView() {
               title: "Member Identification",
               content: (
                 <>
-                  <DetailList rows={data.member} />
+                  <DetailList rows={data.member} labelClassName="font-medium" />
                   <IdentityConfirmation lines={data.identityConfirmation} />
                 </>
               ),
             },
-            { id: "bank", title: "Bank Account Details", content: <DetailList rows={data.bank} /> },
+            { id: "bank", title: "Bank Account Details", content: <DetailList rows={data.bank} labelClassName="font-medium" /> },
             {
               id: "name",
               title: "Name Verification",

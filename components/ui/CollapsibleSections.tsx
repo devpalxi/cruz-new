@@ -29,7 +29,7 @@ export default function CollapsibleSections({ items }: { items: SectionItem[] })
       <div className="flex justify-end">
         <Button
           variant="soft"
-          className="h-[2.3125rem] gap-2 px-4"
+          className="h-[2.3125rem] gap-2 px-[0.9375rem] text-[0.9375rem]! font-medium!"
           onClick={() => setOpenIds(allOpen ? new Set() : new Set(items.map((i) => i.id)))}
         >
           {allOpen ? "Collapse All" : "Expand All"}
@@ -37,7 +37,7 @@ export default function CollapsibleSections({ items }: { items: SectionItem[] })
         </Button>
       </div>
 
-      <div className="mt-[1.75rem]">
+      <div className="mt-[1.5rem]">
         {items.map((item, index) => {
           const open = openIds.has(item.id);
           const Chevron = open ? ChevronUp : ChevronDown;
@@ -54,14 +54,14 @@ export default function CollapsibleSections({ items }: { items: SectionItem[] })
                 type="button"
                 aria-expanded={open}
                 onClick={() => toggle(item.id)}
-                className={`flex h-[5.0625rem] w-full items-center justify-between px-[1.625rem] text-left text-xl text-label ${
-                  open ? "border-b border-line-soft" : ""
+                className={`flex h-[5.0625rem] w-full items-center justify-between px-[1.625rem] text-left text-xl ${
+                  open ? "border-b border-line-soft text-ink" : "text-label"
                 }`}
               >
                 {item.title}
-                <Chevron size="1.25rem" strokeWidth={3} className="text-ink" />
+                <Chevron size="1.625rem" strokeWidth={3} className="text-ink" />
               </button>
-              {open && <div className="px-[1.625rem] py-[1.5625rem]">{item.content}</div>}
+              {open && <div className="px-[1.625rem] pb-[1.4375rem] pt-[1.5625rem]">{item.content}</div>}
             </div>
           );
         })}
