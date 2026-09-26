@@ -1,26 +1,46 @@
 @import "tailwindcss";
 
+/* Design tokens — see docs/design.md */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --brand: #2e2f7a;
+  --brand-disabled: #8f90b6;
+  --page: #f0f1f2;
+  --surface: #ffffff;
+  --field: #f9fafb;
+  --field-disabled: #f5f5f7;
+  --line: #d1d5db;
+  --line-soft: #e4e5e6;
+  --line-date: #c4c4c4;
+  --label: #5f6675;
+  --ink: #111827;
+  --muted: #9ca3af;
+  --subtle: #6b7280;
+  --focus: #06b6d4;
+  --option-active: #c8c8c8;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-brand: var(--brand);
+  --color-brand-disabled: var(--brand-disabled);
+  --color-page: var(--page);
+  --color-surface: var(--surface);
+  --color-field: var(--field);
+  --color-field-disabled: var(--field-disabled);
+  --color-line: var(--line);
+  --color-line-soft: var(--line-soft);
+  --color-line-date: var(--line-date);
+  --color-label: var(--label);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-subtle: var(--subtle);
+  --color-focus: var(--focus);
+  --color-option-active: var(--option-active);
+  --breakpoint-wide: 87.5rem;
+  --font-sans: var(--font-rubik), ui-sans-serif, system-ui, sans-serif;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--page);
+  color: var(--ink);
+  font-family: var(--font-sans);
 }
