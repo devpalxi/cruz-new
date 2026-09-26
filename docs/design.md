@@ -89,3 +89,5 @@ All sizes are rem-based and `html` is set to `font-size: 80%` (12.8px), because 
 - `/collector/payout-details` — step 1 (built)
 - `/collector/payment-breakdown` — step 2 (built)
 - `/collector/summary` — step 7 (built; steps 3–6 skipped for now)
+- `/collector/[step]` — placeholder for unbuilt steps (email-address, primary-id, secondary-id, bank-account, approval)
+- Stepper items are links; every step navigates to its route

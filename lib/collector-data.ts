@@ -1,13 +1,15 @@
-export const COLLECTOR_STEPS = [
-  "New Payout Details",
-  "Payment Breakdown",
-  "Email Address",
-  "Primary ID Document",
-  "Secondary ID (Optional)",
-  "Bank Account",
-  "Summary",
-  "Approval",
-] as const;
+export type CollectorStep = { label: string; href: string };
+
+export const COLLECTOR_STEPS: CollectorStep[] = [
+  { label: "New Payout Details", href: "/collector/payout-details" },
+  { label: "Payment Breakdown", href: "/collector/payment-breakdown" },
+  { label: "Email Address", href: "/collector/email-address" },
+  { label: "Primary ID Document", href: "/collector/primary-id" },
+  { label: "Secondary ID (Optional)", href: "/collector/secondary-id" },
+  { label: "Bank Account", href: "/collector/bank-account" },
+  { label: "Summary", href: "/collector/summary" },
+  { label: "Approval", href: "/collector/approval" },
+];
 
 export const PAYOUT_TYPES = [
   { value: "egm", label: "EGM" },
