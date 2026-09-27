@@ -75,10 +75,12 @@ All sizes are rem-based and `html` is set to `font-size: 80%` (12.8px), because 
 | `DetailList` | `components/ui/DetailList.tsx` | Bold label / right-aligned value rows |
 | `WarningBadge` / `WarningAlert` | `components/ui/` | Amber `warn-*` pill and alert box |
 | `CopValidationCard` / `SummaryView` | `components/collector/` | Summary step pieces |
-| `UserMenu` / `BackLink` | `components/layout/` | Approver header nav + back link |
+| `UserMenu` / `BackLink` | `components/layout/` | Header nav (Dashboard link + avatar) + back link — shared by approver and authoriser |
 | `CollapsibleSections` | `components/ui/CollapsibleSections.tsx` | Multi-open sections + Collapse All / Expand All |
 | `StatusPill` / `InsetCard` | `components/ui/` | Coloured pill; grey inset panel |
-| `ApproverPayoutView` + `components/approver/*` | `components/approver/` | Approver payout review page pieces |
+| `ApproverPayoutView` + `ApprovalPanel` | `components/approver/` | Approver-only pieces: editable risk level + Approve/Cancel |
+| `AuthoriserPayoutView` + `AuthorisationPanel` + `ApproverDecision` | `components/authoriser/` | Authoriser-only pieces: read-only approver decision + Authorise/Reject |
+| `DocketRow` / `IdentityConfirmation` / `NameComparison` / `AmlScreening` / `IdvHistoryTable` / `CollectorInfo` | `components/payout-review/` | Shared payout-review pieces used by both approver and authoriser |
 | `PaymentBreakdownForm` | `components/collector/PaymentBreakdownForm.tsx` | Step 2 form |
 
 ## Field states
@@ -99,5 +101,6 @@ All sizes are rem-based and `html` is set to `font-size: 80%` (12.8px), because 
 - `/collector/payment-breakdown` — step 2 (built)
 - `/collector/summary` — step 7 (built; steps 3–6 skipped for now)
 - `/approver/payout` — approver review of a payout (separate from the collector flow)
+- `/authoriser/payout` — authoriser final sign-off on a payout (visually identical shell to the approver page; separate from both collector and approver flows)
 - `/collector/[step]` — placeholder for unbuilt steps (email-address, primary-id, secondary-id, bank-account, approval)
 - Stepper items are links; every step navigates to its route

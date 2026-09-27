@@ -14,6 +14,9 @@ export default function Home() {
         <Button href="/approver/payout" variant="outline" className="h-[2.875rem] w-[17.875rem]">
           Approver Pages
         </Button>
+        <Button href="/authoriser/payout" variant="outline" className="h-[2.875rem] w-[17.875rem]">
+          Authoriser Pages
+        </Button>
       </main>
     </div>
   );

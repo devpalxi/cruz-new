@@ -5,22 +5,21 @@ import Button from "@/components/ui/Button";
 import CollapsibleSections from "@/components/ui/CollapsibleSections";
 import DetailList from "@/components/ui/DetailList";
 import StatusPill from "@/components/ui/StatusPill";
-import { MOCK_APPROVAL } from "@/lib/approver-data";
 import AmlScreening from "@/components/payout-review/AmlScreening";
-import ApprovalPanel from "./ApprovalPanel";
 import CollectorInfo from "@/components/payout-review/CollectorInfo";
 import DocketRow from "@/components/payout-review/DocketRow";
 import IdentityConfirmation from "@/components/payout-review/IdentityConfirmation";
 import IdvHistoryTable from "@/components/payout-review/IdvHistoryTable";
 import NameComparison from "@/components/payout-review/NameComparison";
+import { MOCK_AUTHORISATION } from "@/lib/authoriser-data";
+import AuthorisationPanel from "./AuthorisationPanel";
 
-export default function ApproverPayoutView() {
-  const data = MOCK_APPROVAL;
+export default function AuthoriserPayoutView() {
+  const data = MOCK_AUTHORISATION;
   const [note, setNote] = useState("");
-  const [risk, setRisk] = useState("");
   const [confirmed, setConfirmed] = useState(false);
 
-  const canApprove = risk !== "" && confirmed;
+  const canAuthorise = confirmed;
 
   return (
     <div className="rounded-xl bg-card p-5">
@@ -59,7 +58,11 @@ export default function ApproverPayoutView() {
                 </>
               ),
             },
-            { id: "bank", title: "Bank Account Details", content: <DetailList rows={data.bank} labelClassName="font-medium" /> },
+            {
+              id: "bank",
+              title: "Bank Account Details",
+              content: <DetailList rows={data.bank} labelClassName="font-medium" />,
+            },
             {
               id: "name",
               title: "Name Verification",
@@ -80,13 +83,12 @@ export default function ApproverPayoutView() {
               id: "approvals",
               title: "Approvals",
               content: (
-                <ApprovalPanel
+                <AuthorisationPanel
                   copStatus={data.approvals.copStatus}
                   idNameMatch={data.approvals.idNameMatch}
+                  approverDecision={data.approverDecision}
                   note={note}
                   onNoteChange={setNote}
-                  risk={risk}
-                  onRiskChange={setRisk}
                   confirmed={confirmed}
                   onConfirmedChange={setConfirmed}
                 />
@@ -97,11 +99,11 @@ export default function ApproverPayoutView() {
       </div>
 
       <div className="mt-[0.9375rem] flex flex-col gap-3">
-        <Button disabled={!canApprove} className="h-[2.8125rem] w-full">
-          Approve
+        <Button disabled={!canAuthorise} className="h-[2.8125rem] w-full">
+          Authorise
         </Button>
         <Button variant="danger" href="/" className="h-[2.8125rem] w-full">
-          Cancel
+          Reject
         </Button>
       </div>
     </div>
