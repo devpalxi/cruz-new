@@ -34,7 +34,7 @@ export default function Dropdown({ label, items }: DropdownProps) {
       {open && (
         <ul
           role="menu"
-          className="absolute left-0 top-full z-30 mt-[1.1rem] min-w-[7.75rem] rounded-sm bg-surface py-1 shadow-md"
+          className="absolute left-0 top-full z-30 mt-[1.1rem] min-w-[7.75rem] whitespace-nowrap rounded-sm bg-surface py-1 shadow-md"
         >
           {items.map((item) => (
             <li key={item.href} role="none">

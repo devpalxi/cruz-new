@@ -87,6 +87,8 @@ All sizes are rem-based and `html` is set to `font-size: 80%` (12.8px), because 
 | `Dropdown` / `SearchInput` / `Pagination` | `components/ui/` | Header menu, search box with icon, page buttons (visual only) |
 | `ResultPill` / `PayoutStatusPill` | `components/ui/` | Table cell check results; coloured payout status pill |
 | `AdminHeader` / `PayoutsDashboard` / `PayoutFilters` / `PayoutsTable` | `components/admin/` | Admin dashboard pieces |
+| `Tabs` / `Modal` / `Toast` / `DateInput` | `components/ui/` | Tab bar with counts; confirm dialog; success toast; labelled date field |
+| `ManualExportView` / `ExportTable` / `ExportDateFilter` / `ExportConfirmDialog` | `components/admin/` | Manual Bank Transfer Export pieces (CSV built in `lib/manual-export-data.ts`, downloaded via `lib/download.ts`) |
 | `PaymentBreakdownForm` | `components/collector/PaymentBreakdownForm.tsx` | Step 2 form |
 
 ## Field states
@@ -108,6 +110,7 @@ All sizes are rem-based and `html` is set to `font-size: 80%` (12.8px), because 
 - `/collector/summary` — step 7 (built; steps 3–6 skipped for now)
 - `/approver/payout` — approver review of a payout (separate from the collector flow)
 - `/admin/dashboard` — Venue Admin Payouts Dashboard (filters, table, pagination). `/admin/users` and `/admin/machines` are placeholders
+- `/admin/manual-bank-export` — Manual Bank Transfer Export (Manage menu). Tabs: Ready to Export (confirm → CSV download → rows stamped exported, Payment Completed) and Previously Exported (Start/End date on Last Exported DateTime; re-download updates the timestamp)
 - `/authoriser/payout` — authoriser final sign-off on a payout (visually identical shell to the approver page; separate from both collector and approver flows)
 - `/collector/[step]` — placeholder for unbuilt steps (email-address, primary-id, secondary-id, bank-account, approval)
 - Stepper items are links; every step navigates to its route

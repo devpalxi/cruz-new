@@ -6,6 +6,7 @@ import { ADMIN_USER } from "@/lib/admin-data";
 const MANAGE_ITEMS = [
   { label: "Users", href: "/admin/users" },
   { label: "Machines", href: "/admin/machines" },
+  { label: "Manual Bank Export", href: "/admin/manual-bank-export" },
 ];
 
 export default function AdminHeader() {
