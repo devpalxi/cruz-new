@@ -30,6 +30,13 @@
   --success-pill: #d6e8e2;
   --success-ink: #2f6b5b;
   --danger: #ef4b4b;
+  --title-navy: #1e3a5f;
+  --fail: #b91c1c;
+  --close-match: #7f1d1d;
+  --complete: #22c55e;
+  --draft: #8b8f97;
+  --pending: #f59e0b;
+  --table-head: #f7f8f9;
 }
 
 @theme inline {
@@ -61,6 +68,13 @@
   --color-success-pill: var(--success-pill);
   --color-success-ink: var(--success-ink);
   --color-danger: var(--danger);
+  --color-title-navy: var(--title-navy);
+  --color-fail: var(--fail);
+  --color-close-match: var(--close-match);
+  --color-complete: var(--complete);
+  --color-draft: var(--draft);
+  --color-pending: var(--pending);
+  --color-table-head: var(--table-head);
   --breakpoint-wide: 87.5rem;
   --font-sans: var(--font-rubik), ui-sans-serif, system-ui, sans-serif;
 }
