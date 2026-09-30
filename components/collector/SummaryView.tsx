@@ -61,9 +61,11 @@ export default function SummaryView() {
             headline={cop.headline}
             message={cop.message}
             title={
-              destinations[0].type === "manual-bank" || destinations[0].type === "cheque"
-                ? "Name Verification"
-                : "CoP Validation"
+              destinations[0].type === "cheque"
+                ? "Cheque Verification"
+                : destinations[0].type === "manual-bank"
+                  ? "Manual Bank Transfer Verification"
+                  : "CoP Validation"
             }
           />
         </div>

@@ -13,6 +13,7 @@ import IdvHistoryTable from "@/components/payout-review/IdvHistoryTable";
 import NameComparison from "@/components/payout-review/NameComparison";
 import { MOCK_AUTHORISATION } from "@/lib/authoriser-data";
 import AuthorisationPanel from "./AuthorisationPanel";
+import ChequeInlineEditScenario from "./ChequeInlineEditScenario";
 
 export default function AuthoriserPayoutView() {
   const data = MOCK_AUTHORISATION;
@@ -20,6 +21,16 @@ export default function AuthoriserPayoutView() {
   const [confirmed, setConfirmed] = useState(false);
 
   const canAuthorise = confirmed;
+
+  // CoP (Confirmation of Payee) only applies to a real Zepto bank check. Cheque and Manual Bank
+  // Transfer destinations only get a client-side name comparison, so the Approvals panel below
+  // labels the result accordingly instead of calling it "CoP Status".
+  const copLabel =
+    data.destinationType === "cheque"
+      ? "Cheque Verification"
+      : data.destinationType === "manual-bank"
+        ? "Manual Bank Transfer Verification"
+        : "CoP Status";
 
   return (
     <div className="rounded-xl bg-card p-5">
@@ -60,8 +71,15 @@ export default function AuthoriserPayoutView() {
             },
             {
               id: "bank",
-              title: "Bank Account Details",
-              content: <DetailList rows={data.bank} labelClassName="font-medium" />,
+              title: "Payout Destination Details",
+              // Venue setting: when the authoriser is responsible for cheque details, this
+              // becomes inline editable with its own Validate step instead of read-only.
+              content:
+                data.destinationType === "cheque" ? (
+                  <ChequeInlineEditScenario />
+                ) : (
+                  <DetailList rows={data.bank} labelClassName="font-medium" />
+                ),
             },
             {
               id: "name",
@@ -85,6 +103,7 @@ export default function AuthoriserPayoutView() {
               content: (
                 <AuthorisationPanel
                   copStatus={data.approvals.copStatus}
+                  copLabel={copLabel}
                   idNameMatch={data.approvals.idNameMatch}
                   approverDecision={data.approverDecision}
                   note={note}
