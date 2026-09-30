@@ -49,7 +49,10 @@ export default function ManualExportView() {
   const awaiting: BatchRow[] = batches
     .filter((b) => !b.abaReference)
     .sort((a, b) => b.exportedAt.localeCompare(a.exportedAt))
-    .map((b) => ({ ...b, total: sum(rowsIn(b.payoutIds)) }));
+    .map((b) => {
+      const payouts = rowsIn(b.payoutIds);
+      return { ...b, total: sum(payouts), payouts };
+    });
   const completed: ExportTableRow[] = rows
     .flatMap((r) => {
       const b = r.batchId ? batchById.get(r.batchId) : undefined;
