@@ -1,7 +1,7 @@
 import PayoutStatusPill from "@/components/ui/PayoutStatusPill";
 import { formatDateTime, type ManualExportRow } from "@/lib/manual-export-data";
 
-export type ExportTableRow = ManualExportRow & { exportedAt?: string; avReference?: string };
+export type ExportTableRow = ManualExportRow & { exportedAt?: string; abaReference?: string };
 
 const baseHeaders = [
   "Payout ID",
@@ -16,12 +16,12 @@ const baseHeaders = [
 type ExportTableProps = {
   rows: ExportTableRow[];
   emptyText: string;
-  // Completed tab shows the recorded AV reference + export time
+  // Completed tab shows the recorded ABA reference + export time
   showExportInfo?: boolean;
 };
 
 export default function ExportTable({ rows, emptyText, showExportInfo = false }: ExportTableProps) {
-  const headers = [...baseHeaders, ...(showExportInfo ? ["AV Reference", "Exported DateTime"] : []), "Status"];
+  const headers = [...baseHeaders, ...(showExportInfo ? ["ABA Reference", "Exported DateTime"] : []), "Status"];
   return (
     <div className="overflow-x-auto rounded-xl bg-surface">
       <table className="w-full min-w-[70rem] text-left">
@@ -56,12 +56,12 @@ export default function ExportTable({ rows, emptyText, showExportInfo = false }:
               <td className="whitespace-nowrap px-[1.25rem]">{formatDateTime(row.collectedAt)}</td>
               {showExportInfo && (
                 <>
-                  <td className="whitespace-nowrap px-[1.25rem] font-medium">{row.avReference}</td>
+                  <td className="whitespace-nowrap px-[1.25rem] font-medium">{row.abaReference}</td>
                   <td className="whitespace-nowrap px-[1.25rem]">{formatDateTime(row.exportedAt ?? null)}</td>
                 </>
               )}
               <td className="px-[1.25rem]">
-                <PayoutStatusPill status={row.avReference ? "Payment Completed" : "Pending Payment"} />
+                <PayoutStatusPill status={row.abaReference ? "Payment Completed" : "Pending Payment"} />
               </td>
             </tr>
           ))}

@@ -12,6 +12,7 @@ export type PayoutStatus =
   | "Awaiting Approval"
   | "Pending Authorisation"
   | "Pending Payment"
+  | "Awaiting ABA Reference"
   | "Payment Delayed"
   | "Payment Processing"
   | "Payment Completed"
@@ -37,6 +38,7 @@ export const PAYOUT_STATUSES: PayoutStatus[] = [
   "Awaiting Approval",
   "Pending Authorisation",
   "Pending Payment",
+  "Awaiting ABA Reference",
   "Payment Delayed",
   "Payment Processing",
   "Payment Completed",

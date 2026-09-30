@@ -12,11 +12,12 @@ export type ManualExportRow = {
   batchId: string | null; // null = never exported
 };
 
-// One export = one batch. Payouts stay Pending Payment until the AV reference is saved.
+// One export = one batch. Exported payouts are "Awaiting ABA Reference" until the bank issues the
+// ABA reference (after it processes the file) and it is entered; then they become Payment Completed.
 export type ExportBatch = {
   id: string;
   exportedAt: string; // ISO, fixed at first export
-  avReference: string | null; // null = awaiting AV reference
+  abaReference: string | null; // null = awaiting ABA reference
   payoutIds: number[];
 };
 
@@ -26,15 +27,15 @@ export const VENUE_CODES: Record<string, string> = {
 };
 
 export const EXPORT_BATCHES: ExportBatch[] = [
-  { id: "B-0927", exportedAt: "2026-09-27T16:40:00", avReference: null, payoutIds: [766, 759] },
-  { id: "B-0919", exportedAt: "2026-09-19T10:05:00", avReference: "AV-20260919-0412", payoutIds: [750, 747] },
-  { id: "B-0915", exportedAt: "2026-09-15T09:30:00", avReference: "AV-20260915-0388", payoutIds: [741, 738] },
-  { id: "B-0908", exportedAt: "2026-09-08T11:45:00", avReference: "AV-20260908-0351", payoutIds: [731, 726] },
-  { id: "B-0901", exportedAt: "2026-09-01T14:20:00", avReference: "AV-20260901-0317", payoutIds: [719, 712] },
+  { id: "B-0927", exportedAt: "2026-09-27T16:40:00", abaReference: null, payoutIds: [766, 759] },
+  { id: "B-0919", exportedAt: "2026-09-19T10:05:00", abaReference: "ABA-20260919-0412", payoutIds: [750, 747] },
+  { id: "B-0915", exportedAt: "2026-09-15T09:30:00", abaReference: "ABA-20260915-0388", payoutIds: [741, 738] },
+  { id: "B-0908", exportedAt: "2026-09-08T11:45:00", abaReference: "ABA-20260908-0351", payoutIds: [731, 726] },
+  { id: "B-0901", exportedAt: "2026-09-01T14:20:00", abaReference: "ABA-20260901-0317", payoutIds: [719, 712] },
 ];
 
 export const MANUAL_EXPORT_ROWS: ManualExportRow[] = [
-  // Ready to export (Pending Payment); B-0927 rows are exported but awaiting AV reference
+  // Ready to export (Pending Payment); B-0927 rows are exported and Awaiting ABA Reference
   { id: 781, venueCode: "RRSL", amount: 1250, bsb: "062-000", accountNumber: "10234567", accountName: "Sarah Thompson", collectedAt: "2026-09-26T14:20:00", batchId: null },
   { id: 777, venueCode: "RRSL", amount: 640, bsb: "033-157", accountNumber: "0981234", accountName: "Daniel Nguyen", collectedAt: "2026-09-25T19:05:00", batchId: null },
   { id: 769, venueCode: "NSC", amount: 880, bsb: "082-401", accountNumber: "53120098", accountName: "Priya Sharma", collectedAt: "2026-09-25T11:42:00", batchId: null },

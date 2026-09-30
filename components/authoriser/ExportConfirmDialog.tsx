@@ -29,7 +29,7 @@ export default function ExportConfirmDialog({ open, count, total, onCancel, onCo
       Export <strong className="text-ink">{count} payouts</strong> (
       <strong className="text-ink">${total.toLocaleString("en-AU", { minimumFractionDigits: 2 })}</strong> total)?
       <br />
-      They will be marked as exported and stay <strong className="text-ink">Pending Payment</strong> until you enter the AV reference number.
+      They will move to <strong className="text-ink">Awaiting ABA Reference</strong>. Enter the ABA reference once the bank has processed the file.
     </Modal>
   );
 }

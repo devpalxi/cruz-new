@@ -33,7 +33,7 @@ export default function BatchTable({ batches, onEnterReference, onRedownload }: 
           {batches.length === 0 && (
             <tr>
               <td colSpan={headers.length} className="py-12 text-center text-lg text-subtle">
-                No exports are waiting for an AV reference.
+                No exports are waiting for an ABA reference.
               </td>
             </tr>
           )}
@@ -44,12 +44,12 @@ export default function BatchTable({ batches, onEnterReference, onRedownload }: 
               <td className="px-[1.25rem] text-label">{b.payoutIds.join(", ")}</td>
               <td className="px-[1.25rem]">${b.total.toLocaleString("en-AU", { minimumFractionDigits: 2 })}</td>
               <td className="px-[1.25rem]">
-                <PayoutStatusPill status="Pending Payment" />
+                <PayoutStatusPill status="Awaiting ABA Reference" />
               </td>
               <td className="px-[1.25rem]">
                 <div className="flex gap-2">
                   <Button className="h-[2.6rem] whitespace-nowrap px-4" onClick={() => onEnterReference(b.id)}>
-                    Enter AV Reference
+                    Enter ABA Reference
                   </Button>
                   <Button
                     variant="ghost"

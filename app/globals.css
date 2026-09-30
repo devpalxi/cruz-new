@@ -38,6 +38,7 @@
   --complete: #22c55e;
   --draft: #8b8f97;
   --pending: #f59e0b;
+  --awaiting: #8b5cf6;
   --table-head: #f7f8f9;
 }
 
@@ -78,6 +79,7 @@
   --color-complete: var(--complete);
   --color-draft: var(--draft);
   --color-pending: var(--pending);
+  --color-awaiting: var(--awaiting);
   --color-table-head: var(--table-head);
   --breakpoint-wide: 87.5rem;
   --font-sans: var(--font-rubik), ui-sans-serif, system-ui, sans-serif;

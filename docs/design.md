@@ -29,6 +29,7 @@ Extracted from the Riverside Hotel "Create New Payout" reference screenshots. Al
 | `danger` | `#ef4b4b` | Cancel button |
 | `title-navy` / `table-head` | `#1e3a5f` / `#f7f8f9` | Admin page title; table header row |
 | `fail` / `close-match` | `#b91c1c` / `#7f1d1d` | Fail and Close Match text in table |
+| `awaiting` | `#8b5cf6` | Awaiting ABA Reference status pill |
 | `complete` / `draft` / `pending` | `#22c55e` / `#8b8f97` / `#f59e0b` | Payout status pills |
 | `header-open` | `#f3f4f6` | Open accordion header |
 | `warn-bg` / `warn-line` / `warn-ink` | `#fffbeb` / `#fde68a` / `#78350f` | Warning badge + alert |
@@ -88,7 +89,7 @@ All sizes are rem-based and `html` is set to `font-size: 80%` (12.8px), because 
 | `ResultPill` / `PayoutStatusPill` | `components/ui/` | Table cell check results; coloured payout status pill |
 | `AdminHeader` / `PayoutsDashboard` / `PayoutFilters` / `PayoutsTable` | `components/admin/` | Admin dashboard pieces |
 | `Tabs` / `Modal` / `Toast` / `DateInput` | `components/ui/` | Tab bar with counts; confirm dialog; success toast; labelled date field |
-| `AuthoriserHeader` / `ManualExportView` / `ExportTable` / `BatchTable` / `ExportDateFilter` / `ExportConfirmDialog` / `AvReferenceDialog` | `components/authoriser/` | Manual Bank Transfer Export pieces (CSV built in `lib/manual-export-data.ts`, downloaded via `lib/download.ts`) |
+| `AuthoriserHeader` / `ManualExportView` / `ExportTable` / `BatchTable` / `ExportDateFilter` / `ExportConfirmDialog` / `AbaReferenceDialog` | `components/authoriser/` | Manual Bank Transfer Export pieces (CSV built in `lib/manual-export-data.ts`, downloaded via `lib/download.ts`) |
 | `PaymentBreakdownForm` | `components/collector/PaymentBreakdownForm.tsx` | Step 2 form |
 
 ## Field states
@@ -110,7 +111,7 @@ All sizes are rem-based and `html` is set to `font-size: 80%` (12.8px), because 
 - `/collector/summary` — step 7 (built; steps 3–6 skipped for now)
 - `/approver/payout` — approver review of a payout (separate from the collector flow)
 - `/admin/dashboard` — Venue Admin Payouts Dashboard (filters, table, pagination). `/admin/users` and `/admin/machines` are placeholders
-- `/authoriser/manual-bank-export` — Manual Bank Transfer Export (authoriser Manage menu; moved from admin). Tabs: Ready to Export (confirm → CSV download → batch created → AV Reference prompt), Awaiting AV Reference (one row per export batch; Enter AV Reference / re-download), Completed (AV Reference + fixed Exported DateTime; Start/End date filter; re-download changes nothing). Payouts move to Payment Completed only when the AV reference is saved
+- `/authoriser/manual-bank-export` — Manual Bank Transfer Export (authoriser Manage menu). Tabs: Ready to Export (Pending Payment; confirm → CSV download → batch moves to Awaiting ABA Reference, no prompt), Awaiting ABA Reference (one row per export batch; Enter ABA Reference once the bank has processed the file / re-download), Completed (ABA Reference + fixed Exported DateTime; Start/End date filter; re-download changes nothing). Payouts move to Payment Completed only when the ABA reference is saved
 - `/authoriser/payout` — authoriser final sign-off on a payout (visually identical shell to the approver page; separate from both collector and approver flows)
 - `/collector/[step]` — placeholder for unbuilt steps (email-address, primary-id, secondary-id, bank-account, approval)
 - Stepper items are links; every step navigates to its route
