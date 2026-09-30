@@ -20,7 +20,7 @@
   --icon-dark: #1e3946;
   --header-open: #f3f4f6;
   --warn-bg: #fffbeb;
-  --warn-line: #fde68a;
+  --warn-line: #fcd34d80;
   --warn-ink: #78350f;
   --card: #f6f7f7;
   --info: #76a9fa;
@@ -30,6 +30,8 @@
   --success-pill: #d6e8e2;
   --success-ink: #2f6b5b;
   --danger: #ef4b4b;
+  --danger-bg: #fdf2f2;
+  --danger-line: #f8b4b480;
   --title-navy: #1e3a5f;
   --fail: #b91c1c;
   --close-match: #7f1d1d;
@@ -68,6 +70,8 @@
   --color-success-pill: var(--success-pill);
   --color-success-ink: var(--success-ink);
   --color-danger: var(--danger);
+  --color-danger-bg: var(--danger-bg);
+  --color-danger-line: var(--danger-line);
   --color-title-navy: var(--title-navy);
   --color-fail: var(--fail);
   --color-close-match: var(--close-match);

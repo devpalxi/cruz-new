@@ -1,11 +1,13 @@
 import type { ReactNode } from "react";
 
-type Tone = "info" | "success" | "successStrong";
+type Tone = "info" | "success" | "successStrong" | "warning" | "danger";
 
 const tones: Record<Tone, string> = {
   info: "bg-info text-white",
-  success: "border border-success-line bg-success-soft text-success",
+  success: "border border-[#4daa9e80] bg-[#4daa9e1a] text-[#2b2e33]",
   successStrong: "bg-success-pill text-success-ink",
+  warning: "border border-warn-line bg-warn-bg text-warn-ink",
+  danger: "border border-danger-line bg-danger-bg text-red-700",
 };
 
 type StatusPillProps = {

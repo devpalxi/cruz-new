@@ -6,10 +6,51 @@ export const COLLECTOR_STEPS: CollectorStep[] = [
   { label: "Email Address", href: "/collector/email-address" },
   { label: "Primary ID Document", href: "/collector/primary-id" },
   { label: "Secondary ID (Optional)", href: "/collector/secondary-id" },
-  { label: "Bank Account", href: "/collector/bank-account" },
+  { label: "Payout Destination Details", href: "/collector/payout-destination-details" },
   { label: "Summary", href: "/collector/summary" },
   { label: "Approval", href: "/collector/approval" },
 ];
+
+export type PayoutDestinationType = "bank" | "manual-bank" | "cheque" | "membership-card";
+
+export type PayoutDestination = {
+  type: PayoutDestinationType;
+  // Venue-customisable display name (prototype: static list; a venue would rename/enable these in Strapi).
+  label: string;
+};
+
+export const PAYOUT_DESTINATIONS: PayoutDestination[] = [
+  { type: "bank", label: "Bank Transfer" },
+  { type: "manual-bank", label: "Manual Bank Transfer" },
+  { type: "cheque", label: "Cheque" },
+  { type: "membership-card", label: "Membership Card" },
+];
+
+// Carries the single non-cash destination picked on Payment Breakdown through to the Payout Destination Details step.
+// Only one non-cash destination can be selected per payout.
+export const SELECTED_DESTINATION_KEY = "cruz.selectedPayoutDestination";
+
+// Carries the captured destination-specific details (account/cheque/membership fields) from the
+// Payout Destination Details step through to the Summary step.
+export const PAYOUT_DESTINATION_DETAILS_KEY = "cruz.payoutDestinationDetails";
+
+export type PayoutDestinationDetails = {
+  type: PayoutDestinationType;
+  title: string;
+  rows: { label: string; value: string }[];
+};
+
+// Mock defaults referenced by the Payout Destination Details step (prototype only)
+export const MOCK_WINNER_NAME = "Alex Morgan";
+export const MOCK_MEMBERSHIP_NUMBER = "M-1234567";
+
+// Manual Bank Transfer has no Zepto CoP check, so it gets a warning-only client-side comparison
+// of the entered Account Name against the customer's name. Returns null while the field is empty.
+export function getManualBankNameMatch(accountName: string): boolean | null {
+  const trimmed = accountName.trim();
+  if (trimmed === "") return null;
+  return trimmed.toLowerCase() === MOCK_WINNER_NAME.trim().toLowerCase();
+}
 
 export const PAYOUT_TYPES = [
   { value: "egm", label: "EGM" },
@@ -40,8 +81,17 @@ export const MACHINES_BY_VENUE: Record<
 // Mock total carried over from step 1 (prototype only)
 export const MOCK_TOTAL_WINNINGS = 1000;
 
+export type CopResult = { status: string; headline?: string; message?: string };
+
 // Mock summary shown on the Summary step (prototype only)
-export const MOCK_SUMMARY = {
+export const MOCK_SUMMARY: {
+  payoutId: number;
+  createdAt: string;
+  payment: { label: string; value: string }[];
+  member: { label: string; value: string }[];
+  destinations: PayoutDestinationDetails[];
+  cop: CopResult;
+} = {
   payoutId: 768,
   createdAt: "26/09/2026, 7:23:04 am",
   payment: [
@@ -50,9 +100,9 @@ export const MOCK_SUMMARY = {
     { label: "Machine ID", value: "EGM-001" },
   ],
   member: [
-    { label: "Membership #", value: "dfdg" },
+    { label: "Membership #", value: MOCK_MEMBERSHIP_NUMBER },
     { label: "Email", value: "uat@palxi.com" },
-    { label: "Full Name", value: "dfd fgf" },
+    { label: "Full Name", value: MOCK_WINNER_NAME },
     { label: "Document Type", value: "Drivers Licence" },
     { label: "Document Number", value: "464613123" },
     { label: "Street", value: "Conn Street" },
@@ -61,15 +111,35 @@ export const MOCK_SUMMARY = {
     { label: "Post Code", value: "3156" },
     { label: "Country of Issue", value: "Australia" },
   ],
-  bank: [
-    { label: "Account Name", value: "[CM]aus" },
-    { label: "BSB Number", value: "032-001" },
-    { label: "Account Number", value: "343-546-431" },
+  // Fallback shown when the Summary step is opened directly, without live data captured
+  // from the Payout Destination Details step (see PAYOUT_DESTINATION_DETAILS_KEY).
+  destinations: [
+    {
+      type: "bank" as PayoutDestinationType,
+      title: "Bank Transfer",
+      rows: [
+        { label: "Account Name", value: MOCK_WINNER_NAME },
+        { label: "BSB Number", value: "032-001" },
+        { label: "Account Number", value: "343-546-431" },
+      ],
+    },
   ],
-  cop: {
-    status: "Close Match",
-    headline: "Close match — flagged for approver.",
-    message:
-      'Entered name "[CM]aus" differs from registered account name. The payee confirmed to proceed.',
-  },
+  // The real collector flow only models the happy path (see PayoutDestinationDetailsForm), so
+  // this always resolves to a clean Match — just the pill, no alert (see CopValidationCard).
+  cop: { status: "Match" },
 };
+
+// Reference fixtures for the collector Summary's CoP Validation states page (payout-destination-scenarios).
+export const SUMMARY_COP_SCENARIOS: { payoutId: number; cop: CopResult }[] = [
+  { payoutId: 776, cop: { status: "Match" } },
+  {
+    payoutId: 531,
+    cop: {
+      status: "Close Match",
+      headline: "Close match — flagged for approver.",
+      message:
+        'Entered name "James O\'Sullivan [CM]" differs from registered account name. The payee confirmed to proceed.',
+    },
+  },
+  { payoutId: 532, cop: { status: "No Match" } },
+];

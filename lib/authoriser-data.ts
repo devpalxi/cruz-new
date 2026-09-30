@@ -27,7 +27,7 @@ export const MOCK_AUTHORISATION = {
     { label: "BSB Number", value: "015203" },
     { label: "Account Number", value: "02345678" },
   ],
-  nameVerification: { idName: "Vivek Mishra", bankName: "Vivek Mishra", match: true },
+  nameVerification: { idName: "Vivek Mishra", otherName: "Vivek Mishra", match: true },
   aml: { title: "AML Screening", check: "PEP - Clear", result: "CLEAR" },
   idvHistory: [
     { country: "Australia Manual KYC (No ID)", dateTime: "24 Sept 2026, 7:59 am", result: "-" },
