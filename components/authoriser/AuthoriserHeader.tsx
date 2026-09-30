@@ -1,20 +1,17 @@
 import AppHeader from "@/components/layout/AppHeader";
 import UserMenu from "@/components/layout/UserMenu";
 import Dropdown from "@/components/ui/Dropdown";
-import { ADMIN_USER } from "@/lib/admin-data";
+import { MOCK_AUTHORISATION } from "@/lib/authoriser-data";
 
-const MANAGE_ITEMS = [
-  { label: "Users", href: "/admin/users" },
-  { label: "Machines", href: "/admin/machines" },
-];
+const MANAGE_ITEMS = [{ label: "Manual Bank Export", href: "/authoriser/manual-bank-export" }];
 
-export default function AdminHeader() {
+export default function AuthoriserHeader() {
   return (
     <AppHeader
       right={
         <UserMenu
-          name={ADMIN_USER}
-          dashboardHref="/admin/dashboard"
+          name={MOCK_AUTHORISATION.user}
+          dashboardHref="/"
           extra={<Dropdown label="Manage" items={MANAGE_ITEMS} />}
         />
       }

@@ -15,7 +15,7 @@ import {
   nowIso,
   type ExportBatch,
 } from "@/lib/manual-export-data";
-import AvReferenceDialog from "./AvReferenceDialog";
+import AbaReferenceDialog from "./AbaReferenceDialog";
 import BatchTable, { type BatchRow } from "./BatchTable";
 import ExportConfirmDialog from "./ExportConfirmDialog";
 import ExportDateFilter from "./ExportDateFilter";
@@ -37,7 +37,7 @@ export default function ManualExportView() {
   const [end, setEnd] = useState("");
   const [applied, setApplied] = useState({ start: "", end: "" });
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const [avBatch, setAvBatch] = useState<{ id: string; justExported: boolean } | null>(null);
+  const [abaBatch, setAbaBatch] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const closeToast = useCallback(() => setToast(null), []);
 
@@ -47,13 +47,16 @@ export default function ManualExportView() {
 
   const ready = rows.filter((r) => !r.batchId);
   const awaiting: BatchRow[] = batches
-    .filter((b) => !b.avReference)
+    .filter((b) => !b.abaReference)
     .sort((a, b) => b.exportedAt.localeCompare(a.exportedAt))
-    .map((b) => ({ ...b, total: sum(rowsIn(b.payoutIds)) }));
+    .map((b) => {
+      const payouts = rowsIn(b.payoutIds);
+      return { ...b, total: sum(payouts), payouts };
+    });
   const completed: ExportTableRow[] = rows
     .flatMap((r) => {
       const b = r.batchId ? batchById.get(r.batchId) : undefined;
-      return b?.avReference ? [{ ...r, exportedAt: b.exportedAt, avReference: b.avReference }] : [];
+      return b?.abaReference ? [{ ...r, exportedAt: b.exportedAt, abaReference: b.abaReference }] : [];
     })
     .filter((r) => inRange(r.exportedAt, applied.start, applied.end))
     .sort((a, b) => b.exportedAt.localeCompare(a.exportedAt));
@@ -64,18 +67,19 @@ export default function ManualExportView() {
     downloadCsv(exportFilename(), buildCsv(list));
   }
 
-  // Export all ready payouts as a new batch, then prompt for the AV reference.
+  // Export all ready payouts as a new batch. No prompt: the ABA reference only exists once the bank
+  // has processed the file, so the batch waits under Awaiting ABA Reference.
   function exportReady() {
     const id = `B-${Date.now()}`;
     const ids = ready.map((r) => r.id);
-    setBatches((prev) => [...prev, { id, exportedAt: nowIso(), avReference: null, payoutIds: ids }]);
+    setBatches((prev) => [...prev, { id, exportedAt: nowIso(), abaReference: null, payoutIds: ids }]);
     setRows((prev) => prev.map((r) => (ids.includes(r.id) ? { ...r, batchId: id } : r)));
     download(ready);
     setConfirmOpen(false);
-    setAvBatch({ id, justExported: true });
+    setToast(`Exported ${ids.length} payouts. They are now Awaiting ABA Reference.`);
   }
 
-  const dialogBatch = avBatch ? batchById.get(avBatch.id) : undefined;
+  const dialogBatch = abaBatch ? batchById.get(abaBatch) : undefined;
   const dialogRows = dialogBatch ? rowsIn(dialogBatch.payoutIds) : [];
 
   return (
@@ -89,7 +93,7 @@ export default function ManualExportView() {
         <Tabs
           tabs={[
             { id: "ready", label: "Ready to Export", count: ready.length },
-            { id: "awaiting", label: "Awaiting AV Reference", count: awaiting.length },
+            { id: "awaiting", label: "Awaiting ABA Reference", count: awaiting.length },
             { id: "completed", label: "Completed" },
           ]}
           active={tab}
@@ -127,7 +131,7 @@ export default function ManualExportView() {
               if (tab === "ready") {
                 setConfirmOpen(true);
               } else {
-                // Re-download only: export time and AV reference stay fixed
+                // Re-download only: export time and ABA reference stay fixed
                 download(completed);
                 setToast(`Downloaded ${completed.length} completed payouts.`);
               }
@@ -142,7 +146,7 @@ export default function ManualExportView() {
         {tab === "awaiting" ? (
           <BatchTable
             batches={awaiting}
-            onEnterReference={(id) => setAvBatch({ id, justExported: false })}
+            onEnterReference={setAbaBatch}
             onRedownload={(id) => {
               const b = batchById.get(id)!;
               download(rowsIn(b.payoutIds));
@@ -169,22 +173,16 @@ export default function ManualExportView() {
         onCancel={() => setConfirmOpen(false)}
         onConfirm={exportReady}
       />
-      <AvReferenceDialog
+      <AbaReferenceDialog
         open={!!dialogBatch}
         count={dialogRows.length}
         total={sum(dialogRows)}
         exportedAt={dialogBatch ? formatDateTime(dialogBatch.exportedAt) : ""}
-        justExported={avBatch?.justExported ?? false}
-        onLater={() => {
-          if (avBatch?.justExported) {
-            setToast("Export saved. Enter the AV reference later under Awaiting AV Reference.");
-          }
-          setAvBatch(null);
-        }}
+        onCancel={() => setAbaBatch(null)}
         onSave={(reference) => {
-          setBatches((prev) => prev.map((b) => (b.id === avBatch!.id ? { ...b, avReference: reference } : b)));
-          setToast(`AV reference ${reference} saved. ${dialogRows.length} payouts moved to Payment Completed.`);
-          setAvBatch(null);
+          setBatches((prev) => prev.map((b) => (b.id === abaBatch ? { ...b, abaReference: reference } : b)));
+          setToast(`ABA reference ${reference} saved. ${dialogRows.length} payouts moved to Payment Completed.`);
+          setAbaBatch(null);
         }}
       />
       <Toast message={toast} onClose={closeToast} />

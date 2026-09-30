@@ -6,6 +6,7 @@ const tones: Record<PayoutStatus, string> = {
   "Awaiting Approval": "bg-info",
   "Pending Authorisation": "bg-pending",
   "Pending Payment": "bg-pending",
+  "Awaiting ABA Reference": "bg-awaiting",
   "Payment Delayed": "bg-pending",
   "Payment Processing": "bg-info",
   "Payment Completed": "bg-complete",
