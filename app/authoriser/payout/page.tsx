@@ -1,15 +1,13 @@
+import AuthoriserHeader from "@/components/authoriser/AuthoriserHeader";
 import AuthoriserPayoutView from "@/components/authoriser/AuthoriserPayoutView";
-import AppHeader from "@/components/layout/AppHeader";
 import BackLink from "@/components/layout/BackLink";
-import UserMenu from "@/components/layout/UserMenu";
-import { MOCK_AUTHORISATION } from "@/lib/authoriser-data";
 
 export const metadata = { title: "Authorise Payout | Cruz Money" };
 
 export default function AuthoriserPayoutPage() {
   return (
     <div className="flex min-h-screen flex-col bg-page">
-      <AppHeader right={<UserMenu name={MOCK_AUTHORISATION.user} dashboardHref="/" />} />
+      <AuthoriserHeader />
       <div className="px-6 pt-[2rem]">
         <BackLink href="/">Dashboard</BackLink>
       </div>
