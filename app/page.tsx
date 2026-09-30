@@ -8,11 +8,21 @@ export default function Home() {
       <main className="flex flex-1 flex-col items-center justify-center gap-4 px-6 text-center">
         <h1 className="text-[2.5rem] font-bold leading-[1.2] text-brand">Cruz Money</h1>
         <p className="mb-6 text-xl text-subtle">UI prototypes — choose a flow to preview.</p>
-        <Button href="/collector/payout-details" className="h-[2.875rem] w-[17.875rem]">
+        <Button href="/collector/payout-details" variant="outline" className="h-[2.875rem] w-[17.875rem]">
           Collector Pages
         </Button>
         <Button href="/approver/payout" variant="outline" className="h-[2.875rem] w-[17.875rem]">
           Approver Pages
+        </Button>
+        <Button href="/payout-destination-scenarios" variant="outline" className="h-[2.875rem] w-[17.875rem]">
+          Payout Destination Scenarios
+        </Button>
+        <Button
+          href="/admin/manage/export-manual-bank-transfers"
+          variant="outline"
+          className="h-[2.875rem] w-[17.875rem]"
+        >
+          Admin Pages
         </Button>
       </main>
     </div>

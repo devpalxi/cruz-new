@@ -1,11 +1,14 @@
-import { Check } from "lucide-react";
 import SelectInput from "@/components/ui/SelectInput";
-import StatusPill from "@/components/ui/StatusPill";
 import { RISK_LEVELS } from "@/lib/approver-data";
+import NameMatchStatus from "./NameMatchStatus";
 
 type ApprovalPanelProps = {
-  copStatus: string;
-  idNameMatch: string;
+  showCop?: boolean;
+  copStatus?: string;
+  nameMatchLabel?: string;
+  nameMatch: boolean;
+  reviewed: boolean;
+  onReviewedChange: (value: boolean) => void;
   note: string;
   onNoteChange: (value: string) => void;
   risk: string;
@@ -15,8 +18,12 @@ type ApprovalPanelProps = {
 };
 
 export default function ApprovalPanel({
+  showCop = true,
   copStatus,
-  idNameMatch,
+  nameMatchLabel,
+  nameMatch,
+  reviewed,
+  onReviewedChange,
   note,
   onNoteChange,
   risk,
@@ -26,20 +33,14 @@ export default function ApprovalPanel({
 }: ApprovalPanelProps) {
   return (
     <div className="px-[0.9375rem] text-base text-label">
-      <p className="flex items-center gap-2 text-[0.875rem]">
-        CoP Status:
-        <StatusPill tone="success" className="h-6 px-2 text-[0.875rem] font-medium">
-          <Check size="0.875rem" strokeWidth={2} />
-          {copStatus}
-        </StatusPill>
-      </p>
-      <p className="mt-3 flex items-center gap-2 text-base text-ink">
-        ID Name Match:
-        <span className="inline-flex items-center gap-1 text-[0.875rem] text-success">
-          <Check size="0.875rem" strokeWidth={2} />
-          {idNameMatch}
-        </span>
-      </p>
+      <NameMatchStatus
+        showCop={showCop}
+        copStatus={copStatus}
+        nameMatchLabel={nameMatchLabel}
+        match={nameMatch}
+        reviewed={reviewed}
+        onReviewedChange={onReviewedChange}
+      />
 
       <label htmlFor="approver-note" className="mt-[1.25rem] block text-base">
         Approver Note (optional)
