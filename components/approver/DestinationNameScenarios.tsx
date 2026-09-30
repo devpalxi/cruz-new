@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { DESTINATION_NAME_SCENARIOS } from "@/lib/approver-data";
-import NameComparison from "./NameComparison";
+import NameComparison from "@/components/payout-review/NameComparison";
 import NameMatchStatus from "./NameMatchStatus";
 
 // Reference: shows the two components that vary by payout destination — Name Verification and its

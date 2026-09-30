@@ -6,13 +6,13 @@ import CollapsibleSections, { type SectionItem } from "@/components/ui/Collapsib
 import DetailList from "@/components/ui/DetailList";
 import StatusPill from "@/components/ui/StatusPill";
 import { MOCK_APPROVAL } from "@/lib/approver-data";
-import AmlScreening from "./AmlScreening";
+import AmlScreening from "@/components/payout-review/AmlScreening";
 import ApprovalPanel from "./ApprovalPanel";
-import CollectorInfo from "./CollectorInfo";
-import DocketRow from "./DocketRow";
-import IdentityConfirmation from "./IdentityConfirmation";
-import IdvHistoryTable from "./IdvHistoryTable";
-import NameComparison from "./NameComparison";
+import CollectorInfo from "@/components/payout-review/CollectorInfo";
+import DocketRow from "@/components/payout-review/DocketRow";
+import IdentityConfirmation from "@/components/payout-review/IdentityConfirmation";
+import IdvHistoryTable from "@/components/payout-review/IdvHistoryTable";
+import NameComparison from "@/components/payout-review/NameComparison";
 
 export default function ApproverPayoutView() {
   const data = MOCK_APPROVAL;

@@ -27,6 +27,9 @@ Extracted from the Riverside Hotel "Create New Payout" reference screenshots. Al
 | `success` / `success-soft` / `success-line` | `#4daa9e` / `#edf3f2` / `#cde5e2` | Collapse All button, Match pill |
 | `success-pill` / `success-ink` | `#d6e8e2` / `#2f6b5b` | CLEAR result pill |
 | `danger` | `#ef4b4b` | Cancel button |
+| `title-navy` / `table-head` | `#1e3a5f` / `#f7f8f9` | Admin page title; table header row |
+| `fail` / `close-match` | `#b91c1c` / `#7f1d1d` | Fail and Close Match text in table |
+| `complete` / `draft` / `pending` | `#22c55e` / `#8b8f97` / `#f59e0b` | Payout status pills |
 | `header-open` | `#f3f4f6` | Open accordion header |
 | `warn-bg` / `warn-line` / `warn-ink` | `#fffbeb` / `#fde68a` / `#78350f` | Warning badge + alert |
 
@@ -75,10 +78,17 @@ All sizes are rem-based and `html` is set to `font-size: 80%` (12.8px), because 
 | `DetailList` | `components/ui/DetailList.tsx` | Bold label / right-aligned value rows |
 | `WarningBadge` / `WarningAlert` | `components/ui/` | Amber `warn-*` pill and alert box |
 | `CopValidationCard` / `SummaryView` | `components/collector/` | Summary step pieces |
-| `UserMenu` / `BackLink` | `components/layout/` | Approver header nav + back link |
+| `UserMenu` / `BackLink` | `components/layout/` | Header nav (Dashboard link + avatar) + back link — shared by approver and authoriser |
 | `CollapsibleSections` | `components/ui/CollapsibleSections.tsx` | Multi-open sections + Collapse All / Expand All |
 | `StatusPill` / `InsetCard` | `components/ui/` | Coloured pill; grey inset panel |
-| `ApproverPayoutView` + `components/approver/*` | `components/approver/` | Approver payout review page pieces |
+| `ApproverPayoutView` + `ApprovalPanel` | `components/approver/` | Approver-only pieces: editable risk level + Approve/Cancel |
+| `AuthoriserPayoutView` + `AuthorisationPanel` + `ApproverDecision` | `components/authoriser/` | Authoriser-only pieces: read-only approver decision + Authorise/Reject |
+| `DocketRow` / `IdentityConfirmation` / `NameComparison` / `AmlScreening` / `IdvHistoryTable` / `CollectorInfo` | `components/payout-review/` | Shared payout-review pieces used by both approver and authoriser |
+| `Dropdown` / `SearchInput` / `Pagination` | `components/ui/` | Header menu, search box with icon, page buttons (visual only) |
+| `ResultPill` / `PayoutStatusPill` | `components/ui/` | Table cell check results; coloured payout status pill |
+| `AdminHeader` / `PayoutsDashboard` / `PayoutFilters` / `PayoutsTable` | `components/admin/` | Admin dashboard pieces |
+| `Tabs` / `Modal` / `Toast` / `DateInput` | `components/ui/` | Tab bar with counts; confirm dialog; success toast; labelled date field |
+| `ManualExportView` / `ExportTable` / `BatchTable` / `ExportDateFilter` / `ExportConfirmDialog` / `AvReferenceDialog` | `components/admin/` | Manual Bank Transfer Export pieces (CSV built in `lib/manual-export-data.ts`, downloaded via `lib/download.ts`) |
 | `PaymentBreakdownForm` | `components/collector/PaymentBreakdownForm.tsx` | Step 2 form |
 
 ## Field states
@@ -99,5 +109,8 @@ All sizes are rem-based and `html` is set to `font-size: 80%` (12.8px), because 
 - `/collector/payment-breakdown` — step 2 (built)
 - `/collector/summary` — step 7 (built; steps 3–6 skipped for now)
 - `/approver/payout` — approver review of a payout (separate from the collector flow)
+- `/admin/dashboard` — Venue Admin Payouts Dashboard (filters, table, pagination). `/admin/users` and `/admin/machines` are placeholders
+- `/admin/manual-bank-export` — Manual Bank Transfer Export (Manage menu). Tabs: Ready to Export (confirm → CSV download → batch created → AV Reference prompt), Awaiting AV Reference (one row per export batch; Enter AV Reference / re-download), Completed (AV Reference + fixed Exported DateTime; Start/End date filter; re-download changes nothing). Payouts move to Payment Completed only when the AV reference is saved
+- `/authoriser/payout` — authoriser final sign-off on a payout (visually identical shell to the approver page; separate from both collector and approver flows)
 - `/collector/[step]` — placeholder for unbuilt steps (email-address, primary-id, secondary-id, bank-account, approval)
 - Stepper items are links; every step navigates to its route

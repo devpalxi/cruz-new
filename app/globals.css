@@ -32,6 +32,13 @@
   --danger: #ef4b4b;
   --danger-bg: #fdf2f2;
   --danger-line: #f8b4b480;
+  --title-navy: #1e3a5f;
+  --fail: #b91c1c;
+  --close-match: #7f1d1d;
+  --complete: #22c55e;
+  --draft: #8b8f97;
+  --pending: #f59e0b;
+  --table-head: #f7f8f9;
 }
 
 @theme inline {
@@ -65,6 +72,13 @@
   --color-danger: var(--danger);
   --color-danger-bg: var(--danger-bg);
   --color-danger-line: var(--danger-line);
+  --color-title-navy: var(--title-navy);
+  --color-fail: var(--fail);
+  --color-close-match: var(--close-match);
+  --color-complete: var(--complete);
+  --color-draft: var(--draft);
+  --color-pending: var(--pending);
+  --color-table-head: var(--table-head);
   --breakpoint-wide: 87.5rem;
   --font-sans: var(--font-rubik), ui-sans-serif, system-ui, sans-serif;
 }
