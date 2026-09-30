@@ -1,9 +1,12 @@
 import AccountNameValidationAlert from "@/components/collector/AccountNameValidationAlert";
+import ChequeOptionalScenario from "@/components/collector/ChequeOptionalScenario";
 import CopValidationCard from "@/components/collector/CopValidationCard";
 import DestinationNameScenarios from "@/components/approver/DestinationNameScenarios";
+import ChequeInlineEditScenario from "@/components/authoriser/ChequeInlineEditScenario";
 import AppHeader from "@/components/layout/AppHeader";
 import BackLink from "@/components/layout/BackLink";
 import Button from "@/components/ui/Button";
+import CollapsibleSections from "@/components/ui/CollapsibleSections";
 import { SUMMARY_COP_SCENARIOS } from "@/lib/collector-data";
 
 export const metadata = { title: "Payout Destination Name-Match Scenarios | Cruz Money" };
@@ -96,23 +99,61 @@ export default function PayoutDestinationScenariosPage() {
         </section>
 
         <section className="mb-14">
-          <h2 className="mb-5 text-[1.5rem] font-semibold text-ink">Collector — Summary Name Verification</h2>
+          <h2 className="mb-5 text-[1.5rem] font-semibold text-ink">
+            Collector — Summary Cheque Verification / Manual Bank Transfer Verification
+          </h2>
           <p className="mb-4 text-base text-subtle">
             Manual Bank Transfer / Cheque — client-side name comparison only, no Close Match tier.
           </p>
           <div className="flex max-w-[38.3125rem] flex-col gap-8">
             {SUMMARY_COP_SCENARIOS.filter((scenario) => scenario.cop.status !== "Close Match").map((scenario) => (
               <div key={scenario.payoutId}>
-                <p className="mb-2 text-base font-semibold text-label">{scenario.cop.status}</p>
-                <CopValidationCard status={scenario.cop.status} title="Name Verification" />
+                <p className="mb-2 text-base font-semibold text-label">{scenario.cop.status} — Cheque</p>
+                <CopValidationCard status={scenario.cop.status} title="Cheque Verification" />
+              </div>
+            ))}
+          </div>
+          <div className="mt-8 flex max-w-[38.3125rem] flex-col gap-8">
+            {SUMMARY_COP_SCENARIOS.filter((scenario) => scenario.cop.status !== "Close Match").map((scenario) => (
+              <div key={scenario.payoutId}>
+                <p className="mb-2 text-base font-semibold text-label">{scenario.cop.status} — Manual Bank Transfer</p>
+                <CopValidationCard status={scenario.cop.status} title="Manual Bank Transfer Verification" />
               </div>
             ))}
           </div>
         </section>
 
-        <section>
+        <section className="mb-14">
           <h2 className="mb-5 text-[1.5rem] font-semibold text-ink">Approver — Bank Transfer</h2>
           <DestinationNameScenarios />
+        </section>
+
+        <section className="mb-14">
+          <h2 className="mb-5 text-[1.5rem] font-semibold text-ink">
+            Collector — Cheque (Collector &amp; Authoriser both responsible)
+          </h2>
+          <p className="mb-4 text-base text-subtle">
+            Venue setting: Cheque details can be collected by either role — the collector may skip
+            it here and leave it for the authoriser.
+          </p>
+          <div className="max-w-[38.3125rem]">
+            <ChequeOptionalScenario />
+          </div>
+        </section>
+
+        <section>
+          <h2 className="mb-5 text-[1.5rem] font-semibold text-ink">
+            Authoriser — Cheque (Authoriser responsible)
+          </h2>
+          <p className="mb-4 text-base text-subtle">
+            Venue setting: Authoriser only, or Collector &amp; Authoriser both after a skip —
+            cheque details become inline editable with their own Validate step.
+          </p>
+          <div className="max-w-[38.3125rem] rounded-xl bg-card p-5">
+            <CollapsibleSections
+              items={[{ id: "bank", title: "Payout Destination Details", content: <ChequeInlineEditScenario /> }]}
+            />
+          </div>
         </section>
       </main>
     </div>

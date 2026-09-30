@@ -1,3 +1,5 @@
+import type { PayoutDestinationType } from "./collector-data";
+
 // Mock payout awaiting final authorisation (prototype only)
 // Same underlying payout the approver already reviewed (see lib/approver-data.ts),
 // now carrying the approver's decision through to the authoriser's dual sign-off.
@@ -22,6 +24,9 @@ export const MOCK_AUTHORISATION = {
     "Identity Documents Provided To Staff Member: No",
     "Identity manually verified: No",
   ],
+  // Venue setting: this venue has the authoriser responsible for collecting cheque details, so
+  // the Payout Destination Details section below becomes inline editable instead of read-only.
+  destinationType: "cheque" as PayoutDestinationType,
   bank: [
     { label: "Account Name", value: "Vivek Mishra" },
     { label: "BSB Number", value: "015203" },
