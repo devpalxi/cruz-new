@@ -37,6 +37,8 @@ export default function PaymentBreakdownForm() {
   const [destinationAmount, setDestinationAmount] = useState("0");
 
   const selectedDestination = PAYOUT_DESTINATIONS.find((d) => d.type === destinationType);
+  const cashMismatch = confirmCash !== "" && confirmCash !== cash;
+  const cashConfirmed = cash !== "" && confirmCash === cash;
 
   const canContinue =
     Number(cash) > 0 &&
@@ -85,6 +87,7 @@ export default function PaymentBreakdownForm() {
                 onChange={(e) => setConfirmCash(e.target.value)}
               />
             </FormField>
+            {cashMismatch && <p className="mt-2 text-[1.25rem] text-danger">Cash amounts do not match.</p>}
           </div>
         </AmountCard>
 
@@ -94,8 +97,13 @@ export default function PaymentBreakdownForm() {
             options={DESTINATION_OPTIONS}
             value={destinationType}
             onChange={(e) => {
-              setDestinationType(e.target.value as PayoutDestinationType | "");
-              setDestinationAmount("0");
+              const type = e.target.value as PayoutDestinationType | "";
+              setDestinationType(type);
+              // Once the cash amount is confirmed, auto-fill the non-cash amount with the
+              // remainder of the total winnings instead of always resetting to 0.
+              setDestinationAmount(
+                type !== "" && cashConfirmed ? String(MOCK_TOTAL_WINNINGS - Number(cash)) : "0",
+              );
             }}
           />
         </FormField>
