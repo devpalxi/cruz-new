@@ -29,8 +29,7 @@ export default function ExportConfirmDialog({ open, count, total, onCancel, onCo
       Export <strong className="text-ink">{count} payouts</strong> (
       <strong className="text-ink">${total.toLocaleString("en-AU", { minimumFractionDigits: 2 })}</strong> total)?
       <br />
-      They will be marked as exported and moved to <strong className="text-ink">Payment Completed</strong>. This
-      can&apos;t be undone.
+      They will be marked as exported and stay <strong className="text-ink">Pending Payment</strong> until you enter the AV reference number.
     </Modal>
   );
 }

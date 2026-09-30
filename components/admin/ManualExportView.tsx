@@ -6,12 +6,22 @@ import Button from "@/components/ui/Button";
 import Tabs from "@/components/ui/Tabs";
 import Toast from "@/components/ui/Toast";
 import { downloadCsv } from "@/lib/download";
-import { buildCsv, exportFilename, MANUAL_EXPORT_ROWS, nowIso } from "@/lib/manual-export-data";
+import {
+  buildCsv,
+  EXPORT_BATCHES,
+  exportFilename,
+  formatDateTime,
+  MANUAL_EXPORT_ROWS,
+  nowIso,
+  type ExportBatch,
+} from "@/lib/manual-export-data";
+import AvReferenceDialog from "./AvReferenceDialog";
+import BatchTable, { type BatchRow } from "./BatchTable";
 import ExportConfirmDialog from "./ExportConfirmDialog";
 import ExportDateFilter from "./ExportDateFilter";
-import ExportTable from "./ExportTable";
+import ExportTable, { type ExportTableRow } from "./ExportTable";
 
-type Tab = "ready" | "exported";
+type Tab = "ready" | "awaiting" | "completed";
 
 // Compare on the date part of the ISO string (YYYY-MM-DD)
 const inRange = (iso: string, start: string, end: string) => {
@@ -21,32 +31,52 @@ const inRange = (iso: string, start: string, end: string) => {
 
 export default function ManualExportView() {
   const [rows, setRows] = useState(MANUAL_EXPORT_ROWS);
+  const [batches, setBatches] = useState<ExportBatch[]>(EXPORT_BATCHES);
   const [tab, setTab] = useState<Tab>("ready");
   const [start, setStart] = useState("");
   const [end, setEnd] = useState("");
   const [applied, setApplied] = useState({ start: "", end: "" });
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [avBatch, setAvBatch] = useState<{ id: string; justExported: boolean } | null>(null);
   const [toast, setToast] = useState<string | null>(null);
-  // Rows just re-downloaded stay visible until the filter is re-applied, even if their new timestamp is out of range
-  const [pinned, setPinned] = useState<number[]>([]);
   const closeToast = useCallback(() => setToast(null), []);
 
-  const ready = rows.filter((r) => !r.lastExportedAt);
-  const exported = rows
-    .filter(
-      (r) => r.lastExportedAt && (pinned.includes(r.id) || inRange(r.lastExportedAt, applied.start, applied.end)),
-    )
-    .sort((a, b) => b.lastExportedAt!.localeCompare(a.lastExportedAt!));
-  const shown = tab === "ready" ? ready : exported;
-  const readyTotal = ready.reduce((sum, r) => sum + r.amount, 0);
+  const batchById = new Map(batches.map((b) => [b.id, b]));
+  const rowsIn = (ids: number[]) => rows.filter((r) => ids.includes(r.id));
+  const sum = (list: { amount: number }[]) => list.reduce((s, r) => s + r.amount, 0);
 
-  // Stamp the given rows with "now" and download them.
-  function exportRows(ids: number[]) {
-    const stamp = nowIso();
-    const next = rows.map((r) => (ids.includes(r.id) ? { ...r, lastExportedAt: stamp } : r));
-    setRows(next);
-    downloadCsv(exportFilename(), buildCsv(next.filter((r) => ids.includes(r.id))));
+  const ready = rows.filter((r) => !r.batchId);
+  const awaiting: BatchRow[] = batches
+    .filter((b) => !b.avReference)
+    .sort((a, b) => b.exportedAt.localeCompare(a.exportedAt))
+    .map((b) => ({ ...b, total: sum(rowsIn(b.payoutIds)) }));
+  const completed: ExportTableRow[] = rows
+    .flatMap((r) => {
+      const b = r.batchId ? batchById.get(r.batchId) : undefined;
+      return b?.avReference ? [{ ...r, exportedAt: b.exportedAt, avReference: b.avReference }] : [];
+    })
+    .filter((r) => inRange(r.exportedAt, applied.start, applied.end))
+    .sort((a, b) => b.exportedAt.localeCompare(a.exportedAt));
+
+  const shownCount = tab === "ready" ? ready.length : tab === "awaiting" ? awaiting.length : completed.length;
+
+  function download(list: typeof rows) {
+    downloadCsv(exportFilename(), buildCsv(list));
   }
+
+  // Export all ready payouts as a new batch, then prompt for the AV reference.
+  function exportReady() {
+    const id = `B-${Date.now()}`;
+    const ids = ready.map((r) => r.id);
+    setBatches((prev) => [...prev, { id, exportedAt: nowIso(), avReference: null, payoutIds: ids }]);
+    setRows((prev) => prev.map((r) => (ids.includes(r.id) ? { ...r, batchId: id } : r)));
+    download(ready);
+    setConfirmOpen(false);
+    setAvBatch({ id, justExported: true });
+  }
+
+  const dialogBatch = avBatch ? batchById.get(avBatch.id) : undefined;
+  const dialogRows = dialogBatch ? rowsIn(dialogBatch.payoutIds) : [];
 
   return (
     <div>
@@ -59,76 +89,102 @@ export default function ManualExportView() {
         <Tabs
           tabs={[
             { id: "ready", label: "Ready to Export", count: ready.length },
-            { id: "exported", label: "Previously Exported" },
+            { id: "awaiting", label: "Awaiting AV Reference", count: awaiting.length },
+            { id: "completed", label: "Completed" },
           ]}
           active={tab}
           onChange={setTab}
         />
       </div>
 
-      {tab === "exported" && (
+      {tab === "completed" && (
         <div className="mt-[1.5rem]">
           <ExportDateFilter
             start={start}
             end={end}
             onStartChange={setStart}
             onEndChange={setEnd}
-            onApply={() => {
-              setApplied({ start, end });
-              setPinned([]);
-            }}
+            onApply={() => setApplied({ start, end })}
             onClear={() => {
               setStart("");
               setEnd("");
               setApplied({ start: "", end: "" });
-              setPinned([]);
             }}
           />
         </div>
       )}
 
-      <div className="mt-[1.3rem] flex items-center justify-end gap-3">
-        <span className="mr-2 text-lg text-subtle">Showing {shown.length} results</span>
-        <Button
-          variant="ghost"
-          disabled={shown.length === 0}
-          className="h-[2.9rem] gap-2 border-line! px-5 text-lg! font-medium! disabled:cursor-not-allowed disabled:text-muted"
-          onClick={() => {
-            if (tab === "ready") {
-              setConfirmOpen(true);
-            } else {
-              const ids = shown.map((r) => r.id);
-              exportRows(ids);
-              setPinned(ids);
-              setToast(`Re-downloaded ${shown.length} payouts. Last Exported DateTime updated.`);
-            }
-          }}
-        >
-          <Download size="1.2rem" strokeWidth={2} /> Export CSV
-        </Button>
+      <div className="mt-[1.3rem] flex min-h-[2.9rem] items-center justify-end gap-3">
+        <span className="mr-2 text-lg text-subtle">
+          Showing {shownCount} {tab === "awaiting" ? "exports" : "results"}
+        </span>
+        {tab !== "awaiting" && (
+          <Button
+            variant="ghost"
+            disabled={shownCount === 0}
+            className="h-[2.9rem] gap-2 border-line! px-5 text-lg! font-medium! disabled:cursor-not-allowed disabled:text-muted"
+            onClick={() => {
+              if (tab === "ready") {
+                setConfirmOpen(true);
+              } else {
+                // Re-download only: export time and AV reference stay fixed
+                download(completed);
+                setToast(`Downloaded ${completed.length} completed payouts.`);
+              }
+            }}
+          >
+            <Download size="1.2rem" strokeWidth={2} /> Export CSV
+          </Button>
+        )}
       </div>
 
       <div className="mt-[1.3rem]">
-        <ExportTable
-          rows={shown}
-          emptyText={
-            tab === "ready"
-              ? "No Manual Bank Transfer payouts are ready to export."
-              : "No exported payouts match these dates."
-          }
-        />
+        {tab === "awaiting" ? (
+          <BatchTable
+            batches={awaiting}
+            onEnterReference={(id) => setAvBatch({ id, justExported: false })}
+            onRedownload={(id) => {
+              const b = batchById.get(id)!;
+              download(rowsIn(b.payoutIds));
+              setToast(`Re-downloaded export from ${formatDateTime(b.exportedAt)}.`);
+            }}
+          />
+        ) : (
+          <ExportTable
+            rows={tab === "ready" ? ready : completed}
+            showExportInfo={tab === "completed"}
+            emptyText={
+              tab === "ready"
+                ? "No Manual Bank Transfer payouts are ready to export."
+                : "No completed payouts match these dates."
+            }
+          />
+        )}
       </div>
 
       <ExportConfirmDialog
         open={confirmOpen}
         count={ready.length}
-        total={readyTotal}
+        total={sum(ready)}
         onCancel={() => setConfirmOpen(false)}
-        onConfirm={() => {
-          const count = ready.length;
-          exportRows(ready.map((r) => r.id));
-          setConfirmOpen(false);
-          setToast(`Exported ${count} payouts. They are now Payment Completed and listed under Previously Exported.`);
+        onConfirm={exportReady}
+      />
+      <AvReferenceDialog
+        open={!!dialogBatch}
+        count={dialogRows.length}
+        total={sum(dialogRows)}
+        exportedAt={dialogBatch ? formatDateTime(dialogBatch.exportedAt) : ""}
+        justExported={avBatch?.justExported ?? false}
+        onLater={() => {
+          if (avBatch?.justExported) {
+            setToast("Export saved. Enter the AV reference later under Awaiting AV Reference.");
+          }
+          setAvBatch(null);
+        }}
+        onSave={(reference) => {
+          setBatches((prev) => prev.map((b) => (b.id === avBatch!.id ? { ...b, avReference: reference } : b)));
+          setToast(`AV reference ${reference} saved. ${dialogRows.length} payouts moved to Payment Completed.`);
+          setAvBatch(null);
         }}
       />
       <Toast message={toast} onClose={closeToast} />

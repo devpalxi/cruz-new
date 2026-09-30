@@ -1,24 +1,27 @@
 import PayoutStatusPill from "@/components/ui/PayoutStatusPill";
 import { formatDateTime, type ManualExportRow } from "@/lib/manual-export-data";
 
-const headers = [
+export type ExportTableRow = ManualExportRow & { exportedAt?: string; avReference?: string };
+
+const baseHeaders = [
   "Payout ID",
   "Venue Code",
-  "Bank Transfer Amount",
+  "Amount",
   "BSB",
   "Account Number",
   "Account Name",
-  "Last Exported DateTime",
   "Collection DateTime",
-  "Status",
 ];
 
 type ExportTableProps = {
-  rows: ManualExportRow[];
+  rows: ExportTableRow[];
   emptyText: string;
+  // Completed tab shows the recorded AV reference + export time
+  showExportInfo?: boolean;
 };
 
-export default function ExportTable({ rows, emptyText }: ExportTableProps) {
+export default function ExportTable({ rows, emptyText, showExportInfo = false }: ExportTableProps) {
+  const headers = [...baseHeaders, ...(showExportInfo ? ["AV Reference", "Exported DateTime"] : []), "Status"];
   return (
     <div className="overflow-x-auto rounded-xl bg-surface">
       <table className="w-full min-w-[70rem] text-left">
@@ -46,16 +49,19 @@ export default function ExportTable({ rows, emptyText }: ExportTableProps) {
             <tr key={row.id} className="h-[4.75rem] border-t border-line-soft text-lg text-ink">
               <td className="pl-[1.9rem] pr-[1.25rem]">{row.id}</td>
               <td className="px-[1.25rem]">{row.venueCode}</td>
-              <td className="px-[1.25rem]">${row.amount.toFixed(2)}</td>
-              <td className="px-[1.25rem] tabular-nums">{row.bsb}</td>
-              <td className="px-[1.25rem] tabular-nums">{row.accountNumber}</td>
+              <td className="w-[1%] whitespace-nowrap px-[1.25rem]">${row.amount.toFixed(2)}</td>
+              <td className="whitespace-nowrap px-[1.25rem] tabular-nums">{row.bsb}</td>
+              <td className="whitespace-nowrap px-[1.25rem] tabular-nums">{row.accountNumber}</td>
               <td className="px-[1.25rem]">{row.accountName}</td>
-              <td className={`px-[1.25rem] ${row.lastExportedAt ? "" : "text-muted"}`}>
-                {formatDateTime(row.lastExportedAt)}
-              </td>
-              <td className="px-[1.25rem]">{formatDateTime(row.collectedAt)}</td>
+              <td className="whitespace-nowrap px-[1.25rem]">{formatDateTime(row.collectedAt)}</td>
+              {showExportInfo && (
+                <>
+                  <td className="whitespace-nowrap px-[1.25rem] font-medium">{row.avReference}</td>
+                  <td className="whitespace-nowrap px-[1.25rem]">{formatDateTime(row.exportedAt ?? null)}</td>
+                </>
+              )}
               <td className="px-[1.25rem]">
-                <PayoutStatusPill status={row.lastExportedAt ? "Payment Completed" : "Pending Payment"} />
+                <PayoutStatusPill status={row.avReference ? "Payment Completed" : "Pending Payment"} />
               </td>
             </tr>
           ))}
