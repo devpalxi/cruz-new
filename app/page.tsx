@@ -17,13 +17,6 @@ export default function Home() {
         <Button href="/payout-destination-scenarios" variant="outline" className="h-[2.875rem] w-[17.875rem]">
           Payout Destination Scenarios
         </Button>
-        <Button
-          href="/admin/manage/export-manual-bank-transfers"
-          variant="outline"
-          className="h-[2.875rem] w-[17.875rem]"
-        >
-          Admin Pages
-        </Button>
       </main>
     </div>
   );

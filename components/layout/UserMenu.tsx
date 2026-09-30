@@ -1,21 +1,17 @@
 import Link from "next/link";
 import { FaUser } from "react-icons/fa6";
-import type { ManageMenuItem } from "@/lib/admin-data";
-import ManageMenu from "./ManageMenu";
 
 type UserMenuProps = {
   name: string;
   dashboardHref: string;
-  manageItems?: ManageMenuItem[];
 };
 
-export default function UserMenu({ name, dashboardHref, manageItems }: UserMenuProps) {
+export default function UserMenu({ name, dashboardHref }: UserMenuProps) {
   return (
     <nav className="flex items-center gap-10 pr-[2.875rem] pt-[1.3125rem] text-lg text-ink">
       <Link href={dashboardHref} className="hover:text-brand">
         Dashboard
       </Link>
-      {manageItems && manageItems.length > 0 && <ManageMenu items={manageItems} />}
       <div className="flex items-center gap-3">
         <span>{name}</span>
         <span className="flex h-[3.125rem] w-[3.125rem] items-center justify-center overflow-hidden rounded-full bg-header-open text-muted">
