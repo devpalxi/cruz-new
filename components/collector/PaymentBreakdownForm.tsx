@@ -54,12 +54,12 @@ export default function PaymentBreakdownForm() {
           // left over from switching back from a non-cash destination.
           sessionStorage.removeItem(SELECTED_DESTINATION_KEY);
           sessionStorage.removeItem(PAYOUT_DESTINATION_DETAILS_KEY);
-          router.push("/collector/summary");
-          return;
+        } else {
+          sessionStorage.setItem(SELECTED_DESTINATION_KEY, JSON.stringify(destinationType));
         }
-        sessionStorage.setItem(SELECTED_DESTINATION_KEY, JSON.stringify(destinationType));
-        // Steps 3-5 are skipped for now; jump straight to Payout Destination Details
-        router.push("/collector/payout-destination-details");
+        // Email → Primary ID → Secondary ID follow; the Secondary ID step then routes to the
+        // destination details (non-cash) or the Summary (cash only).
+        router.push("/collector/before-you-start");
       }}
     >
       <h1 className="mb-[2.125rem] text-[2.5rem] font-bold leading-[2.875rem] text-brand">

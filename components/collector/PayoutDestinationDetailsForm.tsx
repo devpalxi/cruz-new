@@ -188,7 +188,7 @@ export default function PayoutDestinationDetailsForm() {
       )}
 
       <div className="mt-[3.8125rem] flex gap-10">
-        <Button variant="outline" href="/collector/payment-breakdown" className="h-[2.875rem] flex-1">
+        <Button variant="outline" href="/collector/secondary-id" className="h-[2.875rem] flex-1">
           Back
         </Button>
         {destination && !validated ? (

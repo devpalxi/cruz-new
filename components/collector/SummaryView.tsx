@@ -9,11 +9,13 @@ import {
   PAYOUT_DESTINATION_DETAILS_KEY,
   type PayoutDestinationDetails,
 } from "@/lib/collector-data";
+import { EMAIL_CAPTURE_KEY, ID_CAPTURE_KEY, buildMemberIdentificationRows } from "@/lib/id-document-config";
 import CopValidationCard from "./CopValidationCard";
 
 export default function SummaryView() {
   const { payoutId, createdAt, payment, member, destinations: fallbackDestinations, cop } = MOCK_SUMMARY;
   const [destinations, setDestinations] = useState<PayoutDestinationDetails[]>(fallbackDestinations);
+  const [memberRows, setMemberRows] = useState(member);
 
   useEffect(() => {
     try {
@@ -21,6 +23,18 @@ export default function SummaryView() {
       if (stored) setDestinations([JSON.parse(stored)]);
     } catch {
       // Keep the fallback destinations if the stored value can't be read.
+    }
+    try {
+      // Show what the Email Address and Primary ID steps captured; otherwise keep the mock rows.
+      const storedId = sessionStorage.getItem(ID_CAPTURE_KEY);
+      if (storedId) {
+        const storedEmail = sessionStorage.getItem(EMAIL_CAPTURE_KEY);
+        setMemberRows(
+          buildMemberIdentificationRows(JSON.parse(storedId), storedEmail ? JSON.parse(storedEmail) : null),
+        );
+      }
+    } catch {
+      // Keep the mock member rows if the stored value can't be read.
     }
   }, []);
 
@@ -33,7 +47,7 @@ export default function SummaryView() {
         <CollapsibleSections
           items={[
             { id: "payment", title: "Payment Breakdown", content: <DetailList rows={payment} /> },
-            { id: "member", title: "Member Identification", content: <DetailList rows={member} /> },
+            { id: "member", title: "Member Identification", content: <DetailList rows={memberRows} /> },
             {
               id: "destination",
               title: "Payout Destination Details",
@@ -75,8 +89,9 @@ export default function SummaryView() {
         <Button variant="outline" href="/collector/payment-breakdown" className="h-[2.875rem] flex-1">
           Back
         </Button>
-        {/* Approval step not built yet */}
-        <Button className="h-[2.875rem] flex-1">Submit</Button>
+        <Button href="/collector/approval" className="h-[2.875rem] flex-1">
+          Submit
+        </Button>
       </div>
     </div>
   );
