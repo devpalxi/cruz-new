@@ -1,12 +1,11 @@
-import { Check, TriangleAlert, X } from "lucide-react";
-import StatusPill from "@/components/ui/StatusPill";
+import VerificationPill, { type VerificationTone } from "@/components/ui/VerificationPill";
 import WarningAlert from "@/components/ui/WarningAlert";
 
 type NameMatchStatusProps = {
   // Only Bank Transfer has a real Zepto CoP check to report.
   showCop?: boolean;
   copStatus?: string;
-  copTone?: "success" | "warning" | "danger";
+  copTone?: VerificationTone;
   // Shown only for an ambiguous "Close Match" — a clean Match or a clear No Match don't need it.
   copAlert?: { headline: string; message: string };
   // Label varies by destination: "ID Name Match" (Bank), "Account Name Match" (Manual Bank), "Bearer Name Match" (Cheque).
@@ -15,8 +14,6 @@ type NameMatchStatusProps = {
   reviewed: boolean;
   onReviewedChange: (value: boolean) => void;
 };
-
-const COP_ICON = { success: Check, warning: TriangleAlert, danger: X };
 
 export default function NameMatchStatus({
   showCop = true,
@@ -28,17 +25,12 @@ export default function NameMatchStatus({
   reviewed,
   onReviewedChange,
 }: NameMatchStatusProps) {
-  const CopIcon = COP_ICON[copTone];
-
   return (
     <div className="text-base text-label">
       {showCop && copStatus && (
         <p className="flex items-center gap-2 text-[0.875rem]">
           CoP Status:
-          <StatusPill tone={copTone} className="h-6 px-2 text-[0.875rem] font-medium">
-            <CopIcon size="0.875rem" strokeWidth={2} />
-            {copStatus}
-          </StatusPill>
+          <VerificationPill tone={copTone}>{copStatus}</VerificationPill>
         </p>
       )}
 
@@ -50,17 +42,7 @@ export default function NameMatchStatus({
 
       <p className={`${showCop && copStatus ? "mt-3" : ""} flex items-center gap-2 text-base text-ink`}>
         {nameMatchLabel}:
-        {match ? (
-          <span className="inline-flex items-center gap-1 text-[0.875rem] text-success">
-            <Check size="0.875rem" strokeWidth={2} />
-            Yes
-          </span>
-        ) : (
-          <span className="inline-flex items-center gap-1 text-[0.875rem] text-danger">
-            <X size="0.875rem" strokeWidth={2} />
-            No
-          </span>
-        )}
+        <VerificationPill tone={match ? "success" : "danger"}>{match ? "Yes" : "No"}</VerificationPill>
       </p>
 
       {!match && (

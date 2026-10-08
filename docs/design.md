@@ -86,6 +86,7 @@ All sizes are rem-based and `html` is set to `font-size: 80%` (12.8px), because 
 | `AuthoriserPayoutView` + `AuthorisationPanel` + `ApproverDecision` | `components/authoriser/` | Authoriser-only pieces: read-only approver decision + Authorise/Reject |
 | `DocketRow` / `IdentityConfirmation` / `NameComparison` / `AmlScreening` / `IdvHistoryTable` / `CollectorInfo` | `components/payout-review/` | Shared payout-review pieces used by both approver and authoriser |
 | `Dropdown` / `SearchInput` / `Pagination` | `components/ui/` | Header menu, search box with icon, page buttons (visual only) |
+| `VerificationPill` | `components/ui/` | Universal verification result pill (see the UI rule below) |
 | `ResultPill` / `PayoutStatusPill` | `components/ui/` | Table cell check results; coloured payout status pill |
 | `AdminHeader` / `PayoutsDashboard` / `PayoutFilters` / `PayoutsTable` | `components/admin/` | Admin dashboard pieces |
 | `Tabs` / `Modal` / `Toast` / `DateInput` | `components/ui/` | Tab bar with counts; confirm dialog; success toast; labelled date field |
@@ -98,6 +99,21 @@ All sizes are rem-based and `html` is set to `font-size: 80%` (12.8px), because 
 ## ID documents (FrankieOne alignment)
 
 `lib/id-document-config.ts` is the single source for the Primary ID step: the country list, the document types offered per country (mirrors UAT), and the detail fields per country + document. The Country picks the document buttons, and the document picks the fields — e.g. an Australian Driver Licence asks for State of Issue, a New Zealand Driver Licence asks for Licence Number + Version and no State. Fields marked "assumed" in that file (NZ Licence Version, Passport, National ID, Manual KYC) are placeholders until the FrankieOne field spec is confirmed. The identity check is mocked: a prototype-only toggle picks Pass or Server unavailable (which shows the bypass + manual-verification attestations).
+
+## UI rule: verification results are always a pill
+
+Any verification outcome — CoP Status, ID Name Match, and similar Match / Close Match / No Match results — is shown with `VerificationPill` (`components/ui/VerificationPill.tsx`). Never render these as plain coloured text or a one-off badge.
+
+| Tone | Icon | Use for |
+|---|---|---|
+| `success` | tick | Match, Yes, Pass |
+| `warning` | triangle | Close Match, needs a look |
+| `danger` | cross | No Match, No, Fail |
+
+- The pill text is the result only ("Match", "Yes"); the label sits beside it ("CoP Status:", "ID Name Match:").
+- `size="sm"` for inline rows on the Approver / Authoriser panels; `size="md"` for a standalone result card (Collector CoP Validation).
+- Colour, icon and sizing live in the component, so a new result type only picks a tone.
+- Not covered yet: the Admin dashboard table cells (`ResultPill`) keep their own compact style.
 
 ## Field states
 
