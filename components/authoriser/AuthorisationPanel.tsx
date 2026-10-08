@@ -1,5 +1,4 @@
-import { Check } from "lucide-react";
-import StatusPill from "@/components/ui/StatusPill";
+import VerificationPill from "@/components/ui/VerificationPill";
 import ApproverDecision from "./ApproverDecision";
 
 type AuthorisationPanelProps = {
@@ -30,17 +29,11 @@ export default function AuthorisationPanel({
     <div className="px-[0.9375rem] text-base text-label">
       <p className="flex items-center gap-2 text-[0.875rem]">
         {copLabel}:
-        <StatusPill tone="success" className="h-6 px-2 text-[0.875rem] font-medium">
-          <Check size="0.875rem" strokeWidth={2} />
-          {copStatus}
-        </StatusPill>
+        <VerificationPill tone="success">{copStatus}</VerificationPill>
       </p>
       <p className="mt-3 flex items-center gap-2 text-base text-ink">
         ID Name Match:
-        <span className="inline-flex items-center gap-1 text-[0.875rem] text-success">
-          <Check size="0.875rem" strokeWidth={2} />
-          {idNameMatch}
-        </span>
+        <VerificationPill tone="success">{idNameMatch}</VerificationPill>
       </p>
 
       <div className="mt-[1.25rem]">
