@@ -91,7 +91,7 @@ export default function PaymentBreakdownForm() {
           </div>
         </AmountCard>
 
-        <FormField label="Non-Cash Destination" htmlFor="destination-type">
+        <FormField label="Non Cash Details" htmlFor="destination-type">
           <SelectInput
             id="destination-type"
             options={DESTINATION_OPTIONS}
