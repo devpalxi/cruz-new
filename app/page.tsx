@@ -20,6 +20,9 @@ export default function Home() {
         <Button href="/admin/dashboard" variant="outline" className="h-[2.875rem] w-[17.875rem]">
           Admin Pages
         </Button>
+        <Button href="/admin/venues?role=super-admin" variant="outline" className="h-[2.875rem] w-[17.875rem]">
+          Super Admin Pages
+        </Button>
         <Button href="/payout-destination-scenarios" variant="outline" className="h-[2.875rem] w-[17.875rem]">
           Payout Destination Scenarios
         </Button>

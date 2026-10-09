@@ -48,7 +48,7 @@ export default function VenueSettingsForm({ venue, showClient, onSave }: VenueSe
   }
 
   return (
-    <div className="mt-4 max-w-[52rem]">
+    <div className="mt-4">
       <h1 className="text-[2.1rem] font-semibold leading-[2.6rem] text-title-navy">{venue.name}</h1>
       <p className="mt-1 text-lg text-label">
         {showClient && <>Client: {venue.client} · </>}Daily limit: {formatDailyLimit(venue.dailyLimit)}

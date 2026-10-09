@@ -19,7 +19,7 @@ export default function VenueSettingsView({ venueId, isSuperAdmin }: VenueSettin
   const allowed = venue && (isSuperAdmin || venue.client === ADMIN_CLIENT);
 
   return (
-    <div>
+    <div className="mx-auto w-full max-w-[52rem]">
       <BackLink href={backHref}>Venues</BackLink>
       {!ready ? null : allowed ? (
         <VenueSettingsForm
