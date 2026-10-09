@@ -5,32 +5,46 @@ import Button from "@/components/ui/Button";
 import CollapsibleSections from "@/components/ui/CollapsibleSections";
 import DetailList from "@/components/ui/DetailList";
 import StatusPill from "@/components/ui/StatusPill";
+import Toast from "@/components/ui/Toast";
 import AmlScreening from "@/components/payout-review/AmlScreening";
 import CollectorInfo from "@/components/payout-review/CollectorInfo";
 import DocketRow from "@/components/payout-review/DocketRow";
 import IdentityConfirmation from "@/components/payout-review/IdentityConfirmation";
 import IdvHistoryTable from "@/components/payout-review/IdvHistoryTable";
 import NameComparison from "@/components/payout-review/NameComparison";
+import RecordedDestination from "@/components/payout-review/RecordedDestination";
+import ReturnForCorrectionDialog from "@/components/payout-review/ReturnForCorrectionDialog";
 import { MOCK_AUTHORISATION } from "@/lib/authoriser-data";
+import { chequeNeedsAuthoriser, type ReviewScenario } from "@/lib/payout-review-scenarios";
 import AuthorisationPanel from "./AuthorisationPanel";
-import ChequeInlineEditScenario from "./ChequeInlineEditScenario";
+import ChequeDetailsEditor from "./ChequeDetailsEditor";
 
-export default function AuthoriserPayoutView() {
+export default function AuthoriserPayoutView({ scenario }: { scenario: ReviewScenario }) {
   const data = MOCK_AUTHORISATION;
   const [note, setNote] = useState("");
   const [confirmed, setConfirmed] = useState(false);
+  const [chequeComplete, setChequeComplete] = useState(false);
+  const [returnOpen, setReturnOpen] = useState(false);
+  const [returned, setReturned] = useState(false);
+  const [toast, setToast] = useState<string | null>(null);
 
-  const canAuthorise = confirmed;
+  const authoriserEntersCheque = chequeNeedsAuthoriser(scenario);
+  const canAuthorise = confirmed && !returned && (!authoriserEntersCheque || chequeComplete);
 
-  // CoP (Confirmation of Payee) only applies to a real Zepto bank check. Cheque and Manual Bank
-  // Transfer destinations only get a client-side name comparison, so the Approvals panel below
-  // labels the result accordingly instead of calling it "CoP Status".
+  // CoP (Confirmation of Payee) only applies to a real bank check. Cheque and the payment file
+  // only get a name comparison, so the Approvals panel labels the result accordingly.
   const copLabel =
-    data.destinationType === "cheque"
+    scenario.destinationType === "cheque"
       ? "Cheque Verification"
-      : data.destinationType === "manual-bank"
-        ? "Manual Bank Transfer Verification"
+      : scenario.destinationType === "manual-bank"
+        ? "Account Name Check"
         : "CoP Status";
+
+  const payoutRows = [
+    { label: "Cash Amount", value: scenario.cashAmount },
+    { label: `${scenario.destinationTitle} Amount`, value: scenario.nonCashAmount },
+    ...data.payout.slice(2),
+  ];
 
   return (
     <div className="rounded-xl bg-card p-5">
@@ -40,9 +54,15 @@ export default function AuthoriserPayoutView() {
         <p className="text-lg text-subtle">{data.createdAt}</p>
         <div className="relative -top-1 flex items-center gap-[1.625rem] text-xl text-subtle">
           Status:
-          <StatusPill tone="info" className="h-[1.875rem] px-2.5! text-[0.9375rem]!">
-            {data.status}
-          </StatusPill>
+          {returned ? (
+            <StatusPill tone="warning" className="h-[1.875rem] px-2.5! text-[0.9375rem]!">
+              Returned for Correction
+            </StatusPill>
+          ) : (
+            <StatusPill tone="info" className="h-[1.875rem] px-2.5! text-[0.9375rem]!">
+              {data.status}
+            </StatusPill>
+          )}
         </div>
       </div>
 
@@ -54,7 +74,7 @@ export default function AuthoriserPayoutView() {
               title: "Payout Details",
               content: (
                 <>
-                  <DetailList rows={data.payout} labelClassName="font-medium" />
+                  <DetailList rows={payoutRows} labelClassName="font-medium" />
                   <DocketRow />
                 </>
               ),
@@ -72,14 +92,18 @@ export default function AuthoriserPayoutView() {
             {
               id: "bank",
               title: "Payout Destination Details",
-              // Venue setting: when the authoriser is responsible for cheque details, this
-              // becomes inline editable with its own Validate step instead of read-only.
-              content:
-                data.destinationType === "cheque" ? (
-                  <ChequeInlineEditScenario />
-                ) : (
-                  <DetailList rows={data.bank} labelClassName="font-medium" />
-                ),
+              content: authoriserEntersCheque ? (
+                <div className="flex flex-col gap-6">
+                  <RecordedDestination scenario={scenario} />
+                  <ChequeDetailsEditor
+                    initialNumber={scenario.cheque?.number}
+                    initialName={scenario.cheque?.name}
+                    onCompleteChange={setChequeComplete}
+                  />
+                </div>
+              ) : (
+                <RecordedDestination scenario={scenario} />
+              ),
             },
             {
               id: "name",
@@ -117,14 +141,39 @@ export default function AuthoriserPayoutView() {
         />
       </div>
 
+      {authoriserEntersCheque && !chequeComplete && !returned && (
+        <p className="mt-4 text-base text-subtle">
+          Authorise is available once both cheque details are entered and checked.
+        </p>
+      )}
+
       <div className="mt-[0.9375rem] flex flex-col gap-3">
         <Button disabled={!canAuthorise} className="h-[2.8125rem] w-full">
           Authorise
+        </Button>
+        <Button
+          variant="outline"
+          disabled={returned}
+          onClick={() => setReturnOpen(true)}
+          className="h-[2.8125rem] w-full disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          Return for Correction
         </Button>
         <Button variant="danger" href="/" className="h-[2.8125rem] w-full">
           Reject
         </Button>
       </div>
+
+      <ReturnForCorrectionDialog
+        open={returnOpen}
+        onCancel={() => setReturnOpen(false)}
+        onConfirm={() => {
+          setReturnOpen(false);
+          setReturned(true);
+          setToast(`Payout #${data.payoutId} was returned to the Collector.`);
+        }}
+      />
+      <Toast message={toast} onClose={() => setToast(null)} />
     </div>
   );
 }

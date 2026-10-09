@@ -13,16 +13,23 @@ import DocketRow from "@/components/payout-review/DocketRow";
 import IdentityConfirmation from "@/components/payout-review/IdentityConfirmation";
 import IdvHistoryTable from "@/components/payout-review/IdvHistoryTable";
 import NameComparison from "@/components/payout-review/NameComparison";
+import RecordedDestination from "@/components/payout-review/RecordedDestination";
+import ReturnForCorrectionDialog from "@/components/payout-review/ReturnForCorrectionDialog";
+import Toast from "@/components/ui/Toast";
+import type { ReviewScenario } from "@/lib/payout-review-scenarios";
 
-export default function ApproverPayoutView() {
+export default function ApproverPayoutView({ scenario }: { scenario: ReviewScenario }) {
   const data = MOCK_APPROVAL;
   const [note, setNote] = useState("");
   const [risk, setRisk] = useState("");
   const [confirmed, setConfirmed] = useState(false);
   const [reviewed, setReviewed] = useState(false);
+  const [returnOpen, setReturnOpen] = useState(false);
+  const [returned, setReturned] = useState(false);
+  const [toast, setToast] = useState<string | null>(null);
 
-  const hasBankDestination = data.destinations.some((destination) => destination.type === "bank");
-  const canApprove = risk !== "" && confirmed && (data.nameVerification.match || reviewed);
+  const hasBankDestination = scenario.destinationType === "bank";
+  const canApprove = !returned && risk !== "" && confirmed && (data.nameVerification.match || reviewed);
 
   const sections: (SectionItem | false)[] = [
     {
@@ -30,7 +37,14 @@ export default function ApproverPayoutView() {
       title: "Payout Details",
       content: (
         <>
-          <DetailList rows={data.payout} labelClassName="font-medium" />
+          <DetailList
+            rows={[
+              { label: "Cash Amount", value: scenario.cashAmount },
+              { label: `${scenario.destinationTitle} Amount`, value: scenario.nonCashAmount },
+              ...data.payout.slice(2),
+            ]}
+            labelClassName="font-medium"
+          />
           <DocketRow />
         </>
       ),
@@ -48,18 +62,7 @@ export default function ApproverPayoutView() {
     {
       id: "destination",
       title: "Payout Destination Details",
-      content: (
-        <div className="flex flex-col gap-6">
-          {data.destinations.map((destination) => (
-            <div key={destination.type}>
-              {data.destinations.length > 1 && (
-                <p className="mb-2 text-base font-medium text-label">{destination.title}</p>
-              )}
-              <DetailList rows={destination.rows} labelClassName="font-medium" />
-            </div>
-          ))}
-        </div>
-      ),
+      content: <RecordedDestination scenario={scenario} />,
     },
     hasBankDestination && {
       id: "name",
@@ -106,8 +109,8 @@ export default function ApproverPayoutView() {
         <p className="text-lg text-subtle">{data.createdAt}</p>
         <div className="relative -top-1 flex items-center gap-[1.625rem] text-xl text-subtle">
           Status:
-          <StatusPill tone="info" className="h-[1.875rem] px-2.5! text-[0.9375rem]!">
-            {data.status}
+          <StatusPill tone={returned ? "warning" : "info"} className="h-[1.875rem] px-2.5! text-[0.9375rem]!">
+            {returned ? "Returned for Correction" : data.status}
           </StatusPill>
         </div>
       </div>
@@ -120,10 +123,29 @@ export default function ApproverPayoutView() {
         <Button disabled={!canApprove} className="h-[2.8125rem] w-full">
           Approve
         </Button>
+        <Button
+          variant="outline"
+          disabled={returned}
+          onClick={() => setReturnOpen(true)}
+          className="h-[2.8125rem] w-full disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          Return for Correction
+        </Button>
         <Button variant="danger" href="/" className="h-[2.8125rem] w-full">
           Cancel
         </Button>
       </div>
+
+      <ReturnForCorrectionDialog
+        open={returnOpen}
+        onCancel={() => setReturnOpen(false)}
+        onConfirm={() => {
+          setReturnOpen(false);
+          setReturned(true);
+          setToast(`Payout #${data.payoutId} was returned to the Collector.`);
+        }}
+      />
+      <Toast message={toast} onClose={() => setToast(null)} />
     </div>
   );
 }
