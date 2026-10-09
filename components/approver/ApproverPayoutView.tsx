@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Button from "@/components/ui/Button";
 import CollapsibleSections, { type SectionItem } from "@/components/ui/CollapsibleSections";
@@ -13,15 +14,21 @@ import DocketRow from "@/components/payout-review/DocketRow";
 import IdentityConfirmation from "@/components/payout-review/IdentityConfirmation";
 import IdvHistoryTable from "@/components/payout-review/IdvHistoryTable";
 import NameComparison from "@/components/payout-review/NameComparison";
+import RecordedDestination from "@/components/payout-review/RecordedDestination";
+import ReturnForCorrectionDialog from "@/components/payout-review/ReturnForCorrectionDialog";
+import { comparedNameLabel, returnedTypeFor, type ReviewScenario } from "@/lib/payout-review-scenarios";
+import { saveReturnedPayout } from "@/lib/return-payout";
 
-export default function ApproverPayoutView() {
+export default function ApproverPayoutView({ scenario }: { scenario: ReviewScenario }) {
+  const router = useRouter();
   const data = MOCK_APPROVAL;
   const [note, setNote] = useState("");
   const [risk, setRisk] = useState("");
   const [confirmed, setConfirmed] = useState(false);
   const [reviewed, setReviewed] = useState(false);
+  const [returnOpen, setReturnOpen] = useState(false);
 
-  const hasBankDestination = data.destinations.some((destination) => destination.type === "bank");
+  const hasBankDestination = scenario.destinationType === "bank";
   const canApprove = risk !== "" && confirmed && (data.nameVerification.match || reviewed);
 
   const sections: (SectionItem | false)[] = [
@@ -30,7 +37,14 @@ export default function ApproverPayoutView() {
       title: "Payout Details",
       content: (
         <>
-          <DetailList rows={data.payout} labelClassName="font-medium" />
+          <DetailList
+            rows={[
+              { label: "Cash Amount", value: scenario.cashAmount },
+              { label: `${scenario.destinationTitle} Amount`, value: scenario.nonCashAmount },
+              ...data.payout.slice(2),
+            ]}
+            labelClassName="font-medium"
+          />
           <DocketRow />
         </>
       ),
@@ -47,24 +61,13 @@ export default function ApproverPayoutView() {
     },
     {
       id: "destination",
-      title: "Payout Destination Details",
-      content: (
-        <div className="flex flex-col gap-6">
-          {data.destinations.map((destination) => (
-            <div key={destination.type}>
-              {data.destinations.length > 1 && (
-                <p className="mb-2 text-base font-medium text-label">{destination.title}</p>
-              )}
-              <DetailList rows={destination.rows} labelClassName="font-medium" />
-            </div>
-          ))}
-        </div>
-      ),
+      title: "Payment Method Details",
+      content: <RecordedDestination scenario={scenario} />,
     },
     hasBankDestination && {
       id: "name",
       title: "Name Verification",
-      content: <NameComparison {...data.nameVerification} />,
+      content: <NameComparison {...data.nameVerification} otherLabel={comparedNameLabel(scenario)} />,
     },
     {
       id: "results",
@@ -120,10 +123,27 @@ export default function ApproverPayoutView() {
         <Button disabled={!canApprove} className="h-[2.8125rem] w-full">
           Approve
         </Button>
+        <Button
+          variant="outline"
+          onClick={() => setReturnOpen(true)}
+          className="h-[2.8125rem] w-full"
+        >
+          Return for Correction
+        </Button>
         <Button variant="danger" href="/" className="h-[2.8125rem] w-full">
           Cancel
         </Button>
       </div>
+
+      <ReturnForCorrectionDialog
+        open={returnOpen}
+        onCancel={() => setReturnOpen(false)}
+        onConfirm={(reason) => {
+          setReturnOpen(false);
+          saveReturnedPayout(`${data.user} (Approver)`, reason);
+          router.push(`/collector/returned-payout?type=${returnedTypeFor(scenario)}`);
+        }}
+      />
     </div>
   );
 }

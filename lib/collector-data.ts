@@ -1,3 +1,5 @@
+import { CHEQUE_LABEL, FUNDS_TRANSFER_LABEL, PAYMENT_FILE_LABEL, type Venue } from "@/lib/venue-data";
+
 export type CollectorStep = { label: string; href: string };
 
 export const COLLECTOR_STEPS: CollectorStep[] = [
@@ -6,7 +8,7 @@ export const COLLECTOR_STEPS: CollectorStep[] = [
   { label: "Email Address", href: "/collector/email-address" },
   { label: "Primary ID Document", href: "/collector/primary-id" },
   { label: "Secondary ID (Optional)", href: "/collector/secondary-id" },
-  { label: "Payout Destination Details", href: "/collector/payout-destination-details" },
+  { label: "Payment Method Details", href: "/collector/payout-destination-details" },
   { label: "Summary", href: "/collector/summary" },
   { label: "Approval", href: "/collector/approval" },
 ];
@@ -20,18 +22,28 @@ export type PayoutDestination = {
 };
 
 export const PAYOUT_DESTINATIONS: PayoutDestination[] = [
-  { type: "bank", label: "Bank Transfer" },
-  { type: "manual-bank", label: "Manual Bank Transfer" },
-  { type: "cheque", label: "Cheque" },
+  { type: "bank", label: FUNDS_TRANSFER_LABEL },
+  { type: "manual-bank", label: PAYMENT_FILE_LABEL },
+  { type: "cheque", label: CHEQUE_LABEL },
   { type: "membership-card", label: "Membership Card" },
 ];
 
-// Carries the single non-cash destination picked on Payment Breakdown through to the Payout Destination Details step.
+// The venue the Collector works at in this prototype (matches a venue on the Venues screen)
+export const COLLECTOR_VENUE_ID = "riverside-rsl-club";
+
+// Only the payment methods this venue has switched on are offered (Venue Settings)
+export function isDestinationAvailable(type: PayoutDestinationType, venue: Venue | undefined): boolean {
+  if (type === "manual-bank") return !!venue?.paymentFileEnabled;
+  if (type === "cheque") return !!venue?.chequeEnabled;
+  return true;
+}
+
+// Carries the single non-cash destination picked on Payment Breakdown through to the Payment Method Details step.
 // Only one non-cash destination can be selected per payout.
 export const SELECTED_DESTINATION_KEY = "cruz.selectedPayoutDestination";
 
 // Carries the captured destination-specific details (account/cheque/membership fields) from the
-// Payout Destination Details step through to the Summary step.
+// Payment Method Details step through to the Summary step.
 export const PAYOUT_DESTINATION_DETAILS_KEY = "cruz.payoutDestinationDetails";
 
 export type PayoutDestinationDetails = {
@@ -40,7 +52,7 @@ export type PayoutDestinationDetails = {
   rows: { label: string; value: string }[];
 };
 
-// Mock defaults referenced by the Payout Destination Details step (prototype only)
+// Mock defaults referenced by the Payment Method Details step (prototype only)
 export const MOCK_WINNER_NAME = "Alex Morgan";
 export const MOCK_MEMBERSHIP_NUMBER = "M-1234567";
 
@@ -112,7 +124,7 @@ export const MOCK_SUMMARY: {
     { label: "Country of Issue", value: "Australia" },
   ],
   // Fallback shown when the Summary step is opened directly, without live data captured
-  // from the Payout Destination Details step (see PAYOUT_DESTINATION_DETAILS_KEY).
+  // from the Payment Method Details step (see PAYOUT_DESTINATION_DETAILS_KEY).
   destinations: [
     {
       type: "bank" as PayoutDestinationType,

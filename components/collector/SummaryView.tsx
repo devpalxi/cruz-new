@@ -50,7 +50,7 @@ export default function SummaryView() {
             { id: "member", title: "Member Identification", content: <DetailList rows={memberRows} /> },
             {
               id: "destination",
-              title: "Payout Destination Details",
+              title: "Payment Method Details",
               content: (
                 <div className="flex flex-col gap-6">
                   {destinations.map((destination) => (

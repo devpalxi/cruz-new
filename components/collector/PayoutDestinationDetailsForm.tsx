@@ -9,6 +9,8 @@ import FormField from "@/components/ui/FormField";
 import TextInput from "@/components/ui/TextInput";
 import WarningAlert from "@/components/ui/WarningAlert";
 import {
+  COLLECTOR_VENUE_ID,
+  isDestinationAvailable,
   MOCK_MEMBERSHIP_NUMBER,
   MOCK_WINNER_NAME,
   PAYOUT_DESTINATION_DETAILS_KEY,
@@ -16,8 +18,10 @@ import {
   SELECTED_DESTINATION_KEY,
   type PayoutDestinationType,
 } from "@/lib/collector-data";
+import { useVenues } from "@/lib/use-venues";
 import AmountCard from "./AmountCard";
 import BankAccountFields from "./BankAccountFields";
+import ChequeDetailsFields from "./ChequeDetailsFields";
 
 const DESTINATION_ICONS: Record<PayoutDestinationType, ReactNode> = {
   bank: <FaBuildingColumns size="2.2rem" />,
@@ -43,20 +47,23 @@ const VALIDATED_MESSAGES: Record<PayoutDestinationType, string> = {
 
 export default function PayoutDestinationDetailsForm() {
   const router = useRouter();
+  const { venues, ready } = useVenues();
+  const venue = venues.find((v) => v.id === COLLECTOR_VENUE_ID);
   const [destinationType, setDestinationType] = useState<PayoutDestinationType | null>(null);
 
-  // Manual Bank Transfer uses the same bank account details as Bank Transfer, plus a Venue Code.
+  // The payment file uses the same bank account details as Funds Transfer. Its venue code comes from Venue Settings.
   const [accountName, setAccountName] = useState("");
   const [bsb, setBsb] = useState("");
   const [accountNumber, setAccountNumber] = useState("");
-  const [venueCode, setVenueCode] = useState("");
 
   const [chequeNumber, setChequeNumber] = useState("");
   const [chequeName, setChequeName] = useState(MOCK_WINNER_NAME);
 
   const [membershipCardId, setMembershipCardId] = useState(MOCK_MEMBERSHIP_NUMBER);
 
-  // Every destination must be validated before Next appears.
+  // Messages stay hidden until the Collector tries to continue.
+  const [showErrors, setShowErrors] = useState(false);
+  // Checks that need a validation step must pass it before Next appears.
   const [validated, setValidated] = useState(false);
 
   useEffect(() => {
@@ -70,7 +77,12 @@ export default function PayoutDestinationDetailsForm() {
 
   const destination = PAYOUT_DESTINATIONS.find((d) => d.type === destinationType) ?? null;
   const isBankLike = destination?.type === "bank" || destination?.type === "manual-bank";
-  const isManualBank = destination?.type === "manual-bank";
+  const isPaymentFile = destination?.type === "manual-bank";
+  const isCheque = destination?.type === "cheque";
+  const chequeMode = venue?.chequeMode || "collector";
+
+  // The venue may have switched this method off since it was chosen. Entered details are kept.
+  const unavailable = ready && destination !== null && !isDestinationAvailable(destination.type, venue);
 
   // Re-validate whenever any detail changes after a successful validation.
   function withRevalidate<T>(setter: (value: T) => void) {
@@ -82,22 +94,44 @@ export default function PayoutDestinationDetailsForm() {
   const updateAccountName = withRevalidate(setAccountName);
   const updateBsb = withRevalidate(setBsb);
   const updateAccountNumber = withRevalidate(setAccountNumber);
-  const updateVenueCode = withRevalidate(setVenueCode);
   const updateChequeNumber = withRevalidate(setChequeNumber);
   const updateChequeName = withRevalidate(setChequeName);
   const updateMembershipCardId = withRevalidate(setMembershipCardId);
 
+  const bankErrors = {
+    accountName: accountName.trim() === "" ? "Enter the account name." : undefined,
+    bsb: /^\d{3}-?\d{3}$/.test(bsb.trim()) ? undefined : "Enter a 6-digit BSB, for example 032-001.",
+    accountNumber:
+      accountNumber.trim() === ""
+        ? "Enter the account number."
+        : /^[\d\s-]+$/.test(accountNumber)
+          ? undefined
+          : "The account number can only contain digits.",
+  };
+  const chequeErrors = {
+    chequeNumber: chequeNumber.trim() === "" ? "Enter the cheque number." : undefined,
+    chequeName: chequeName.trim() === "" ? "Enter the name on the cheque." : undefined,
+  };
+
+  // Cheque details are only required from the Collector when the venue says the Collector enters them.
+  const chequeCollectorRequired = isCheque && chequeMode === "collector";
+  const needsValidation = destination !== null && (!isCheque || chequeCollectorRequired);
+
   const fieldsComplete =
     destination === null ||
-    (isBankLike &&
-      accountName !== "" &&
-      bsb !== "" &&
-      accountNumber !== "" &&
-      (!isManualBank || venueCode !== "")) ||
-    (destination.type === "cheque" && chequeNumber !== "" && chequeName !== "") ||
+    (isBankLike && !bankErrors.accountName && !bankErrors.bsb && !bankErrors.accountNumber) ||
+    (isCheque && (!chequeCollectorRequired || (!chequeErrors.chequeNumber && !chequeErrors.chequeName))) ||
     (destination.type === "membership-card" && membershipCardId !== "");
 
-  const canContinue = fieldsComplete && (destination === null || validated);
+  const canContinue = !unavailable && fieldsComplete && (!needsValidation || validated);
+
+  function savedChequeRows() {
+    if (chequeMode === "authoriser") return [{ label: "Cheque Details", value: "To be entered by the Authoriser" }];
+    return [
+      { label: "Cheque Number", value: chequeNumber.trim() || "Not entered yet" },
+      { label: "Cheque Name", value: chequeName.trim() || "Not entered yet" },
+    ];
+  }
 
   return (
     <form
@@ -110,13 +144,9 @@ export default function PayoutDestinationDetailsForm() {
                 { label: "Account Name", value: accountName },
                 { label: "BSB", value: bsb },
                 { label: "Account Number", value: accountNumber },
-                ...(isManualBank ? [{ label: "Venue Code", value: venueCode }] : []),
               ]
-            : destination.type === "cheque"
-              ? [
-                  { label: "Cheque Number", value: chequeNumber },
-                  { label: "Cheque Name", value: chequeName },
-                ]
+            : isCheque
+              ? savedChequeRows()
               : [{ label: "Membership Card ID", value: membershipCardId }];
 
           sessionStorage.setItem(
@@ -129,12 +159,28 @@ export default function PayoutDestinationDetailsForm() {
       }}
     >
       <h1 className="mb-[2.125rem] text-[2.5rem] font-bold leading-[2.875rem] text-brand">
-        Payout Destination Details
+        Payment Method Details
       </h1>
+
+      {unavailable && destination && (
+        <div className="mb-[2.625rem]">
+          <WarningAlert
+            title={`${destination.label} is no longer available at this venue.`}
+            message="Go back to Payment Breakdown and choose another way to pay the rest. The details you entered here are kept."
+          />
+        </div>
+      )}
 
       {destination && (
         <div className="flex flex-col gap-[2.625rem]">
           <AmountCard icon={DESTINATION_ICONS[destination.type]} title={destination.label}>
+            {isPaymentFile && (
+              <p className="mb-[1.375rem] text-base text-subtle">
+                Your venue arranges this payment itself. The details below go into the payment file your team uploads
+                to your bank. The bank is not paid automatically.
+              </p>
+            )}
+
             {isBankLike && (
               <BankAccountFields
                 accountName={accountName}
@@ -143,29 +189,19 @@ export default function PayoutDestinationDetailsForm() {
                 onBsbChange={updateBsb}
                 accountNumber={accountNumber}
                 onAccountNumberChange={updateAccountNumber}
-                venueCode={venueCode}
-                onVenueCodeChange={updateVenueCode}
-                showVenueCode={isManualBank}
+                errors={showErrors ? bankErrors : {}}
               />
             )}
 
-            {destination.type === "cheque" && (
-              <div className="flex flex-col gap-[1.375rem]">
-                <FormField label="Cheque Number" htmlFor="cheque-number">
-                  <TextInput
-                    id="cheque-number"
-                    value={chequeNumber}
-                    onChange={(e) => updateChequeNumber(e.target.value)}
-                  />
-                </FormField>
-                <FormField label="Cheque Name" htmlFor="cheque-name">
-                  <TextInput
-                    id="cheque-name"
-                    value={chequeName}
-                    onChange={(e) => updateChequeName(e.target.value)}
-                  />
-                </FormField>
-              </div>
+            {isCheque && (
+              <ChequeDetailsFields
+                mode={chequeMode}
+                chequeNumber={chequeNumber}
+                onChequeNumberChange={updateChequeNumber}
+                chequeName={chequeName}
+                onChequeNameChange={updateChequeName}
+                errors={showErrors && chequeCollectorRequired ? chequeErrors : {}}
+              />
             )}
 
             {destination.type === "membership-card" && (
@@ -191,12 +227,15 @@ export default function PayoutDestinationDetailsForm() {
         <Button variant="outline" href="/collector/secondary-id" className="h-[2.875rem] flex-1">
           Back
         </Button>
-        {destination && !validated ? (
+        {destination && needsValidation && !validated ? (
           <Button
             key="validate"
             type="button"
-            disabled={!fieldsComplete}
-            onClick={() => setValidated(true)}
+            disabled={unavailable}
+            onClick={() => {
+              if (fieldsComplete) setValidated(true);
+              else setShowErrors(true);
+            }}
             className="h-[2.875rem] flex-1"
           >
             {VALIDATE_LABELS[destination.type]}

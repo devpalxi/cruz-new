@@ -19,8 +19,8 @@ export const MOCK_APPROVAL = {
     { label: "Document Type", value: "No ID document" },
   ],
   identityConfirmation: [
-    "Identity Documents Provided To Staff Member: No",
-    "Identity manually verified: No",
+    { label: "Identity Documents Provided To Staff Member", yes: false },
+    { label: "Identity manually verified", yes: false },
   ],
   // The single payout destination the collector selected on Payment Breakdown
   // (only one non-cash destination can be selected per payout).

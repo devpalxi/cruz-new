@@ -28,7 +28,7 @@ The rules every new screen follows so the whole prototype looks and behaves like
 
 ## 3. Status and result display
 
-1. **Verification results** (CoP Status, ID Name Match, any Match / Close Match / No Match) are always a `VerificationPill`. Never plain coloured text. See the rule in `docs/design.md`.
+1. **Verification results** (Account Name Check, ID Name Match, any Match / Close Match / No Match) are always a `VerificationPill`. Never plain coloured text. See the rule in `docs/design.md`.
 2. **Other statuses** use the existing pill (`StatusPill`, `PayoutStatusPill`). A new status adds a tone or value there; it doesn't get its own badge.
 3. **Alerts and warnings** use `WarningAlert` (`warning`, `success`, `danger`). Don't write another alert box.
 4. **The same data looks the same on every role's page.** If the Approver and Authoriser both show it, they use the same component.

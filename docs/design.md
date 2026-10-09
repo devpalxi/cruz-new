@@ -91,6 +91,13 @@ All sizes are rem-based and `html` is set to `font-size: 80%` (12.8px), because 
 | `AdminHeader` / `PayoutsDashboard` / `PayoutFilters` / `PayoutsTable` | `components/admin/` | Admin dashboard pieces |
 | `Tabs` / `Modal` / `Toast` / `DateInput` | `components/ui/` | Tab bar with counts; confirm dialog; success toast; labelled date field |
 | `AuthoriserHeader` / `ManualExportView` / `ExportTable` / `BatchTable` / `ExportDateFilter` / `ExportConfirmDialog` / `AbaReferenceDialog` | `components/authoriser/` | Manual Bank Transfer Export pieces (CSV built in `lib/manual-export-data.ts`, downloaded via `lib/download.ts`) |
+| `VenuesView` / `VenuesTable` / `VenueSettingsView` / `VenueSettingsForm` / `PaymentMethodRow` / `ChequeModeOptions` | `components/admin/` | Venues list (Manage → Venues) and the Venue Settings screen: payment method switches, Venue Code, cheque collection mode, Save / Cancel. Mock data in `lib/venue-data.ts`; saved edits kept per browser tab by `lib/use-venues.ts` |
+| `Switch` / `RadioOption` | `components/ui/` | On/off switch (`role="switch"`); radio with a label and a help line |
+| `ChequeDetailsFields` | `components/collector/` | Cheque Number / Cheque Name for the Collector. Shows required fields, optional fields, or a note that the Authoriser enters them, depending on the venue's cheque setting |
+| `RecordedDestination` / `ReturnForCorrectionDialog` / `ScenarioSwitcher` | `components/payout-review/` | Read-only "how the non-cash amount is paid" summary shared by Approver and Authoriser; the Return for Correction dialog (reason required); prototype-only switcher between payout types. Mock payouts in `lib/payout-review-scenarios.ts` |
+| `ChequeDetailsEditor` | `components/authoriser/` | Authoriser enters or completes Cheque Number / Cheque Name; Authorise stays off until both are entered and checked |
+| `ReturnedPayoutView` | `components/collector/` | Collector corrects a returned cheque or payment-file payout and sends it back for review |
+| `TextArea` | `components/ui/` | Shared multi-line input |
 | `PaymentBreakdownForm` | `components/collector/PaymentBreakdownForm.tsx` | Step 2 form |
 | `BeforeYouStartView` / `EmailAddressForm` / `SecondaryIdForm` / `MedicareCardForm` / `ApprovalView` | `components/collector/` | Before you start (pre-step, not in the stepper), Email Address, Secondary ID (skip checkbox or Medicare form), Approval confirmation |
 | `PrimaryIdFlow` | `components/collector/PrimaryIdFlow.tsx` | Primary ID state machine: `IdDocumentPicker` → `IdDocumentDetailsForm` → `IdNameForm` → `IdDobForm` → `IdAddressForm` → `IdReviewScreen` (+ `IdentityCheckPanel`, `IdCheckActionRow`, `ReviewSection`) |
@@ -102,7 +109,7 @@ All sizes are rem-based and `html` is set to `font-size: 80%` (12.8px), because 
 
 ## UI rule: verification results are always a pill
 
-Any verification outcome — CoP Status, ID Name Match, and similar Match / Close Match / No Match results — is shown with `VerificationPill` (`components/ui/VerificationPill.tsx`). Never render these as plain coloured text or a one-off badge.
+Any verification outcome — Account Name Check, ID Name Match, and similar Match / Close Match / No Match results — is shown with `VerificationPill` (`components/ui/VerificationPill.tsx`). Never render these as plain coloured text or a one-off badge.
 
 | Tone | Icon | Use for |
 |---|---|---|
@@ -110,7 +117,7 @@ Any verification outcome — CoP Status, ID Name Match, and similar Match / Clos
 | `warning` | triangle | Close Match, needs a look |
 | `danger` | cross | No Match, No, Fail |
 
-- The pill text is the result only ("Match", "Yes"); the label sits beside it ("CoP Status:", "ID Name Match:").
+- The pill text is the result only ("Match", "Yes"); the label sits beside it ("Account Name Check:", "ID Name Match:").
 - `size="sm"` for inline rows on the Approver / Authoriser panels; `size="md"` for a standalone result card (Collector CoP Validation).
 - Colour, icon and sizing live in the component, so a new result type only picks a tone.
 - Not covered yet: the Admin dashboard table cells (`ResultPill`) keep their own compact style.
@@ -134,7 +141,10 @@ Any verification outcome — CoP Status, ID Name Match, and similar Match / Clos
 - `/collector/summary` — step 7 (built; steps 3–6 skipped for now)
 - `/approver/payout` — approver review of a payout (separate from the collector flow)
 - `/admin/dashboard` — Venue Admin Payouts Dashboard (filters, table, pagination). `/admin/users` and `/admin/machines` are placeholders
+- `/admin/venues` — Venues list (Venue Name, Payment Method, Daily Limit, edit icon on hover). Add `?role=super-admin` to see every client with a Client column. `/admin/venues/[id]` — Venue Settings (same query). An Admin opening another client's venue sees an access message
 - `/authoriser/manual-bank-export` — Manual Bank Transfer Export (authoriser Manage menu). Tabs: Ready to Export (Pending Payment; confirm → CSV download → batch moves to Awaiting ABA Reference, no prompt), Awaiting ABA Reference (one row per export batch; Enter ABA Reference once the bank has processed the file / re-download), Completed (ABA Reference + fixed Exported DateTime; Start/End date filter; re-download changes nothing). Payouts move to Payment Completed only when the ABA reference is saved
+- `/collector/returned-payout?type=cheque|payment-file` — Collector corrects a returned payout (shows the return reason)
+- `/approver/payout` and `/authoriser/payout` accept `?scenario=funds-transfer|payment-file|cheque-collector|cheque-authoriser|cheque-both` (prototype switcher at the top of each page). Both roles can Return for Correction
 - `/authoriser/payout` — authoriser final sign-off on a payout (visually identical shell to the approver page; separate from both collector and approver flows)
 - `/collector/before-you-start` → `/collector/email-address` → `/collector/primary-id` → `/collector/secondary-id` (all built). Secondary ID routes to `/collector/payout-destination-details` for a non-cash destination, or `/collector/summary` for cash only. Summary Submit → `/collector/approval` (built; the original Approval screen wasn't captured, so it's a simple "awaiting approval" confirmation)
 - `/collector/[step]` — placeholder for any collector step without its own route (none left in the current stepper)

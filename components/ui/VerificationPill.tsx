@@ -17,7 +17,7 @@ const SIZES = {
   md: { pill: "h-[1.9375rem] px-4 text-sm", icon: "1rem", stroke: 1.75 },
 };
 
-// The one way a verification outcome (CoP Status, ID Name Match, ...) is shown: a toned pill with an
+// The one way a verification outcome (Account Name Check, ID Name Match, ...) is shown: a toned pill with an
 // icon and the result text. Never render these as plain coloured text — see docs/design.md.
 export default function VerificationPill({ tone, children, size = "sm" }: VerificationPillProps) {
   const Icon = ICONS[tone];

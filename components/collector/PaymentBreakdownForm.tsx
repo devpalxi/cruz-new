@@ -8,7 +8,10 @@ import Button from "@/components/ui/Button";
 import CurrencyInput from "@/components/ui/CurrencyInput";
 import FormField from "@/components/ui/FormField";
 import SelectInput from "@/components/ui/SelectInput";
+import { useVenues } from "@/lib/use-venues";
 import {
+  COLLECTOR_VENUE_ID,
+  isDestinationAvailable,
   MOCK_TOTAL_WINNINGS,
   PAYOUT_DESTINATION_DETAILS_KEY,
   PAYOUT_DESTINATIONS,
@@ -24,13 +27,14 @@ const DESTINATION_ICONS: Record<PayoutDestinationType, ReactNode> = {
   "membership-card": <FaIdCard size="2.2rem" />,
 };
 
-const DESTINATION_OPTIONS = PAYOUT_DESTINATIONS.map((destination) => ({
-  value: destination.type,
-  label: destination.label,
-}));
-
 export default function PaymentBreakdownForm() {
   const router = useRouter();
+  const { venues } = useVenues();
+  const venue = venues.find((v) => v.id === COLLECTOR_VENUE_ID);
+  const destinationOptions = PAYOUT_DESTINATIONS.filter((d) => isDestinationAvailable(d.type, venue)).map((d) => ({
+    value: d.type,
+    label: d.label,
+  }));
   const [cash, setCash] = useState("");
   const [confirmCash, setConfirmCash] = useState("");
   const [destinationType, setDestinationType] = useState<PayoutDestinationType | "">("");
@@ -91,10 +95,10 @@ export default function PaymentBreakdownForm() {
           </div>
         </AmountCard>
 
-        <FormField label="Non Cash Details" htmlFor="destination-type">
+        <FormField label="How the Rest Is Paid" htmlFor="destination-type">
           <SelectInput
             id="destination-type"
-            options={DESTINATION_OPTIONS}
+            options={destinationOptions}
             value={destinationType}
             onChange={(e) => {
               const type = e.target.value as PayoutDestinationType | "";

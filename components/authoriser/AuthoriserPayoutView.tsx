@@ -1,36 +1,46 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Button from "@/components/ui/Button";
 import CollapsibleSections from "@/components/ui/CollapsibleSections";
 import DetailList from "@/components/ui/DetailList";
 import StatusPill from "@/components/ui/StatusPill";
+import WarningAlert from "@/components/ui/WarningAlert";
 import AmlScreening from "@/components/payout-review/AmlScreening";
 import CollectorInfo from "@/components/payout-review/CollectorInfo";
 import DocketRow from "@/components/payout-review/DocketRow";
 import IdentityConfirmation from "@/components/payout-review/IdentityConfirmation";
 import IdvHistoryTable from "@/components/payout-review/IdvHistoryTable";
 import NameComparison from "@/components/payout-review/NameComparison";
+import RecordedDestination from "@/components/payout-review/RecordedDestination";
+import ReturnForCorrectionDialog from "@/components/payout-review/ReturnForCorrectionDialog";
 import { MOCK_AUTHORISATION } from "@/lib/authoriser-data";
+import { chequeNeedsAuthoriser, comparedNameLabel, returnedTypeFor, type ReviewScenario } from "@/lib/payout-review-scenarios";
+import { saveReturnedPayout } from "@/lib/return-payout";
 import AuthorisationPanel from "./AuthorisationPanel";
-import ChequeInlineEditScenario from "./ChequeInlineEditScenario";
+import ChequeDetailsEditor from "./ChequeDetailsEditor";
 
-export default function AuthoriserPayoutView() {
+export default function AuthoriserPayoutView({ scenario }: { scenario: ReviewScenario }) {
+  const router = useRouter();
   const data = MOCK_AUTHORISATION;
   const [note, setNote] = useState("");
   const [confirmed, setConfirmed] = useState(false);
+  const [chequeComplete, setChequeComplete] = useState(false);
+  const [returnOpen, setReturnOpen] = useState(false);
 
-  const canAuthorise = confirmed;
+  const authoriserEntersCheque = chequeNeedsAuthoriser(scenario);
+  const canAuthorise = confirmed && (!authoriserEntersCheque || chequeComplete);
 
-  // CoP (Confirmation of Payee) only applies to a real Zepto bank check. Cheque and Manual Bank
-  // Transfer destinations only get a client-side name comparison, so the Approvals panel below
-  // labels the result accordingly instead of calling it "CoP Status".
-  const copLabel =
-    data.destinationType === "cheque"
-      ? "Cheque Verification"
-      : data.destinationType === "manual-bank"
-        ? "Manual Bank Transfer Verification"
-        : "CoP Status";
+  // CoP (Confirmation of Payee) only applies to a real bank check. Cheque and the payment file
+  // only get a name comparison, so the Approvals panel labels the result accordingly.
+  const copLabel = scenario.destinationType === "cheque" ? "Cheque Verification" : "Account Name Check";
+
+  const payoutRows = [
+    { label: "Cash Amount", value: scenario.cashAmount },
+    { label: `${scenario.destinationTitle} Amount`, value: scenario.nonCashAmount },
+    ...data.payout.slice(2),
+  ];
 
   return (
     <div className="rounded-xl bg-card p-5">
@@ -54,7 +64,7 @@ export default function AuthoriserPayoutView() {
               title: "Payout Details",
               content: (
                 <>
-                  <DetailList rows={data.payout} labelClassName="font-medium" />
+                  <DetailList rows={payoutRows} labelClassName="font-medium" />
                   <DocketRow />
                 </>
               ),
@@ -71,20 +81,24 @@ export default function AuthoriserPayoutView() {
             },
             {
               id: "bank",
-              title: "Payout Destination Details",
-              // Venue setting: when the authoriser is responsible for cheque details, this
-              // becomes inline editable with its own Validate step instead of read-only.
-              content:
-                data.destinationType === "cheque" ? (
-                  <ChequeInlineEditScenario />
-                ) : (
-                  <DetailList rows={data.bank} labelClassName="font-medium" />
-                ),
+              title: "Payment Method Details",
+              content: authoriserEntersCheque ? (
+                <div className="flex flex-col gap-6">
+                  <RecordedDestination scenario={scenario} />
+                  <ChequeDetailsEditor
+                    initialNumber={scenario.cheque?.number}
+                    initialName={scenario.cheque?.name}
+                    onCompleteChange={setChequeComplete}
+                  />
+                </div>
+              ) : (
+                <RecordedDestination scenario={scenario} />
+              ),
             },
             {
               id: "name",
               title: "Name Verification",
-              content: <NameComparison {...data.nameVerification} />,
+              content: <NameComparison {...data.nameVerification} otherLabel={comparedNameLabel(scenario)} />,
             },
             {
               id: "results",
@@ -117,14 +131,40 @@ export default function AuthoriserPayoutView() {
         />
       </div>
 
+      {authoriserEntersCheque && !chequeComplete && (
+        <div className="mt-4">
+          <WarningAlert
+            title="Cheque details are needed before you can authorise."
+            message="Enter the Cheque Number and Cheque Name under Payment Method Details, then select Validate Cheque."
+          />
+        </div>
+      )}
+
       <div className="mt-[0.9375rem] flex flex-col gap-3">
         <Button disabled={!canAuthorise} className="h-[2.8125rem] w-full">
           Authorise
+        </Button>
+        <Button
+          variant="outline"
+          onClick={() => setReturnOpen(true)}
+          className="h-[2.8125rem] w-full"
+        >
+          Return for Correction
         </Button>
         <Button variant="danger" href="/" className="h-[2.8125rem] w-full">
           Reject
         </Button>
       </div>
+
+      <ReturnForCorrectionDialog
+        open={returnOpen}
+        onCancel={() => setReturnOpen(false)}
+        onConfirm={(reason) => {
+          setReturnOpen(false);
+          saveReturnedPayout(`${data.user} (Authoriser)`, reason);
+          router.push(`/collector/returned-payout?type=${returnedTypeFor(scenario)}`);
+        }}
+      />
     </div>
   );
 }

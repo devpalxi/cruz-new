@@ -28,8 +28,8 @@ export default function NameMatchStatus({
   return (
     <div className="text-base text-label">
       {showCop && copStatus && (
-        <p className="flex items-center gap-2 text-[0.875rem]">
-          CoP Status:
+        <p className="flex items-center gap-2 text-base text-ink">
+          Account Name Check:
           <VerificationPill tone={copTone}>{copStatus}</VerificationPill>
         </p>
       )}

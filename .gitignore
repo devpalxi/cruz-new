@@ -41,3 +41,5 @@ yarn-error.log*
 next-env.d.ts
 .idea
 memory.md
+# doc tooling dependencies (html/tools)
+/html/tools/node_modules
