@@ -16,7 +16,7 @@ import NameComparison from "@/components/payout-review/NameComparison";
 import RecordedDestination from "@/components/payout-review/RecordedDestination";
 import ReturnForCorrectionDialog from "@/components/payout-review/ReturnForCorrectionDialog";
 import { MOCK_AUTHORISATION } from "@/lib/authoriser-data";
-import { chequeNeedsAuthoriser, returnedTypeFor, type ReviewScenario } from "@/lib/payout-review-scenarios";
+import { chequeNeedsAuthoriser, comparedNameLabel, returnedTypeFor, type ReviewScenario } from "@/lib/payout-review-scenarios";
 import { saveReturnedPayout } from "@/lib/return-payout";
 import AuthorisationPanel from "./AuthorisationPanel";
 import ChequeDetailsEditor from "./ChequeDetailsEditor";
@@ -98,7 +98,7 @@ export default function AuthoriserPayoutView({ scenario }: { scenario: ReviewSce
             {
               id: "name",
               title: "Name Verification",
-              content: <NameComparison {...data.nameVerification} />,
+              content: <NameComparison {...data.nameVerification} otherLabel={comparedNameLabel(scenario)} />,
             },
             {
               id: "results",

@@ -16,7 +16,7 @@ import IdvHistoryTable from "@/components/payout-review/IdvHistoryTable";
 import NameComparison from "@/components/payout-review/NameComparison";
 import RecordedDestination from "@/components/payout-review/RecordedDestination";
 import ReturnForCorrectionDialog from "@/components/payout-review/ReturnForCorrectionDialog";
-import { returnedTypeFor, type ReviewScenario } from "@/lib/payout-review-scenarios";
+import { comparedNameLabel, returnedTypeFor, type ReviewScenario } from "@/lib/payout-review-scenarios";
 import { saveReturnedPayout } from "@/lib/return-payout";
 
 export default function ApproverPayoutView({ scenario }: { scenario: ReviewScenario }) {
@@ -67,7 +67,7 @@ export default function ApproverPayoutView({ scenario }: { scenario: ReviewScena
     hasBankDestination && {
       id: "name",
       title: "Name Verification",
-      content: <NameComparison {...data.nameVerification} />,
+      content: <NameComparison {...data.nameVerification} otherLabel={comparedNameLabel(scenario)} />,
     },
     {
       id: "results",

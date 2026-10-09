@@ -119,3 +119,10 @@ export const RETURNED_PAYOUT = {
   cheque: { number: "000417", name: "Vivek Mishra Jr" },
   account: { name: "Vivek Mishra", bsb: "015203", number: "02345678" },
 };
+
+// Label for the second name in the Name Verification comparison, by how the payout is paid
+export function comparedNameLabel(scenario: ReviewScenario): string {
+  if (scenario.destinationType === "cheque") return "Name on cheque";
+  if (scenario.destinationType === "manual-bank") return "Account name provided";
+  return "Provided bank account name";
+}
