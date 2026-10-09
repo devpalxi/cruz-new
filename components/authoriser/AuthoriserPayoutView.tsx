@@ -1,11 +1,12 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Button from "@/components/ui/Button";
 import CollapsibleSections from "@/components/ui/CollapsibleSections";
 import DetailList from "@/components/ui/DetailList";
 import StatusPill from "@/components/ui/StatusPill";
-import Toast from "@/components/ui/Toast";
+import WarningAlert from "@/components/ui/WarningAlert";
 import AmlScreening from "@/components/payout-review/AmlScreening";
 import CollectorInfo from "@/components/payout-review/CollectorInfo";
 import DocketRow from "@/components/payout-review/DocketRow";
@@ -15,21 +16,21 @@ import NameComparison from "@/components/payout-review/NameComparison";
 import RecordedDestination from "@/components/payout-review/RecordedDestination";
 import ReturnForCorrectionDialog from "@/components/payout-review/ReturnForCorrectionDialog";
 import { MOCK_AUTHORISATION } from "@/lib/authoriser-data";
-import { chequeNeedsAuthoriser, type ReviewScenario } from "@/lib/payout-review-scenarios";
+import { chequeNeedsAuthoriser, returnedTypeFor, type ReviewScenario } from "@/lib/payout-review-scenarios";
+import { saveReturnedPayout } from "@/lib/return-payout";
 import AuthorisationPanel from "./AuthorisationPanel";
 import ChequeDetailsEditor from "./ChequeDetailsEditor";
 
 export default function AuthoriserPayoutView({ scenario }: { scenario: ReviewScenario }) {
+  const router = useRouter();
   const data = MOCK_AUTHORISATION;
   const [note, setNote] = useState("");
   const [confirmed, setConfirmed] = useState(false);
   const [chequeComplete, setChequeComplete] = useState(false);
   const [returnOpen, setReturnOpen] = useState(false);
-  const [returned, setReturned] = useState(false);
-  const [toast, setToast] = useState<string | null>(null);
 
   const authoriserEntersCheque = chequeNeedsAuthoriser(scenario);
-  const canAuthorise = confirmed && !returned && (!authoriserEntersCheque || chequeComplete);
+  const canAuthorise = confirmed && (!authoriserEntersCheque || chequeComplete);
 
   // CoP (Confirmation of Payee) only applies to a real bank check. Cheque and the payment file
   // only get a name comparison, so the Approvals panel labels the result accordingly.
@@ -54,15 +55,9 @@ export default function AuthoriserPayoutView({ scenario }: { scenario: ReviewSce
         <p className="text-lg text-subtle">{data.createdAt}</p>
         <div className="relative -top-1 flex items-center gap-[1.625rem] text-xl text-subtle">
           Status:
-          {returned ? (
-            <StatusPill tone="warning" className="h-[1.875rem] px-2.5! text-[0.9375rem]!">
-              Returned for Correction
-            </StatusPill>
-          ) : (
-            <StatusPill tone="info" className="h-[1.875rem] px-2.5! text-[0.9375rem]!">
-              {data.status}
-            </StatusPill>
-          )}
+          <StatusPill tone="info" className="h-[1.875rem] px-2.5! text-[0.9375rem]!">
+            {data.status}
+          </StatusPill>
         </div>
       </div>
 
@@ -141,10 +136,13 @@ export default function AuthoriserPayoutView({ scenario }: { scenario: ReviewSce
         />
       </div>
 
-      {authoriserEntersCheque && !chequeComplete && !returned && (
-        <p className="mt-4 text-base text-subtle">
-          Authorise is available once both cheque details are entered and checked.
-        </p>
+      {authoriserEntersCheque && !chequeComplete && (
+        <div className="mt-4">
+          <WarningAlert
+            title="Cheque details are needed before you can authorise."
+            message="Enter the Cheque Number and Cheque Name under Payout Destination Details, then select Validate Cheque."
+          />
+        </div>
       )}
 
       <div className="mt-[0.9375rem] flex flex-col gap-3">
@@ -153,9 +151,8 @@ export default function AuthoriserPayoutView({ scenario }: { scenario: ReviewSce
         </Button>
         <Button
           variant="outline"
-          disabled={returned}
           onClick={() => setReturnOpen(true)}
-          className="h-[2.8125rem] w-full disabled:cursor-not-allowed disabled:opacity-60"
+          className="h-[2.8125rem] w-full"
         >
           Return for Correction
         </Button>
@@ -167,13 +164,12 @@ export default function AuthoriserPayoutView({ scenario }: { scenario: ReviewSce
       <ReturnForCorrectionDialog
         open={returnOpen}
         onCancel={() => setReturnOpen(false)}
-        onConfirm={() => {
+        onConfirm={(reason) => {
           setReturnOpen(false);
-          setReturned(true);
-          setToast(`Payout #${data.payoutId} was returned to the Collector.`);
+          saveReturnedPayout(`${data.user} (Authoriser)`, reason);
+          router.push(`/collector/returned-payout?type=${returnedTypeFor(scenario)}`);
         }}
       />
-      <Toast message={toast} onClose={() => setToast(null)} />
     </div>
   );
 }

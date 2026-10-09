@@ -29,12 +29,6 @@ export default function RecordedDestination({ scenario }: { scenario: ReviewScen
           This payment stays pending until your team includes it in a payment file and uploads that file to the bank.
         </p>
       )}
-      {isCheque && (
-        <p className="text-base text-subtle">
-          The venue chose who enters the cheque details when this payout was submitted. Later changes to venue settings
-          do not change it.
-        </p>
-      )}
     </div>
   );
 }

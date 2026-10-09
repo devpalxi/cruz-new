@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Button from "@/components/ui/Button";
 import CollapsibleSections, { type SectionItem } from "@/components/ui/CollapsibleSections";
@@ -15,21 +16,20 @@ import IdvHistoryTable from "@/components/payout-review/IdvHistoryTable";
 import NameComparison from "@/components/payout-review/NameComparison";
 import RecordedDestination from "@/components/payout-review/RecordedDestination";
 import ReturnForCorrectionDialog from "@/components/payout-review/ReturnForCorrectionDialog";
-import Toast from "@/components/ui/Toast";
-import type { ReviewScenario } from "@/lib/payout-review-scenarios";
+import { returnedTypeFor, type ReviewScenario } from "@/lib/payout-review-scenarios";
+import { saveReturnedPayout } from "@/lib/return-payout";
 
 export default function ApproverPayoutView({ scenario }: { scenario: ReviewScenario }) {
+  const router = useRouter();
   const data = MOCK_APPROVAL;
   const [note, setNote] = useState("");
   const [risk, setRisk] = useState("");
   const [confirmed, setConfirmed] = useState(false);
   const [reviewed, setReviewed] = useState(false);
   const [returnOpen, setReturnOpen] = useState(false);
-  const [returned, setReturned] = useState(false);
-  const [toast, setToast] = useState<string | null>(null);
 
   const hasBankDestination = scenario.destinationType === "bank";
-  const canApprove = !returned && risk !== "" && confirmed && (data.nameVerification.match || reviewed);
+  const canApprove = risk !== "" && confirmed && (data.nameVerification.match || reviewed);
 
   const sections: (SectionItem | false)[] = [
     {
@@ -109,8 +109,8 @@ export default function ApproverPayoutView({ scenario }: { scenario: ReviewScena
         <p className="text-lg text-subtle">{data.createdAt}</p>
         <div className="relative -top-1 flex items-center gap-[1.625rem] text-xl text-subtle">
           Status:
-          <StatusPill tone={returned ? "warning" : "info"} className="h-[1.875rem] px-2.5! text-[0.9375rem]!">
-            {returned ? "Returned for Correction" : data.status}
+          <StatusPill tone="info" className="h-[1.875rem] px-2.5! text-[0.9375rem]!">
+            {data.status}
           </StatusPill>
         </div>
       </div>
@@ -125,9 +125,8 @@ export default function ApproverPayoutView({ scenario }: { scenario: ReviewScena
         </Button>
         <Button
           variant="outline"
-          disabled={returned}
           onClick={() => setReturnOpen(true)}
-          className="h-[2.8125rem] w-full disabled:cursor-not-allowed disabled:opacity-60"
+          className="h-[2.8125rem] w-full"
         >
           Return for Correction
         </Button>
@@ -139,13 +138,12 @@ export default function ApproverPayoutView({ scenario }: { scenario: ReviewScena
       <ReturnForCorrectionDialog
         open={returnOpen}
         onCancel={() => setReturnOpen(false)}
-        onConfirm={() => {
+        onConfirm={(reason) => {
           setReturnOpen(false);
-          setReturned(true);
-          setToast(`Payout #${data.payoutId} was returned to the Collector.`);
+          saveReturnedPayout(`${data.user} (Approver)`, reason);
+          router.push(`/collector/returned-payout?type=${returnedTypeFor(scenario)}`);
         }}
       />
-      <Toast message={toast} onClose={() => setToast(null)} />
     </div>
   );
 }

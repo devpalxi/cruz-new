@@ -94,12 +94,25 @@ export function chequeNeedsAuthoriser(scenario: ReviewScenario): boolean {
   return scenario.destinationType === "cheque" && scenario.chequeMode !== "collector";
 }
 
+// Carries the reviewer's reason to the Collector's correction page (prototype only, kept in this browser tab)
+export const RETURNED_PAYOUT_KEY = "cruz.returnedPayout";
+
+export type ReturnedPayoutType = "funds-transfer" | "payment-file" | "cheque";
+
+export function returnedTypeFor(scenario: ReviewScenario): ReturnedPayoutType {
+  if (scenario.destinationType === "cheque") return "cheque";
+  if (scenario.destinationType === "manual-bank") return "payment-file";
+  return "funds-transfer";
+}
+
 // Prototype only: a payout the reviewer sent back, shown to the Collector for correction
 export const RETURNED_PAYOUT = {
   payoutId: 764,
   returnedBy: "R.Nguyen (Authoriser)",
   returnedAt: "24/09/2026 04:10am",
   reasons: {
+    "funds-transfer":
+      "The account name does not match the winner's name on the ID. Please check the account details with the winner.",
     cheque: "The cheque name does not match the winner's name on the ID. Please check the cheque and correct it.",
     "payment-file": "The BSB does not belong to this account name. Please check the account details with the winner.",
   },

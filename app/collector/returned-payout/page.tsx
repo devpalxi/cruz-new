@@ -7,7 +7,7 @@ export default async function ReturnedPayoutPage({ searchParams }: { searchParam
   const { type } = await searchParams;
   return (
     <CollectorShell currentStep={5}>
-      <ReturnedPayoutView type={type === "payment-file" ? "payment-file" : "cheque"} />
+      <ReturnedPayoutView type={type === "payment-file" || type === "funds-transfer" ? type : "cheque"} />
     </CollectorShell>
   );
 }

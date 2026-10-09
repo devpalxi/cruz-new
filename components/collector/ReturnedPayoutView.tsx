@@ -1,22 +1,28 @@
 "use client";
 
-import { useState } from "react";
-import { FaMoneyBillTransfer, FaMoneyCheckDollar } from "react-icons/fa6";
+import { useEffect, useState } from "react";
+import { FaBuildingColumns, FaMoneyBillTransfer, FaMoneyCheckDollar } from "react-icons/fa6";
 import Button from "@/components/ui/Button";
 import Toast from "@/components/ui/Toast";
 import WarningAlert from "@/components/ui/WarningAlert";
-import { FUNDS_TRANSFER_LABEL, PAYMENT_FILE_LABEL, CHEQUE_LABEL } from "@/lib/venue-data";
-import { RETURNED_PAYOUT } from "@/lib/payout-review-scenarios";
+import {
+  RETURNED_PAYOUT,
+  RETURNED_PAYOUT_KEY,
+  type ReturnedPayoutType,
+} from "@/lib/payout-review-scenarios";
+import { CHEQUE_LABEL, FUNDS_TRANSFER_LABEL, PAYMENT_FILE_LABEL } from "@/lib/venue-data";
 import AmountCard from "./AmountCard";
 import BankAccountFields from "./BankAccountFields";
 import ChequeDetailsFields from "./ChequeDetailsFields";
 
-type ReturnedPayoutViewProps = {
-  type: "cheque" | "payment-file";
+const CARDS = {
+  "funds-transfer": { title: FUNDS_TRANSFER_LABEL, icon: <FaBuildingColumns size="2.2rem" /> },
+  "payment-file": { title: PAYMENT_FILE_LABEL, icon: <FaMoneyBillTransfer size="2.2rem" /> },
+  cheque: { title: CHEQUE_LABEL, icon: <FaMoneyCheckDollar size="2.2rem" /> },
 };
 
 // The Collector corrects details that an Approver or Authoriser sent back, then sends the payout for review again.
-export default function ReturnedPayoutView({ type }: ReturnedPayoutViewProps) {
+export default function ReturnedPayoutView({ type }: { type: ReturnedPayoutType }) {
   const isCheque = type === "cheque";
   const [chequeNumber, setChequeNumber] = useState(RETURNED_PAYOUT.cheque.number);
   const [chequeName, setChequeName] = useState(RETURNED_PAYOUT.cheque.name);
@@ -26,6 +32,21 @@ export default function ReturnedPayoutView({ type }: ReturnedPayoutViewProps) {
   const [showErrors, setShowErrors] = useState(false);
   const [sent, setSent] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
+  // Who returned it and why: the reviewer's own message when they just returned it, otherwise a sample
+  const [returnInfo, setReturnInfo] = useState({
+    returnedBy: RETURNED_PAYOUT.returnedBy,
+    returnedAt: RETURNED_PAYOUT.returnedAt,
+    reason: RETURNED_PAYOUT.reasons[type],
+  });
+
+  useEffect(() => {
+    try {
+      const saved = sessionStorage.getItem(RETURNED_PAYOUT_KEY);
+      if (saved) setReturnInfo(JSON.parse(saved));
+    } catch {
+      // Keep the sample reason
+    }
+  }, []);
 
   const chequeErrors = {
     chequeNumber: chequeNumber.trim() === "" ? "Enter the cheque number." : undefined,
@@ -36,8 +57,7 @@ export default function ReturnedPayoutView({ type }: ReturnedPayoutViewProps) {
     bsb: /^\d{3}-?\d{3}$/.test(bsb.trim()) ? undefined : "Enter a 6-digit BSB, for example 032-001.",
     accountNumber: accountNumber.trim() === "" ? "Enter the account number." : undefined,
   };
-  const errors = isCheque ? chequeErrors : bankErrors;
-  const hasErrors = Object.values(errors).some(Boolean);
+  const hasErrors = Object.values(isCheque ? chequeErrors : bankErrors).some(Boolean);
 
   function handleResubmit() {
     if (hasErrors) {
@@ -53,16 +73,13 @@ export default function ReturnedPayoutView({ type }: ReturnedPayoutViewProps) {
       <h1 className="mb-[2.125rem] text-[2.5rem] font-bold leading-[2.875rem] text-brand">Correct Returned Payout</h1>
 
       <WarningAlert
-        title={`Payout #${RETURNED_PAYOUT.payoutId} was returned by ${RETURNED_PAYOUT.returnedBy}`}
-        message={RETURNED_PAYOUT.reasons[type]}
+        title={`Payout #${RETURNED_PAYOUT.payoutId} was returned by ${returnInfo.returnedBy}`}
+        message={returnInfo.reason}
       />
-      <p className="mt-2 text-base text-subtle">Returned {RETURNED_PAYOUT.returnedAt}</p>
+      <p className="mt-2 text-base text-subtle">Returned {returnInfo.returnedAt}</p>
 
       <div className="mt-[2.625rem]">
-        <AmountCard
-          icon={isCheque ? <FaMoneyCheckDollar size="2.2rem" /> : <FaMoneyBillTransfer size="2.2rem" />}
-          title={isCheque ? CHEQUE_LABEL : PAYMENT_FILE_LABEL}
-        >
+        <AmountCard icon={CARDS[type].icon} title={CARDS[type].title}>
           {isCheque ? (
             <ChequeDetailsFields
               mode="collector"
@@ -87,8 +104,7 @@ export default function ReturnedPayoutView({ type }: ReturnedPayoutViewProps) {
       </div>
 
       <p className="mt-6 text-base text-subtle">
-        Correcting the details does not pay the payout. It goes back for review first. The {FUNDS_TRANSFER_LABEL}{" "}
-        option is not affected.
+        Correcting the details does not pay the payout. It goes back for review first.
       </p>
 
       <Button disabled={sent} onClick={handleResubmit} className="mt-[2rem] h-[2.875rem] w-full">
