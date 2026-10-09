@@ -109,7 +109,7 @@ All sizes are rem-based and `html` is set to `font-size: 80%` (12.8px), because 
 
 ## UI rule: verification results are always a pill
 
-Any verification outcome — CoP Status, ID Name Match, and similar Match / Close Match / No Match results — is shown with `VerificationPill` (`components/ui/VerificationPill.tsx`). Never render these as plain coloured text or a one-off badge.
+Any verification outcome — Account Name Check, ID Name Match, and similar Match / Close Match / No Match results — is shown with `VerificationPill` (`components/ui/VerificationPill.tsx`). Never render these as plain coloured text or a one-off badge.
 
 | Tone | Icon | Use for |
 |---|---|---|
@@ -117,7 +117,7 @@ Any verification outcome — CoP Status, ID Name Match, and similar Match / Clos
 | `warning` | triangle | Close Match, needs a look |
 | `danger` | cross | No Match, No, Fail |
 
-- The pill text is the result only ("Match", "Yes"); the label sits beside it ("CoP Status:", "ID Name Match:").
+- The pill text is the result only ("Match", "Yes"); the label sits beside it ("Account Name Check:", "ID Name Match:").
 - `size="sm"` for inline rows on the Approver / Authoriser panels; `size="md"` for a standalone result card (Collector CoP Validation).
 - Colour, icon and sizing live in the component, so a new result type only picks a tone.
 - Not covered yet: the Admin dashboard table cells (`ResultPill`) keep their own compact style.

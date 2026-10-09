@@ -151,7 +151,7 @@ export default function PayoutDestinationScenariosPage() {
           </p>
           <div className="max-w-[38.3125rem] rounded-xl bg-card p-5">
             <CollapsibleSections
-              items={[{ id: "bank", title: "Payout Destination Details", content: <ChequeDetailsEditor /> }]}
+              items={[{ id: "bank", title: "Payment Method Details", content: <ChequeDetailsEditor /> }]}
             />
           </div>
         </section>

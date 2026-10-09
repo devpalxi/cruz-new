@@ -34,12 +34,7 @@ export default function AuthoriserPayoutView({ scenario }: { scenario: ReviewSce
 
   // CoP (Confirmation of Payee) only applies to a real bank check. Cheque and the payment file
   // only get a name comparison, so the Approvals panel labels the result accordingly.
-  const copLabel =
-    scenario.destinationType === "cheque"
-      ? "Cheque Verification"
-      : scenario.destinationType === "manual-bank"
-        ? "Account Name Check"
-        : "CoP Status";
+  const copLabel = scenario.destinationType === "cheque" ? "Cheque Verification" : "Account Name Check";
 
   const payoutRows = [
     { label: "Cash Amount", value: scenario.cashAmount },
@@ -86,7 +81,7 @@ export default function AuthoriserPayoutView({ scenario }: { scenario: ReviewSce
             },
             {
               id: "bank",
-              title: "Payout Destination Details",
+              title: "Payment Method Details",
               content: authoriserEntersCheque ? (
                 <div className="flex flex-col gap-6">
                   <RecordedDestination scenario={scenario} />
@@ -140,7 +135,7 @@ export default function AuthoriserPayoutView({ scenario }: { scenario: ReviewSce
         <div className="mt-4">
           <WarningAlert
             title="Cheque details are needed before you can authorise."
-            message="Enter the Cheque Number and Cheque Name under Payout Destination Details, then select Validate Cheque."
+            message="Enter the Cheque Number and Cheque Name under Payment Method Details, then select Validate Cheque."
           />
         </div>
       )}

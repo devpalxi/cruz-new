@@ -3,7 +3,7 @@ import ApproverDecision from "./ApproverDecision";
 
 type AuthorisationPanelProps = {
   copStatus: string;
-  // Bank Transfer runs a real Zepto CoP (Confirmation of Payee) check, so "CoP Status" is
+  // Bank Transfer runs a real Zepto CoP (Confirmation of Payee) check, so "Account Name Check" is
   // accurate there. Cheque and Manual Bank Transfer only compare names client-side, so the
   // caller passes a matching label instead of the CoP name.
   copLabel?: string;
@@ -17,7 +17,7 @@ type AuthorisationPanelProps = {
 
 export default function AuthorisationPanel({
   copStatus,
-  copLabel = "CoP Status",
+  copLabel = "Account Name Check",
   idNameMatch,
   approverDecision,
   note,
@@ -27,7 +27,7 @@ export default function AuthorisationPanel({
 }: AuthorisationPanelProps) {
   return (
     <div className="px-[0.9375rem] text-base text-label">
-      <p className="flex items-center gap-2 text-[0.875rem]">
+      <p className="flex items-center gap-2 text-base text-ink">
         {copLabel}:
         <VerificationPill tone="success">{copStatus}</VerificationPill>
       </p>

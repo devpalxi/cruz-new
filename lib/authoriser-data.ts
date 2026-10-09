@@ -25,7 +25,7 @@ export const MOCK_AUTHORISATION = {
     { label: "Identity manually verified", yes: false },
   ],
   // Venue setting: this venue has the authoriser responsible for collecting cheque details, so
-  // the Payout Destination Details section below becomes inline editable instead of read-only.
+  // the Payment Method Details section below becomes inline editable instead of read-only.
   destinationType: "cheque" as PayoutDestinationType,
   bank: [
     { label: "Account Name", value: "Vivek Mishra" },

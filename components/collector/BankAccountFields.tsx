@@ -17,7 +17,7 @@ type BankAccountFieldsProps = {
 };
 
 // Account Name/BSB/Account Number fields shared by Bank Transfer and Manual Bank Transfer, plus
-// Manual Bank Transfer's Venue Code field. Used by the real Payout Destination Details step and
+// Manual Bank Transfer's Venue Code field. Used by the real Payment Method Details step and
 // reused as-is for reference.
 export default function BankAccountFields({
   accountName,

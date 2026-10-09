@@ -61,7 +61,7 @@ export default function ApproverPayoutView({ scenario }: { scenario: ReviewScena
     },
     {
       id: "destination",
-      title: "Payout Destination Details",
+      title: "Payment Method Details",
       content: <RecordedDestination scenario={scenario} />,
     },
     hasBankDestination && {

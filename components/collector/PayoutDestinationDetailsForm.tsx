@@ -159,7 +159,7 @@ export default function PayoutDestinationDetailsForm() {
       }}
     >
       <h1 className="mb-[2.125rem] text-[2.5rem] font-bold leading-[2.875rem] text-brand">
-        Payout Destination Details
+        Payment Method Details
       </h1>
 
       {unavailable && destination && (
