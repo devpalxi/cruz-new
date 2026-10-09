@@ -1,3 +1,5 @@
+import { CHEQUE_LABEL, FUNDS_TRANSFER_LABEL, PAYMENT_FILE_LABEL, type Venue } from "@/lib/venue-data";
+
 export type CollectorStep = { label: string; href: string };
 
 export const COLLECTOR_STEPS: CollectorStep[] = [
@@ -20,11 +22,21 @@ export type PayoutDestination = {
 };
 
 export const PAYOUT_DESTINATIONS: PayoutDestination[] = [
-  { type: "bank", label: "Bank Transfer" },
-  { type: "manual-bank", label: "Manual Bank Transfer" },
-  { type: "cheque", label: "Cheque" },
+  { type: "bank", label: FUNDS_TRANSFER_LABEL },
+  { type: "manual-bank", label: PAYMENT_FILE_LABEL },
+  { type: "cheque", label: CHEQUE_LABEL },
   { type: "membership-card", label: "Membership Card" },
 ];
+
+// The venue the Collector works at in this prototype (matches a venue on the Venues screen)
+export const COLLECTOR_VENUE_ID = "riverside-rsl-club";
+
+// Only the payment methods this venue has switched on are offered (Venue Settings)
+export function isDestinationAvailable(type: PayoutDestinationType, venue: Venue | undefined): boolean {
+  if (type === "manual-bank") return !!venue?.paymentFileEnabled;
+  if (type === "cheque") return !!venue?.chequeEnabled;
+  return true;
+}
 
 // Carries the single non-cash destination picked on Payment Breakdown through to the Payout Destination Details step.
 // Only one non-cash destination can be selected per payout.

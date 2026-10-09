@@ -10,8 +10,10 @@ type BankAccountFieldsProps = {
   onAccountNumberChange: (value: string) => void;
   venueCode?: string;
   onVenueCodeChange?: (value: string) => void;
-  // Manual Bank Transfer only.
+  // Payment file only.
   showVenueCode?: boolean;
+  // Inline messages, shown under the field they belong to
+  errors?: { accountName?: string; bsb?: string; accountNumber?: string };
 };
 
 // Account Name/BSB/Account Number fields shared by Bank Transfer and Manual Bank Transfer, plus
@@ -27,6 +29,7 @@ export default function BankAccountFields({
   venueCode = "",
   onVenueCodeChange,
   showVenueCode = false,
+  errors = {},
 }: BankAccountFieldsProps) {
   return (
     <div className="flex flex-col gap-[1.375rem]">
@@ -36,9 +39,11 @@ export default function BankAccountFields({
           value={accountName}
           onChange={(e) => onAccountNameChange(e.target.value)}
         />
+        {errors.accountName && <p className="text-base text-danger">{errors.accountName}</p>}
       </FormField>
       <FormField label="BSB" htmlFor="bank-bsb">
         <TextInput id="bank-bsb" value={bsb} onChange={(e) => onBsbChange(e.target.value)} />
+        {errors.bsb && <p className="text-base text-danger">{errors.bsb}</p>}
       </FormField>
       <FormField label="Account Number" htmlFor="bank-account-number">
         <TextInput
@@ -46,6 +51,7 @@ export default function BankAccountFields({
           value={accountNumber}
           onChange={(e) => onAccountNumberChange(e.target.value)}
         />
+        {errors.accountNumber && <p className="text-base text-danger">{errors.accountNumber}</p>}
       </FormField>
       {showVenueCode && (
         <FormField label="Venue Code" htmlFor="manual-bank-venue-code">
