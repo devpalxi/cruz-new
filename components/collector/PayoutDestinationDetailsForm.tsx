@@ -16,6 +16,7 @@ import {
   PAYOUT_DESTINATION_DETAILS_KEY,
   PAYOUT_DESTINATIONS,
   SELECTED_DESTINATION_KEY,
+  UNAVAILABLE_METHOD_NOTICE_KEY,
   type PayoutDestinationType,
 } from "@/lib/collector-data";
 import { useVenues } from "@/lib/use-venues";
@@ -81,8 +82,20 @@ export default function PayoutDestinationDetailsForm() {
   const isCheque = destination?.type === "cheque";
   const chequeMode = venue?.chequeMode || "collector";
 
-  // The venue may have switched this method off since it was chosen. Entered details are kept.
+  // The venue may have switched this method off since it was chosen. The Collector goes straight back to
+  // Payment Breakdown, where a message explains what happened.
   const unavailable = ready && destination !== null && !isDestinationAvailable(destination.type, venue);
+
+  useEffect(() => {
+    if (!unavailable || !destination) return;
+    try {
+      sessionStorage.setItem(UNAVAILABLE_METHOD_NOTICE_KEY, destination.label);
+      sessionStorage.removeItem(SELECTED_DESTINATION_KEY);
+    } catch {
+      // Storage blocked: the Collector still lands on Payment Breakdown
+    }
+    router.replace("/collector/payment-breakdown");
+  }, [unavailable, destination, router]);
 
   // Re-validate whenever any detail changes after a successful validation.
   function withRevalidate<T>(setter: (value: T) => void) {
@@ -133,6 +146,9 @@ export default function PayoutDestinationDetailsForm() {
     ];
   }
 
+  // Nothing to show while the Collector is being sent back
+  if (unavailable) return null;
+
   return (
     <form
       onSubmit={(e) => {
@@ -161,15 +177,6 @@ export default function PayoutDestinationDetailsForm() {
       <h1 className="mb-[2.125rem] text-[2.5rem] font-bold leading-[2.875rem] text-brand">
         Payment Method Details
       </h1>
-
-      {unavailable && destination && (
-        <div className="mb-[2.625rem]">
-          <WarningAlert
-            title={`${destination.label} is no longer available at this venue.`}
-            message="Go back to Payment Breakdown and choose another way to pay the rest. The details you entered here are kept."
-          />
-        </div>
-      )}
 
       {destination && (
         <div className="flex flex-col gap-[2.625rem]">

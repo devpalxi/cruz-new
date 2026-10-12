@@ -38,6 +38,9 @@ export function isDestinationAvailable(type: PayoutDestinationType, venue: Venue
   return true;
 }
 
+// Set when the chosen payment method is switched off at the venue. Payment Breakdown reads it and shows a message.
+export const UNAVAILABLE_METHOD_NOTICE_KEY = "cruz.unavailableMethodNotice";
+
 // Carries the single non-cash destination picked on Payment Breakdown through to the Payment Method Details step.
 // Only one non-cash destination can be selected per payout.
 export const SELECTED_DESTINATION_KEY = "cruz.selectedPayoutDestination";

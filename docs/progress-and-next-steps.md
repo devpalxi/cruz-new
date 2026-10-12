@@ -73,7 +73,7 @@ All screens are prototype-only. State is mock data plus `sessionStorage` (resets
 |---|---|
 | `/admin/venues` | Admin view: venues of the Admin's own client (Riverside RSL Group). Columns: Venue Name, Payment Method, Daily Limit. Edit pencil appears on row hover. Row click opens settings. |
 | `/admin/venues?role=super-admin` | Super Admin view: all clients, plus a Client column. `?role=super-admin` is a prototype stand-in for logging in as a Super Admin. |
-| `/admin/venues/[id]` (+ `?role=super-admin`) | Venue Settings. Funds Transfer (always on). Switch for Payment File for Your Bank, with Venue Code (text, keeps leading zeros). Switch for Cheque, with three radio options for who enters the cheque details. Save and Cancel. |
+| `/admin/venues/[id]` (+ `?role=super-admin`) | Venue Settings. Funds Transfer (always available, shown in a lighter card with an "Always available" label). Switch for Payment File for Your Bank, with Venue Code (text, keeps leading zeros). Switch for Cheque, with three radio options for who enters the cheque details. Save and Cancel. |
 | Home page `/` | "Super Admin Pages" button opens the Super Admin list. |
 
 Behaviour:
@@ -95,7 +95,7 @@ Files: `app/admin/venues/page.tsx`, `app/admin/venues/[id]/page.tsx`, `component
     - Collector Only: Cheque Number and Cheque Name required (name starts as the winner's name); needs Validate Cheque.
     - Authoriser Only: nothing to enter; a note says so; Next is available.
     - Both: both fields optional; blank values show "Not entered yet" on the Summary; no validation step.
-  - If the venue has switched the chosen method off after it was picked, a warning says it is no longer available and Next is blocked. Entered values are kept.
+  - If the venue has switched the chosen method off after it was picked, the Collector is **sent straight back to Payment Breakdown**, where a warning says the method is no longer available (notice key `cruz.unavailableMethodNotice`). The earlier selection is cleared; amounts typed on Payment Breakdown are not kept.
 - **Returned payout** (`/collector/returned-payout?type=cheque|payment-file|funds-transfer`): shows who returned it and the reviewer's reason (from `sessionStorage` key `cruz.returnedPayout`, otherwise a sample), with the saved details editable. "Send Back for Review" checks the fields, then shows a toast and switches off.
 
 Files: `components/collector/{PaymentBreakdownForm,PayoutDestinationDetailsForm,BankAccountFields,ChequeDetailsFields,ReturnedPayoutView}.tsx`, `app/collector/returned-payout/page.tsx`, `lib/collector-data.ts`.
@@ -113,7 +113,9 @@ Files: `components/collector/{PaymentBreakdownForm,PayoutDestinationDetailsForm,
 | `cheque-both` | Cheque, Both | Collector's number prefilled, name blank; Authoriser completes it |
 
 - A "Prototype only. Payout paid by:" row at the top switches scenario.
-- The Payment Method Details section shows Paid By, Amount and the account or cheque details (`components/payout-review/RecordedDestination.tsx`). The Approver never edits cheque details.
+- The Payment Method Details card shows Paid By, Amount and the account or cheque details (`components/payout-review/RecordedDestination.tsx`). The Approver never edits cheque details.
+- **Cheque Details Entered By** lists the usernames of the people who actually entered details (for example `M.Santos (Collector), R.Nguyen (Authoriser)`), or `Not entered yet`. The Authoriser's name is added once they enter or change details and check them.
+- When the Authoriser enters cheque details, the Cheque Number and Cheque Name fields sit **inside the card** in place of the two rows (no separate form below). After Validate Cheque the card shows the values with a pencil to edit.
 - **Return for Correction** (both roles): a dialog requires a reason, then the reviewer is sent to the Collector's returned-payout page for that payment method.
 - When cheque details are needed, a warning above the buttons tells the Authoriser where to enter them.
 - "Identity Documents Provided To Staff Member" and "Identity manually verified" show Yes/No `VerificationPill`s.
@@ -266,3 +268,22 @@ MBT-14, MBT-23, CHE-24, CHE-25 (backend rules); MBT-28, MBT-29, CHE-26, CHE-27 (
 ## 11. Housekeeping
 
 - The temporary working folder used for scripts, a `puppeteer-core` install and backups was emptied on 2026-10-10. Everything needed to regenerate the screenshots and documents is in `html/tools/`. Run `npm install` there once (its `node_modules` is in `.gitignore`).
+
+## 12. Reviewer feedback fixed on 2026-10-12
+
+Feedback came from Oshada and Akila on the Venue Settings screen, the review pages and the Collector flow. All of it is done:
+
+| Feedback | Fix |
+|---|---|
+| Move the "changes apply to new payouts only" note near Save | The note now sits directly above Save and Cancel; the long intro under "How Winners Are Paid" is gone |
+| Toggles need a clear label, announce state, work with a keyboard, show state in text | `Switch` shows On or Off in words, is a real button with `role="switch"` (Space and Enter work), and points to its description with `aria-describedby` |
+| Shorter descriptions; reveal detail only when needed | One short line per method; Venue Code note is "Included in the file; leading zeros are kept."; cheque question is "Who can enter cheque details?"; the three options have shorter help lines |
+| Funds Transfer looks configurable | New `AlwaysAvailableMethodRow`: lighter card with "Always available" |
+| Cheque Details Entered By should show the actual username | Shows usernames of people who entered details; one row listing everyone, as agreed |
+| Authoriser-entered details should fill the card, not new placeholders | Editor now lives inside the card; values show in the card after Validate Cheque |
+| A method switched off should take the Collector to Payment Breakdown | Redirect with a warning on Payment Breakdown |
+| Akila: less wordy | Covered by the shorter descriptions above |
+
+The screenshots, both story pages, `docs/linear-updates.md` and `html/linear-updates.html` were regenerated after these changes.
+
+Still open from this round: the Collector's typed amounts are not kept when they are sent back to Payment Breakdown (prototype only; the amounts live in component state).

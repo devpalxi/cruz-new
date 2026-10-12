@@ -19,18 +19,26 @@ import { MOCK_AUTHORISATION } from "@/lib/authoriser-data";
 import { chequeNeedsAuthoriser, comparedNameLabel, returnedTypeFor, type ReviewScenario } from "@/lib/payout-review-scenarios";
 import { saveReturnedPayout } from "@/lib/return-payout";
 import AuthorisationPanel from "./AuthorisationPanel";
-import ChequeDetailsEditor from "./ChequeDetailsEditor";
+import ChequeDetailsEditor, { type ChequeEditorState } from "./ChequeDetailsEditor";
 
 export default function AuthoriserPayoutView({ scenario }: { scenario: ReviewScenario }) {
   const router = useRouter();
   const data = MOCK_AUTHORISATION;
   const [note, setNote] = useState("");
   const [confirmed, setConfirmed] = useState(false);
-  const [chequeComplete, setChequeComplete] = useState(false);
+  const [cheque, setCheque] = useState<ChequeEditorState>({ number: "", name: "", complete: false });
   const [returnOpen, setReturnOpen] = useState(false);
 
   const authoriserEntersCheque = chequeNeedsAuthoriser(scenario);
+  const chequeComplete = cheque.complete;
   const canAuthorise = confirmed && (!authoriserEntersCheque || chequeComplete);
+
+  // Cheque Details Entered By lists the people who actually entered details: the Collector (as recorded)
+  // and the Authoriser once they have entered or changed something and checked it.
+  const authoriserEntered =
+    chequeComplete &&
+    (cheque.number !== (scenario.cheque?.number ?? "") || cheque.name !== (scenario.cheque?.name ?? ""));
+  const enteredBy = [...(scenario.chequeEnteredBy ?? []), ...(authoriserEntered ? [`${data.user} (Authoriser)`] : [])];
 
   // CoP (Confirmation of Payee) only applies to a real bank check. Cheque and the payment file
   // only get a name comparison, so the Approvals panel labels the result accordingly.
@@ -83,14 +91,17 @@ export default function AuthoriserPayoutView({ scenario }: { scenario: ReviewSce
               id: "bank",
               title: "Payment Method Details",
               content: authoriserEntersCheque ? (
-                <div className="flex flex-col gap-6">
-                  <RecordedDestination scenario={scenario} />
-                  <ChequeDetailsEditor
-                    initialNumber={scenario.cheque?.number}
-                    initialName={scenario.cheque?.name}
-                    onCompleteChange={setChequeComplete}
-                  />
-                </div>
+                <RecordedDestination
+                  scenario={scenario}
+                  chequeEnteredBy={enteredBy}
+                  chequeSlot={
+                    <ChequeDetailsEditor
+                      initialNumber={scenario.cheque?.number}
+                      initialName={scenario.cheque?.name}
+                      onChange={setCheque}
+                    />
+                  }
+                />
               ) : (
                 <RecordedDestination scenario={scenario} />
               ),

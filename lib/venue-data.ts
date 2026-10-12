@@ -22,17 +22,17 @@ export const CHEQUE_MODES: { value: ChequeMode; label: string; help: string }[] 
   {
     value: "collector",
     label: "Collector Only",
-    help: "The Collector enters the cheque details. The Authoriser can read them but not change them.",
+    help: "The Collector enters them. The Authoriser can only read them.",
   },
   {
     value: "authoriser",
     label: "Authoriser Only",
-    help: "The Collector does not enter cheque details. The Authoriser enters them before authorising.",
+    help: "The Authoriser enters them before authorising.",
   },
   {
     value: "both",
     label: "Collector and Authoriser Both",
-    help: "Either person can enter or correct the cheque details. The Authoriser must complete them before authorising.",
+    help: "Either can enter or correct them. The Authoriser completes them before authorising.",
   },
 ];
 
