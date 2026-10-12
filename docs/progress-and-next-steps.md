@@ -130,6 +130,7 @@ Files: `components/approver/ApproverPayoutView.tsx`, `components/authoriser/{Aut
 - `html/MBT-jira-user-stories.html` and `html/CHE-jira-user-stories.html`: every story now has a **Prototype** box with a status badge, screenshots and "Open live" links. A coverage table sits at the top. Images are embedded (base64), so each file works alone. Cross-links between the two files and within each file were fixed. "Payout Destination Details" was renamed in them.
 - `html/screenshots/`: 25 PNGs at 1440 wide.
 - `docs/linear-updates.md`: 27 Linear-ready entries (name, short description, screenshots, how it works, live links) plus a table of stories with no screen yet. Its images are relative links, so they only show where the folder structure is kept.
+- `html/feedback-changes.html`: report of the 2026-10-12 reviewer feedback. Seven entries, each with the issue, the first-build screenshot, the feedback (quoted), the fixed screenshot and the workflow after. Cropped screenshots are made by `html/tools/feedback.py`: "before" images come from git commit `914eb5b`, "after" images from `html/screenshots/`. Run `python feedback.py` after `shots.mjs` if the UI changes again.
 - `html/linear-updates.html`: the same 27 entries as **one self-contained page** with the screenshots embedded. This is the one to share with people who only get a single file.
 - `docs/design.md`: updated with every new component and route.
 - `html/tools/`: the scripts that make the screenshots and embed them (see section 7).
