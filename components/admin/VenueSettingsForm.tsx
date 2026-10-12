@@ -10,7 +10,6 @@ import {
   CHEQUE_LABEL,
   FUNDS_TRANSFER_LABEL,
   PAYMENT_FILE_LABEL,
-  formatDailyLimit,
   type Venue,
 } from "@/lib/venue-data";
 import AlwaysAvailableMethodRow from "./AlwaysAvailableMethodRow";
@@ -19,11 +18,10 @@ import PaymentMethodRow from "./PaymentMethodRow";
 
 type VenueSettingsFormProps = {
   venue: Venue;
-  showClient: boolean;
   onSave: (venue: Venue) => void;
 };
 
-export default function VenueSettingsForm({ venue, showClient, onSave }: VenueSettingsFormProps) {
+export default function VenueSettingsForm({ venue, onSave }: VenueSettingsFormProps) {
   const [draft, setDraft] = useState<Venue>(venue);
   const [chequeModeError, setChequeModeError] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
@@ -51,9 +49,6 @@ export default function VenueSettingsForm({ venue, showClient, onSave }: VenueSe
   return (
     <div className="mt-4">
       <h1 className="text-[2.1rem] font-semibold leading-[2.6rem] text-title-navy">{venue.name}</h1>
-      <p className="mt-1 text-lg text-label">
-        {showClient && <>Client: {venue.client} · </>}Daily limit: {formatDailyLimit(venue.dailyLimit)}
-      </p>
 
       <h2 className="mt-[2.2rem] text-xl font-semibold text-ink">How Winners Are Paid</h2>
 

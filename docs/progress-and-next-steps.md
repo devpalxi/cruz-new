@@ -73,7 +73,7 @@ All screens are prototype-only. State is mock data plus `sessionStorage` (resets
 |---|---|
 | `/admin/venues` | Admin view: venues of the Admin's own client (Riverside RSL Group). Columns: Venue Name, Payment Method, Daily Limit. Edit pencil appears on row hover. Row click opens settings. |
 | `/admin/venues?role=super-admin` | Super Admin view: all clients, plus a Client column. `?role=super-admin` is a prototype stand-in for logging in as a Super Admin. |
-| `/admin/venues/[id]` (+ `?role=super-admin`) | Venue Settings. Funds Transfer (always available, shown in a lighter card with an "Always available" label). Switch for Payment File for Your Bank, with Venue Code (text, keeps leading zeros). Switch for Cheque, with three radio options for who enters the cheque details. Save and Cancel. |
+| `/admin/venues/[id]` (+ `?role=super-admin`) | Venue Settings. Funds Transfer (always available: the same card as the others, with an "Always available" badge where the switch would be). The venue's client and daily limit are not shown on this screen. Switch for Payment File for Your Bank, with Venue Code (text, keeps leading zeros). Switch for Cheque, with three radio options for who enters the cheque details. Save and Cancel. |
 | Home page `/` | "Super Admin Pages" button opens the Super Admin list. |
 
 Behaviour:
@@ -279,7 +279,7 @@ Feedback came from Oshada and Akila on the Venue Settings screen, the review pag
 | Move the "changes apply to new payouts only" note near Save | The note now sits directly above Save and Cancel; the long intro under "How Winners Are Paid" is gone |
 | Toggles need a clear label, announce state, work with a keyboard, show state in text | `Switch` shows On or Off in words, is a real button with `role="switch"` (Space and Enter work), and points to its description with `aria-describedby` |
 | Shorter descriptions; reveal detail only when needed | One short line per method; Venue Code note is "Included in the file; leading zeros are kept."; cheque question is "Who can enter cheque details?"; the three options have shorter help lines |
-| Funds Transfer looks configurable | New `AlwaysAvailableMethodRow`: lighter card with "Always available" |
+| Funds Transfer looks configurable | New `AlwaysAvailableMethodRow`. First a lighter card with "Always available"; then changed (user request, 2026-10-12) to the same card as the others with an "Always available" badge. The "Client / Daily limit" line under the venue name was also removed |
 | Cheque Details Entered By should show the actual username | Shows usernames of people who entered details; one row listing everyone, as agreed |
 | Authoriser-entered details should fill the card, not new placeholders | Editor now lives inside the card; values show in the card after Validate Cheque |
 | A method switched off should take the Collector to Payment Breakdown | Redirect with a warning on Payment Breakdown |
