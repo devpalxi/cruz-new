@@ -23,6 +23,8 @@ export type ReviewScenario = {
   accountRows: { label: string; value: string }[];
   // What the Collector recorded for a cheque; empty strings mean not entered yet
   cheque?: { number: string; name: string };
+  // The people who actually entered cheque details so far, by username. Empty means nobody yet.
+  chequeEnteredBy?: string[];
 };
 
 const ACCOUNT_ROWS = [
@@ -60,6 +62,7 @@ export const REVIEW_SCENARIOS: ReviewScenario[] = [
     nonCashAmount: "500",
     accountRows: [],
     cheque: { number: "000417", name: "Vivek Mishra" },
+    chequeEnteredBy: ["M.Santos (Collector)"],
   },
   {
     id: "cheque-authoriser",
@@ -71,6 +74,7 @@ export const REVIEW_SCENARIOS: ReviewScenario[] = [
     nonCashAmount: "500",
     accountRows: [],
     cheque: { number: "", name: "" },
+    chequeEnteredBy: [],
   },
   {
     id: "cheque-both",
@@ -82,6 +86,7 @@ export const REVIEW_SCENARIOS: ReviewScenario[] = [
     nonCashAmount: "500",
     accountRows: [],
     cheque: { number: "000418", name: "" },
+    chequeEnteredBy: ["M.Santos (Collector)"],
   },
 ];
 

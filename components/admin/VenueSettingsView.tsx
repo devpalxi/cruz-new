@@ -25,7 +25,6 @@ export default function VenueSettingsView({ venueId, isSuperAdmin }: VenueSettin
         <VenueSettingsForm
           key={venue.id}
           venue={venue}
-          showClient={isSuperAdmin}
           onSave={saveVenue}
         />
       ) : (

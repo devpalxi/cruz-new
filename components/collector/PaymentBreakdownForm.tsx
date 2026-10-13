@@ -1,13 +1,14 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { FaBuildingColumns, FaIdCard, FaMoneyBill, FaMoneyBillTransfer, FaMoneyCheckDollar } from "react-icons/fa6";
 import Button from "@/components/ui/Button";
 import CurrencyInput from "@/components/ui/CurrencyInput";
 import FormField from "@/components/ui/FormField";
 import SelectInput from "@/components/ui/SelectInput";
+import WarningAlert from "@/components/ui/WarningAlert";
 import { useVenues } from "@/lib/use-venues";
 import {
   COLLECTOR_VENUE_ID,
@@ -16,6 +17,7 @@ import {
   PAYOUT_DESTINATION_DETAILS_KEY,
   PAYOUT_DESTINATIONS,
   SELECTED_DESTINATION_KEY,
+  UNAVAILABLE_METHOD_NOTICE_KEY,
   type PayoutDestinationType,
 } from "@/lib/collector-data";
 import AmountCard from "./AmountCard";
@@ -39,6 +41,20 @@ export default function PaymentBreakdownForm() {
   const [confirmCash, setConfirmCash] = useState("");
   const [destinationType, setDestinationType] = useState<PayoutDestinationType | "">("");
   const [destinationAmount, setDestinationAmount] = useState("0");
+  // Set when the venue switched off the method the Collector had chosen; shown once, then cleared
+  const [unavailableMethod, setUnavailableMethod] = useState<string | null>(null);
+
+  useEffect(() => {
+    try {
+      const label = sessionStorage.getItem(UNAVAILABLE_METHOD_NOTICE_KEY);
+      if (label) {
+        setUnavailableMethod(label);
+        sessionStorage.removeItem(UNAVAILABLE_METHOD_NOTICE_KEY);
+      }
+    } catch {
+      // Storage blocked: no message
+    }
+  }, []);
 
   const selectedDestination = PAYOUT_DESTINATIONS.find((d) => d.type === destinationType);
   const cashMismatch = confirmCash !== "" && confirmCash !== cash;
@@ -69,6 +85,15 @@ export default function PaymentBreakdownForm() {
       <h1 className="mb-[2.125rem] text-[2.5rem] font-bold leading-[2.875rem] text-brand">
         Payout Details
       </h1>
+
+      {unavailableMethod && (
+        <div className="mb-[2.125rem]">
+          <WarningAlert
+            title={`${unavailableMethod} is no longer available at this venue.`}
+            message="Choose another way to pay the rest."
+          />
+        </div>
+      )}
 
       <FormField label="Total Winnings">
         <CurrencyInput value={MOCK_TOTAL_WINNINGS} disabled readOnly />
