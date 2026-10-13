@@ -87,7 +87,7 @@ export default function ChequeDetailsEditor({
 
   return (
     <div className="flex flex-col gap-4">
-      <FormField label="Cheque Number" htmlFor="authoriser-cheque-number">
+      <FormField label="Cheque Number" htmlFor="authoriser-cheque-number" required>
         <TextInput
           id="authoriser-cheque-number"
           value={chequeNumber}
@@ -96,7 +96,7 @@ export default function ChequeDetailsEditor({
         />
         {showErrors && numberError && <p className="text-base text-danger">{numberError}</p>}
       </FormField>
-      <FormField label="Cheque Name" htmlFor="authoriser-cheque-name">
+      <FormField label="Cheque Name" htmlFor="authoriser-cheque-name" required>
         <TextInput
           id="authoriser-cheque-name"
           value={chequeName}
@@ -107,7 +107,7 @@ export default function ChequeDetailsEditor({
       </FormField>
 
       <Button type="button" onClick={handleValidate} className="h-[2.875rem] w-full">
-        Validate Cheque
+        Check Name Match
       </Button>
     </div>
   );

@@ -14,6 +14,7 @@ import DocketRow from "@/components/payout-review/DocketRow";
 import IdentityConfirmation from "@/components/payout-review/IdentityConfirmation";
 import IdvHistoryTable from "@/components/payout-review/IdvHistoryTable";
 import NameComparison from "@/components/payout-review/NameComparison";
+import PayoutStatusNote from "@/components/payout-review/PayoutStatusNote";
 import RecordedDestination from "@/components/payout-review/RecordedDestination";
 import ReturnForCorrectionDialog from "@/components/payout-review/ReturnForCorrectionDialog";
 import { comparedNameLabel, returnedTypeFor, type ReviewScenario } from "@/lib/payout-review-scenarios";
@@ -114,6 +115,7 @@ export default function ApproverPayoutView({ scenario }: { scenario: ReviewScena
           </StatusPill>
         </div>
       </div>
+      <PayoutStatusNote scenario={scenario} />
 
       <div className="mt-[1.375rem]">
         <CollapsibleSections items={sections.filter((section): section is SectionItem => Boolean(section))} />

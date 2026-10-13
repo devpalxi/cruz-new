@@ -1,5 +1,8 @@
 import { RETURNED_PAYOUT_KEY } from "./payout-review-scenarios";
 
+// The most a reviewer can write when returning a payout
+export const RETURN_REASON_MAX_LENGTH = 500;
+
 // Remembers who returned the payout and why. The caller then sends the reviewer to the Collector's correction page.
 export function saveReturnedPayout(returnedBy: string, reason: string) {
   const returnedAt = new Date().toLocaleString("en-AU", { dateStyle: "short", timeStyle: "short" });

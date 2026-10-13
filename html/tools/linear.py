@@ -12,15 +12,15 @@ ROOT = ns["ROOT"]
 HOW = {
     "mbt-01": "Open Manage, then Venues. Pick a venue from your client's list. The venue screen opens with its name at the top and its saved payment settings. An Admin only sees their own client's venues.",
     "mbt-02": "Open Manage, then Venues as a Super Admin (add ?role=super-admin to the link). Every client's venues are listed with a Client column. Select a venue to open its settings. The client and venue name show at the top.",
-    "mbt-03": "On the venue screen, turn on Payment File for Your Bank. A Venue Code field appears under it. The line under the title says your team uploads a payment file to your bank's online portal. It is off until you turn it on, and the switch shows On or Off in words.",
-    "mbt-04": "With Payment File for Your Bank on, type the Venue Code. The help text says it is included in the file and that leading zeros are kept (for example 0042).",
+    "mbt-03": "On the venue screen, turn on Manual Bank Transfer. A Venue Code field appears under it. The line under the title says it is paid by uploading a payment file to the bank's online portal. It is off until you turn it on, and the switch shows On or Off in words.",
+    "mbt-04": "With Manual Bank Transfer on, type the Venue Code. The help text says it is included in the file and that leading zeros are kept (for example 0042).",
     "mbt-05": "Change any setting and select Save. A confirmation message appears. Reload the page and the saved values are still there. Only this venue changes.",
     "mbt-06": "Change a setting, then select Cancel. The screen goes back to the last saved values.",
-    "mbt-07": "Turn Payment File for Your Bank off and Save. It stops being offered to Collectors for new payouts. Payouts already submitted keep their payment method.",
+    "mbt-07": "Turn Manual Bank Transfer off and Save. It stops being offered to Collectors for new payouts. Payouts already submitted keep their payment method.",
     "mbt-08": "Open any payout from the Approver or Authoriser. Payment Method Details shows how the payout was set up to be paid when it was submitted. A payment file payout also says it stays pending until the file is uploaded to the bank.",
     "mbt-09": "On Payment Breakdown, enter the full amount as cash and leave How the Rest Is Paid empty. Next goes straight on, with no payment method details to fill in.",
     "mbt-10": "Choose a payment method, then have the venue switch it off. When the Collector reaches Payment Method Details, they are sent straight back to Payment Breakdown with a message that the method is no longer available and to choose another way to pay the rest.",
-    "mbt-11": "Choose Payment File for Your Bank on Payment Breakdown, then continue to Payment Method Details. Enter Account Name, BSB and Account Number. Select Validate Account with fields empty or wrong to see the messages.",
+    "mbt-11": "Choose Manual Bank Transfer on Payment Breakdown, then continue to Payment Method Details. Enter Account Name, BSB and Account Number. Select Validate Account with fields empty or wrong to see the messages.",
     "mbt-12": "Open the Approver or Authoriser review for a payment file payout. The account details and amount are shown. Select Return for Correction, enter a reason, and you are taken to the Collector's correction page showing that reason.",
     "che-01": "On the venue screen, turn Cheque on. Who enters the cheque details appears under it. The same Save and Cancel apply as for the other payment methods.",
     "che-02": "With Cheque on, choose one of three options: Collector Only, Authoriser Only, or Collector and Authoriser Both. Each has one short line. The question is Who can enter cheque details? Saving with Cheque on and no option chosen shows a message and does not save.",
@@ -28,15 +28,15 @@ HOW = {
     "che-04": "Open a cheque payout in the Approver or Authoriser review. Payment Method Details shows Cheque Details Entered By with the usernames of the people who have entered details, or Not entered yet.",
     "che-06": "On Payment Breakdown, open How the Rest Is Paid. Only the methods the venue has switched on are listed. Choosing one shows an amount box for it.",
     "che-07": "Choose Cheque with Collector and Authoriser Both: the cheque fields are optional. If the venue has since switched a method off, the Collector is sent back to Payment Breakdown with a message and is asked to choose another.",
-    "che-08": "With Collector Only, Payment Method Details shows Cheque Number and Cheque Name, both required. The name starts as the winner's name. Select Validate Cheque with a field empty to see the message.",
+    "che-08": "With Collector Only, Payment Method Details shows Cheque Number and Cheque Name, both required. The name starts as the winner's name. Select Check Name Match with a field empty to see the message.",
     "che-09": "Open the Authoriser review for a Collector Only cheque. The cheque details are shown but cannot be changed. Return for Correction sends it back with a reason.",
     "che-10": "After a cheque is returned, the Collector opens the correction page. It shows who returned it and why, with the saved cheque details ready to edit. Send Back for Review checks both fields first.",
-    "che-11": "With Authoriser Only, the Collector sees that there is nothing to enter and continues. In the Authoriser review, the Authoriser enters Cheque Number and Cheque Name inside the Payment Method Details card. Authorise stays off until both are entered and checked.",
-    "che-12": "In the Authoriser review, enter Cheque Number and Cheque Name, then select Validate Cheque. The values then appear in the card with a pencil to edit them again, and Cheque Details Entered By shows the Authoriser. Authorise can be used once the confirm box is ticked.",
+    "che-11": "With Authoriser Only, the Collector skips the Payment Method Details step and goes straight to the Summary, which says the Authoriser will enter the cheque details. In the Authoriser review, the Authoriser enters Cheque Number and Cheque Name inside the Payment Method Details card. A short line says to enter cheque details before authorising. Authorise stays off until both are entered and checked.",
+    "che-12": "In the Authoriser review, enter Cheque Number and Cheque Name, then select Check Name Match. The values then appear in the card with a pencil to edit them again, and Cheque Details Entered By shows the Authoriser. Authorise can be used once the confirm box is ticked.",
     "che-13": "With Collector and Authoriser Both, the Collector can fill in both cheque details, one of them, or neither, and still continue. Anything left blank shows as Not entered yet on the Summary.",
     "che-14": "In the Authoriser review, anything the Collector left blank can be completed. In the example, the Collector entered the number and the Authoriser adds the name, so the card lists both people. Both are needed before Authorise is available.",
     "che-15": "On the Collector's cheque form, the Cheque Name starts as the winner's name and can be changed. The Cheque Number is typed as text, so leading zeros are kept.",
-    "che-16": "Open any cheque payout in the Approver or Authoriser review. Payment Method Details shows Paid By, Amount, Cheque Details Entered By, the Cheque Number and the Cheque Name.",
+    "che-16": "Open any cheque payout in the Approver or Authoriser review. Payment Method Details shows Method, Amount, Cheque Details Entered By, the Cheque Number and the Cheque Name.",
 }
 
 
@@ -71,7 +71,7 @@ out.append(
 out.append("Stories with no screen yet are listed at the end.\n")
 out.append(
     "**Before you paste:** issue names and short descriptions are copied from the story files, so they still say "
-    "*Manual Bank Transfer* and *payout destination*. The screens say *Payment File for Your Bank* and *Payment Method "
+    "*Manual Bank Transfer* and *payout destination*. The screens say *Manual Bank Transfer* and *Payment Method "
     "Details*. Pick one set of names, then update the stories (and these entries) to match.\n"
 )
 out.append(
@@ -80,7 +80,7 @@ out.append(
     "switch between payouts. Venue settings are kept for the current browser tab only.\n"
 )
 out.append(
-    "**Wording to confirm with Brien or Minosha before sharing:** *Payment File for Your Bank*, *Funds Transfer*, "
+    "**Wording to confirm with Brien or Minosha before sharing:** *Manual Bank Transfer*, *EFT*, "
     "*How the Rest Is Paid*, *Payment Method Details*, *Account Name Check*, *Return for Correction*.\n"
 )
 
@@ -174,7 +174,7 @@ table{{border-collapse:collapse;width:100%;font-size:.94rem}}th,td{{border:1px s
 </style></head><body>
 <h1>Linear updates: new configurable payout screens</h1>
 <p>Live prototype: <a href="{LIVE}">{LIVE}</a>. One entry per story that has a screen. Each has the issue name, a short description, screenshots, and how it works with live links. This file works on its own: the screenshots are inside it.</p>
-<div class="callout"><strong>Before you paste:</strong> issue names and short descriptions are copied from the story files, so they still say <em>Manual Bank Transfer</em> and <em>payout destination</em>. The screens say <em>Payment File for Your Bank</em> and <em>Payment Method Details</em>. Pick one set of names, then update the stories to match. Names to confirm with Brien or Minosha: Payment File for Your Bank, Funds Transfer, How the Rest Is Paid, Payment Method Details, Account Name Check, Return for Correction.</div>
+<div class="callout"><strong>Before you paste:</strong> issue names and short descriptions are copied from the story files, so they still say <em>Manual Bank Transfer</em> and <em>payout destination</em>. The screens say <em>Manual Bank Transfer</em> and <em>Payment Method Details</em>. Pick one set of names, then update the stories to match. Names to confirm with Brien or Minosha: Manual Bank Transfer, EFT, How the Rest Is Paid, Payment Method Details, Account Name Check, Return for Correction.</div>
 <div class="callout"><strong>Live links for the Collector:</strong> Payment Method Details opens from the flow. Choose a method under How the Rest Is Paid on Payment Breakdown first, then continue. The review pages have a <em>Prototype only</em> row at the top to switch between payouts. Venue settings are kept for the current browser tab only. Links work once this branch is deployed.</div>
 {"".join(body)}
 <h2>Stories with no screen yet</h2>

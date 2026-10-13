@@ -2,7 +2,7 @@
 and the fixed screen with its workflow.
 
 "First build" screenshots come from git commit FIRST_BUILD (the screens the reviewers saw).
-"After" screenshots are the current ones in html/screenshots/ (run shots.mjs first if the UI changed).
+"After" screenshots come from git commit AFTER_BUILD (the build after round 1), so regenerating html/screenshots does not change this report.
 Needs Pillow (pip install pillow) and git on the PATH. Run from anywhere:  python feedback.py
 """
 import base64, html, io, os, subprocess
@@ -11,6 +11,8 @@ from PIL import Image
 REPO = r"D:\DN-75\Edu\DN\Palxi\Cruz-Money-2\cruz"
 SHOTS = os.path.join(REPO, "html", "screenshots")
 FIRST_BUILD = "914eb5b"
+# The build after round 1 of feedback. Pinned to a commit so later UI changes do not alter this report.
+AFTER_BUILD = "158fefc"
 LIVE = "https://cruz-new.vercel.app"
 esc = html.escape
 
@@ -21,7 +23,8 @@ def before_img(name):
 
 
 def after_img(name):
-    return Image.open(os.path.join(SHOTS, name + ".png")).convert("RGB")
+    data = subprocess.check_output(["git", "-C", REPO, "show", f"{AFTER_BUILD}:html/screenshots/{name}.png"])
+    return Image.open(io.BytesIO(data)).convert("RGB")
 
 
 # crop id -> (before|after, screenshot, (left, top, right, bottom), caption)

@@ -90,7 +90,7 @@ export default function PaymentBreakdownForm() {
         <div className="mb-[2.125rem]">
           <WarningAlert
             title={`${unavailableMethod} is no longer available at this venue.`}
-            message="Choose another way to pay the rest."
+            message="It was switched off for this venue. Choose another way to pay the rest."
           />
         </div>
       )}

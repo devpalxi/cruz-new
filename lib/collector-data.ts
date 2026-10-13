@@ -55,6 +55,13 @@ export type PayoutDestinationDetails = {
   rows: { label: string; value: string }[];
 };
 
+// Saved for the Summary when only the Authoriser enters the cheque details, so the Collector skips Payment Method Details
+export const AUTHORISER_ONLY_CHEQUE_DETAILS: PayoutDestinationDetails = {
+  type: "cheque",
+  title: CHEQUE_LABEL,
+  rows: [{ label: "Cheque Details", value: "To be entered by the Authoriser" }],
+};
+
 // Mock defaults referenced by the Payment Method Details step (prototype only)
 export const MOCK_WINNER_NAME = "Alex Morgan";
 export const MOCK_MEMBERSHIP_NUMBER = "M-1234567";

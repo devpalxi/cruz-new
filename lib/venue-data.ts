@@ -14,25 +14,25 @@ export type Venue = {
 };
 
 // One name per thing: change these labels here and every screen follows.
-export const FUNDS_TRANSFER_LABEL = "Funds Transfer";
-export const PAYMENT_FILE_LABEL = "Payment File for Your Bank";
+export const FUNDS_TRANSFER_LABEL = "EFT";
+export const PAYMENT_FILE_LABEL = "Manual Bank Transfer";
 export const CHEQUE_LABEL = "Cheque";
 
 export const CHEQUE_MODES: { value: ChequeMode; label: string; help: string }[] = [
   {
     value: "collector",
     label: "Collector Only",
-    help: "The Collector enters them. The Authoriser can only read them.",
+    help: "Collector enters the cheque details. Authoriser can view them.",
   },
   {
     value: "authoriser",
     label: "Authoriser Only",
-    help: "The Authoriser enters them before authorising.",
+    help: "Authoriser enters the cheque details.",
   },
   {
     value: "both",
     label: "Collector and Authoriser Both",
-    help: "Either can enter or correct them. The Authoriser completes them before authorising.",
+    help: "Both can enter and edit the cheque details.",
   },
 ];
 

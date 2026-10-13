@@ -103,11 +103,7 @@ export default function ReturnedPayoutView({ type }: { type: ReturnedPayoutType 
         </AmountCard>
       </div>
 
-      <p className="mt-6 text-base text-subtle">
-        Correcting the details does not pay the payout. It goes back for review first.
-      </p>
-
-      <Button disabled={sent} onClick={handleResubmit} className="mt-[2rem] h-[2.875rem] w-full">
+      <Button disabled={sent} onClick={handleResubmit} className="mt-[2.625rem] h-[2.875rem] w-full">
         Send Back for Review
       </Button>
       <Toast message={toast} onClose={() => setToast(null)} />
