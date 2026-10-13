@@ -5,6 +5,7 @@ import Button from "@/components/ui/Button";
 import CollapsibleSections from "@/components/ui/CollapsibleSections";
 import DetailList from "@/components/ui/DetailList";
 import {
+  AUTHORISER_ONLY_CHEQUE_DETAILS,
   MOCK_SUMMARY,
   PAYOUT_DESTINATION_DETAILS_KEY,
   type PayoutDestinationDetails,
@@ -38,6 +39,11 @@ export default function SummaryView() {
     }
   }, []);
 
+  // With no cheque details yet there is nothing to verify, so no verification result is shown
+  const chequeLeftToAuthoriser = destinations.some((d) =>
+    d.rows.some((row) => row.value === AUTHORISER_ONLY_CHEQUE_DETAILS.rows[0].value),
+  );
+
   return (
     <div>
       <h1 className="text-[2.5rem] font-bold leading-[2.875rem] text-brand">Payout #{payoutId}</h1>
@@ -68,7 +74,7 @@ export default function SummaryView() {
         />
       </div>
 
-      {destinations.length > 0 && (
+      {destinations.length > 0 && !chequeLeftToAuthoriser && (
         <div className="mt-[1.875rem]">
           <CopValidationCard
             status={cop.status}

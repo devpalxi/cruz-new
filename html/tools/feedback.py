@@ -5,8 +5,11 @@ and the fixed screen with its workflow.
 "After" screenshots come from git commit AFTER_BUILD (the build after round 1), so regenerating html/screenshots does not change this report.
 Needs Pillow (pip install pillow) and git on the PATH. Run from anywhere:  python feedback.py
 """
-import base64, html, io, os, subprocess
+import base64, html, io, os, subprocess, sys
 from PIL import Image
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from feedback_round2 import CROPS2, ENTRIES2, NOT_ADOPTED
 
 REPO = r"D:\DN-75\Edu\DN\Palxi\Cruz-Money-2\cruz"
 SHOTS = os.path.join(REPO, "html", "screenshots")
@@ -25,6 +28,11 @@ def before_img(name):
 def after_img(name):
     data = subprocess.check_output(["git", "-C", REPO, "show", f"{AFTER_BUILD}:html/screenshots/{name}.png"])
     return Image.open(io.BytesIO(data)).convert("RGB")
+
+
+def new_img(name):
+    # Round 2 "after": the current screenshots (run shots.mjs first if the UI changed)
+    return Image.open(os.path.join(SHOTS, name + ".png")).convert("RGB")
 
 
 # crop id -> (before|after, screenshot, (left, top, right, bottom), caption)
@@ -58,9 +66,13 @@ CROPS = {
 }
 
 
+CROPS.update(CROPS2)
+IMAGE_SOURCES = {"b": before_img, "a": after_img, "n": new_img}
+
+
 def crop_uri(cid):
     kind, name, box, _ = CROPS[cid]
-    im = (before_img if kind == "b" else after_img)(name).crop(box)
+    im = IMAGE_SOURCES[kind](name).crop(box)
     buf = io.BytesIO()
     im.save(buf, "PNG", optimize=True)
     return "data:image/png;base64," + base64.b64encode(buf.getvalue()).decode()
@@ -220,7 +232,7 @@ CSS = """
 body{max-width:1100px;margin:32px auto;padding:0 22px;font:16px/1.6 system-ui,sans-serif;color:#172b4d;background:#fff}
 h1{font-size:2rem;margin-bottom:4px}h2{font-size:1.4rem;margin:0 0 4px}a{color:#0052cc}
 .lead{color:#42526e;margin-top:0}
-.entry{margin:44px 0;padding-top:20px;border-top:2px solid #dfe1e6;scroll-margin-top:16px}
+h2.round{margin:46px 0 8px;font-size:1.6rem;color:#0747a6}.entry{margin:44px 0;padding-top:20px;border-top:2px solid #dfe1e6;scroll-margin-top:16px}
 .meta{color:#6b778c;font-size:.9rem;margin:0 0 14px}
 .tag{display:inline-block;padding:2px 10px;border-radius:12px;background:#deebff;color:#0747a6;font-size:.8rem;font-weight:600;margin-right:8px}
 .block{margin:16px 0}.block h3{font-size:.85rem;text-transform:uppercase;letter-spacing:.04em;color:#6b778c;margin:0 0 6px}
@@ -241,41 +253,69 @@ table{border-collapse:collapse;width:100%;font-size:.94rem}th,td{border:1px soli
 """
 
 
+def entry_html(e, anchor, number, round_cols):
+    first_box = CROPS[e["before"][0]][2]
+    wide = (first_box[2] - first_box[0]) >= 1000
+    p = [f'<section class="entry{" wide" if wide else ""}" id="{anchor}">']
+    p.append(f'<h2>{esc(number)}. {esc(e["title"])}</h2>')
+    p.append(f'<p class="meta"><span class="tag">{esc(e["where"])}</span>{esc(e["who"])}</p>')
+    p.append(f'<div class="block"><h3>Issue</h3><p>{esc(e["issue"])}</p></div>')
+    p.append(f'<div class="block"><h3>Feedback</h3><blockquote>{esc(e["feedback"])}</blockquote></div>')
+    if e.get("note"):
+        p.append(f'<div class="block"><h3>Note</h3><p>{esc(e["note"])}</p></div>')
+    p.append('<div class="compare">')
+    p.append(f'<div class="col before"><h3>{esc(round_cols[0])}</h3>' + "".join(figure(c) for c in e["before"]) + "</div>")
+    p.append(f'<div class="col after"><h3>{esc(round_cols[1])}</h3>' + "".join(figure(c) for c in e["after"]) + "</div>")
+    p.append("</div>")
+    p.append('<div class="block"><h3>Workflow after the change</h3><ol>' + "".join(f"<li>{esc(s)}</li>" for s in e["steps"]) + "</ol>")
+    path, label = e["live"]
+    p.append(f'<p class="live"><a href="{LIVE}{path}">Open live: {esc(label)}</a></p>')
+    p.append(f'<p class="changed">Changed in: {esc(e["changed"])}</p></div>')
+    p.append("</section>")
+    return "".join(p)
+
+
 def build():
     parts = []
     parts.append("<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">")
     parts.append("<title>Reviewer feedback and fixes</title><style>" + CSS + "</style></head><body>")
     parts.append("<h1>Reviewer feedback and the changes we made</h1>")
     parts.append(
-        '<p class="lead">For each comment: the issue in the first build, the reviewer’s feedback, and the fixed screen with the steps to try it. '
+        '<p class="lead">For each comment: the issue, the reviewer’s feedback, the screen before, and the fixed screen with the steps to try it. '
         f'Live prototype: <a href="{LIVE}">{LIVE}</a>.</p>'
     )
     parts.append(
-        '<div class="callout"><strong>How to read this.</strong> <em>First build</em> is the version the reviewers saw (Oct 10). '
-        "<em>After</em> is the current version (Oct 12). Screenshots are cropped to the part of the screen the comment is about, and are inside this file, so it works on its own. "
+        '<div class="callout"><strong>How to read this.</strong> There are two rounds. '
+        "<strong>Round 1</strong> (Oct 12) is feedback from Oshada and Akila on the first build (Oct 10). "
+        "<strong>Round 2</strong> (Oct 13) is the Figma board comments, compared with the build after round 1. "
+        "Screenshots are cropped to the part of the screen the comment is about, and are inside this file, so it works on its own. "
         "Venue settings in the prototype last for the current browser tab only. Live links work once the latest changes are deployed.</div>"
     )
     rows = "".join(
         f'<tr><td><a href="#item-{i}">{i}</a></td><td>{esc(e["title"])}</td><td>{esc(e["where"])}</td><td>{esc(e["who"])}</td></tr>'
         for i, e in enumerate(ENTRIES, 1)
     )
+    parts.append('<h2 class="round">Round 1: first build</h2>')
     parts.append(f"<table><thead><tr><th>#</th><th>Change</th><th>Screen</th><th>From</th></tr></thead><tbody>{rows}</tbody></table>")
+    rows2 = "".join(
+        f'<tr><td><a href="#r2-{i}">R2-{i}</a></td><td>{esc(e["title"])}</td><td>{esc(e["where"])}</td><td>{esc(e["who"])}</td></tr>'
+        for i, e in enumerate(ENTRIES2, 1)
+    )
+    parts.append('<h2 class="round">Round 2: Figma comments</h2>')
+    parts.append(f"<table><thead><tr><th>#</th><th>Change</th><th>Screen</th><th>From</th></tr></thead><tbody>{rows2}</tbody></table>")
+
+    parts.append('<h2 class="round" id="round-1">Round 1 in detail</h2>')
     for i, e in enumerate(ENTRIES, 1):
-        tall = e["before"][0] in ("e7_before",)
-        parts.append(f'<section class="entry{" wide" if tall else ""}" id="item-{i}">')
-        parts.append(f'<h2>{i}. {esc(e["title"])}</h2>')
-        parts.append(f'<p class="meta"><span class="tag">{esc(e["where"])}</span>{esc(e["who"])}</p>')
-        parts.append(f'<div class="block"><h3>Issue in the first build</h3><p>{esc(e["issue"])}</p></div>')
-        parts.append(f'<div class="block"><h3>Feedback</h3><blockquote>{esc(e["feedback"])}</blockquote></div>')
-        parts.append('<div class="compare">')
-        parts.append('<div class="col before"><h3>First build</h3>' + "".join(figure(c) for c in e["before"]) + "</div>")
-        parts.append('<div class="col after"><h3>After the feedback</h3>' + "".join(figure(c) for c in e["after"]) + "</div>")
-        parts.append("</div>")
-        parts.append('<div class="block"><h3>Workflow after the feedback</h3><ol>' + "".join(f"<li>{esc(s)}</li>" for s in e["steps"]) + "</ol>")
-        path, label = e["live"]
-        parts.append(f'<p class="live"><a href="{LIVE}{path}">Open live: {esc(label)}</a></p>')
-        parts.append(f'<p class="changed">Changed in: {esc(e["changed"])}</p></div>')
-        parts.append("</section>")
+        parts.append(entry_html(e, f"item-{i}", str(i), ("First build", "After the feedback")))
+
+    parts.append('<h2 class="round" id="round-2">Round 2 in detail</h2>')
+    for i, e in enumerate(ENTRIES2, 1):
+        parts.append(entry_html(e, f"r2-{i}", f"R2-{i}", ("Before", "After the Figma comments")))
+
+    na = "".join(f"<tr><td>{esc(a)}</td><td>{esc(b)}</td></tr>" for a, b in NOT_ADOPTED)
+    parts.append('<section class="entry" id="not-adopted"><h2>Round 2 comments not followed, and why</h2>')
+    parts.append("<p>These were read and left out because earlier feedback or a team decision came first.</p>")
+    parts.append(f"<table><thead><tr><th>Comment</th><th>Reason</th></tr></thead><tbody>{na}</tbody></table></section>")
     parts.append("</body></html>")
     out = os.path.join(REPO, "html", "feedback-changes.html")
     open(out, "w", encoding="utf8").write("".join(parts))

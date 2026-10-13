@@ -62,7 +62,7 @@ Still using older wording (left on purpose):
 - Issue names and short descriptions in the story HTML files and `docs/linear-updates.md` (copied from the stories). They say "payout destination".
 - The route `/collector/payout-destination-details` (a code name, kept on purpose).
 - `docs/v1-glossary.md` (the team's own glossary, not customer wording).
-- `html/feedback-changes.html` (round 1 report) shows the names as they were at that time, on purpose.
+- Round 1 of `html/feedback-changes.html` shows the names as they were at that time, on purpose.
 
 Rules to keep following: one name per thing everywhere; Title Case labels; Cheque spelling; spell out acronyms; tell the user about any term you were unsure of.
 
@@ -135,7 +135,7 @@ Files: `components/approver/ApproverPayoutView.tsx`, `components/authoriser/{Aut
 - `html/MBT-jira-user-stories.html` and `html/CHE-jira-user-stories.html`: every story now has a **Prototype** box with a status badge, screenshots and "Open live" links. A coverage table sits at the top. Images are embedded (base64), so each file works alone. Cross-links between the two files and within each file were fixed. "Payout Destination Details" was renamed in them.
 - `html/screenshots/`: 25 PNGs at 1440 wide.
 - `docs/linear-updates.md`: 27 Linear-ready entries (name, short description, screenshots, how it works, live links) plus a table of stories with no screen yet. Its images are relative links, so they only show where the folder structure is kept.
-- `html/feedback-changes.html`: report of the 2026-10-12 reviewer feedback. Seven entries, each with the issue, the first-build screenshot, the feedback (quoted), the fixed screenshot and the workflow after. Cropped screenshots are made by `html/tools/feedback.py`: "before" images come from git commit `914eb5b`, "after" images from `html/screenshots/`. Run `python feedback.py` after `shots.mjs` if the UI changes again.
+- `html/feedback-changes.html`: report of reviewer feedback in two rounds. **Round 1** (2026-10-12, Oshada and Akila): 8 entries, first build (commit `914eb5b`) to the build after round 1 (commit `158fefc`). **Round 2** (2026-10-13, Figma comments): 11 entries plus a table of comments not followed, from `158fefc` to the current screenshots in `html/screenshots/`. Each entry has the issue, the feedback (quoted), the before and after crops, and the workflow after. Built by `html/tools/feedback.py` (round 1 content) and `html/tools/feedback_round2.py` (round 2 content and crop boxes). Run `python feedback.py` after `shots.mjs`. When round 2 is committed, pin its "after" to that commit the way round 1 is pinned.
 - `html/linear-updates.html`: the same 27 entries as **one self-contained page** with the screenshots embedded. This is the one to share with people who only get a single file.
 - `docs/design.md`: updated with every new component and route.
 - `html/tools/`: the scripts that make the screenshots and embed them (see section 7).
@@ -334,9 +334,9 @@ Board: https://www.figma.com/board/wps619UWOeRFJ8YpBxZvzs/Payouts-new-UIs (comme
 `lib/venue-data.ts` (labels, option text), `lib/collector-data.ts` (`AUTHORISER_ONLY_CHEQUE_DETAILS`), `lib/return-payout.ts` (`RETURN_REASON_MAX_LENGTH`), `components/ui/{FormField,DetailList,Toast,WarningAlert}.tsx`, new `components/ui/NotEnteredYet.tsx`, new `components/payout-review/PayoutStatusNote.tsx`, `components/payout-review/{RecordedDestination,ReturnForCorrectionDialog}.tsx`, `components/authoriser/{AuthoriserPayoutView,ChequeDetailsEditor}.tsx`, `components/approver/ApproverPayoutView.tsx`, `components/admin/VenueSettingsForm.tsx`, `components/collector/{ChequeDetailsFields,PayoutDestinationDetailsForm,SecondaryIdForm,ReturnedPayoutView,PaymentBreakdownForm}.tsx`.
 
 ### Documents
-Screenshots, both story pages, `docs/linear-updates.md` and `html/linear-updates.html` were regenerated with the new UI and names. `html/tools/feedback.py` now takes its "after" images from git commit `158fefc` (the build after round 1), so regenerating screenshots does not change the round 1 report. A round 2 report (same format) was **not** built yet; the "before" build for it is commit `158fefc`.
+Screenshots, both story pages, `docs/linear-updates.md` and `html/linear-updates.html` were regenerated with the new UI and names. `html/tools/feedback.py` now takes its "after" images from git commit `158fefc` (the build after round 1), so regenerating screenshots does not change the round 1 report. The round 2 report was added to `html/feedback-changes.html` (before: commit `158fefc`; after: the current screenshots). One bug found while making it: the Collector Summary showed a "Cheque Verification: Match" card when the Authoriser will enter the cheque details. It is now hidden in that case.
 
 ### Open
 - The unread replies on the "Check Name Match" comment.
 - Whether Brien and Minosha accept "Manual Bank Transfer" and "EFT" (see section 3).
-- A round 2 feedback report, if wanted.
+- Commit the round 2 changes, then pin the round 2 "after" images to that commit in `feedback_round2.py`.
