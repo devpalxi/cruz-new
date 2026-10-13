@@ -40,24 +40,29 @@ Two Jira epics, split out of one earlier idea:
 
 ## 3. Customer wording (important)
 
-Names were chosen with the `customer-wording` skill (Brien, a venue owner, is the test reader). **None of these are confirmed by Brien or Minosha yet.** They are single constants in `lib/venue-data.ts`, so changing one changes every screen.
+Names were first chosen with the `customer-wording` skill (Brien, a venue owner, is the test reader), then changed by the user after reviewer feedback. They are single constants in `lib/venue-data.ts`, so changing one changes every screen.
 
 | Used on screens | Replaces | Status |
 |---|---|---|
-| Payment File for Your Bank | Manual Bank Transfer | Suggested by the skill; not confirmed |
-| Funds Transfer | Bank Transfer | Chosen by us; always on for every venue |
+| **EFT** | Funds Transfer, Bank Transfer | **User decision, 2026-10-13** (a Figma comment asked for it). Always on for every venue |
+| **Manual Bank Transfer** | Payment File for Your Bank | **User decision, 2026-10-13** (a Figma comment asked for it). See the warning below |
 | Cheque | Cheque | Fine |
-| How the Rest Is Paid | Non Cash Details (dropdown label on Payment Breakdown) | Suggested by the skill |
-| Payment Method Details | Payout Destination Details (section and Collector step) | **Chosen by the user** |
-| Account Name Check | CoP Status | **Chosen by the user** |
+| How the Rest Is Paid | Non Cash Details (dropdown label on Payment Breakdown) | Suggested by the skill. A Figma comment asked for "Non-cash payout method"; **not adopted** because Brien did not understand "non-cash destination" |
+| Payment Method Details | Payout Destination Details (section and Collector step) | User decision |
+| Account Name Check | CoP Status | User decision |
+| Method | Paid By (row label on the review cards) | From a Figma comment |
+| Payouts configuration | How Winners Are Paid (Venue Settings heading) | From a Figma comment; line under it: "Choose how winners can be paid." |
+| Check Name Match | Validate Cheque (button) | From a Figma comment (the thread said it was already discussed) |
+| Who can enter cheque details? | Who Enters the Cheque Details | Oshada's earlier comment, kept over a Figma suggestion ("Cheque detail entry") |
 | Return for Correction / Send Back for Review / Correct Returned Payout | (new) | Our wording, unconfirmed |
-| Who Enters the Cheque Details | (new) | Our wording, unconfirmed |
 
-Still using the **old** wording (left on purpose until the names are agreed):
-- "Manual Bank Transfer" in `app/authoriser/manual-bank-export/page.tsx`, `ManualExportView.tsx`, `ExportConfirmDialog.tsx`, `AuthoriserHeader.tsx` ("Manual Bank Export"), `app/payout-destination-scenarios/page.tsx`, and the verification titles in `SummaryView.tsx` and `CopValidationCard` usage.
-- Issue names and short descriptions in the story HTML files and `docs/linear-updates.md` (copied from the stories). They say "Manual Bank Transfer" and "payout destination".
+**Warning:** the skill's term guide, built from the Oct 9 meeting with Brien, says "Manual Bank Transfer" reads as "a transfer someone does by hand" and suggests "Payment file for your bank". The user chose to go with the reviewer's request. The term guide in `.claude/skills/customer-wording/SKILL.md` has **not** been updated (Minosha reviewed it), so it still says the opposite. Ask before editing it, and tell Brien or Minosha about the change.
+
+Still using older wording (left on purpose):
+- Issue names and short descriptions in the story HTML files and `docs/linear-updates.md` (copied from the stories). They say "payout destination".
 - The route `/collector/payout-destination-details` (a code name, kept on purpose).
-- The term guide in the skill has **not** been updated with the user's two choices (Payment Method Details, Account Name Check). Minosha reviewed that file, so ask before editing it.
+- `docs/v1-glossary.md` (the team's own glossary, not customer wording).
+- Round 1 of `html/feedback-changes.html` shows the names as they were at that time, on purpose.
 
 Rules to keep following: one name per thing everywhere; Title Case labels; Cheque spelling; spell out acronyms; tell the user about any term you were unsure of.
 
@@ -73,7 +78,7 @@ All screens are prototype-only. State is mock data plus `sessionStorage` (resets
 |---|---|
 | `/admin/venues` | Admin view: venues of the Admin's own client (Riverside RSL Group). Columns: Venue Name, Payment Method, Daily Limit. Edit pencil appears on row hover. Row click opens settings. |
 | `/admin/venues?role=super-admin` | Super Admin view: all clients, plus a Client column. `?role=super-admin` is a prototype stand-in for logging in as a Super Admin. |
-| `/admin/venues/[id]` (+ `?role=super-admin`) | Venue Settings. Funds Transfer (always available: the same card as the others, with an "Always available" badge where the switch would be). The venue's client and daily limit are not shown on this screen. Switch for Payment File for Your Bank, with Venue Code (text, keeps leading zeros). Switch for Cheque, with three radio options for who enters the cheque details. Save and Cancel. |
+| `/admin/venues/[id]` (+ `?role=super-admin`) | Venue Settings. EFT (always available: the same card as the others, with an "Always available" badge where the switch would be). The venue's client and daily limit are not shown on this screen. Switch for Manual Bank Transfer, with Venue Code (text, keeps leading zeros). Switch for Cheque, with three radio options for who enters the cheque details. Save and Cancel. |
 | Home page `/` | "Super Admin Pages" button opens the Super Admin list. |
 
 Behaviour:
@@ -90,9 +95,9 @@ Files: `app/admin/venues/page.tsx`, `app/admin/venues/[id]/page.tsx`, `component
 
 - **Payment Breakdown** (`/collector/payment-breakdown`): the dropdown **How the Rest Is Paid** lists only the methods the Collector's venue has switched on. The Collector's venue is fixed to `riverside-rsl-club` (`COLLECTOR_VENUE_ID` in `lib/collector-data.ts`). Membership Card is still always offered (outside these epics). Cash only: leave the dropdown empty.
 - **Payment Method Details** (`/collector/payout-destination-details`), reads the chosen method from `sessionStorage` key `cruz.selectedPayoutDestination`:
-  - Funds Transfer and Payment File for Your Bank: Account Name, BSB (6 digits), Account Number (digits). Messages appear when the Collector selects Validate Account with bad or empty fields. The Venue Code field is **no longer on this screen** (it comes from Venue Settings). The payment file version has an explanation above the form.
+  - EFT and Manual Bank Transfer: Account Name, BSB (6 digits), Account Number (digits). Messages appear when the Collector selects Validate Account with bad or empty fields. The Venue Code field is **no longer on this screen** (it comes from Venue Settings). The payment file version has an explanation above the form.
   - Cheque, by the venue's setting:
-    - Collector Only: Cheque Number and Cheque Name required (name starts as the winner's name); needs Validate Cheque.
+    - Collector Only: Cheque Number and Cheque Name required (name starts as the winner's name); needs Check Name Match.
     - Authoriser Only: nothing to enter; a note says so; Next is available.
     - Both: both fields optional; blank values show "Not entered yet" on the Summary; no validation step.
   - If the venue has switched the chosen method off after it was picked, the Collector is **sent straight back to Payment Breakdown**, where a warning says the method is no longer available (notice key `cruz.unavailableMethodNotice`). The earlier selection is cleared; amounts typed on Payment Breakdown are not kept.
@@ -106,22 +111,22 @@ Files: `components/collector/{PaymentBreakdownForm,PayoutDestinationDetailsForm,
 
 | scenario | Paid by | Authoriser behaviour |
 |---|---|---|
-| `funds-transfer` | Funds Transfer | read-only account details (Approver default) |
-| `payment-file` | Payment File for Your Bank | read-only account details; note that it stays pending until the file is uploaded |
+| `funds-transfer` | EFT | read-only account details (Approver default) |
+| `payment-file` | Manual Bank Transfer | read-only account details; note that it stays pending until the file is uploaded |
 | `cheque-collector` | Cheque, Collector Only | cheque details read-only |
-| `cheque-authoriser` | Cheque, Authoriser Only | Authoriser enters Cheque Number and Name; **Authorise stays off until both are entered and Validate Cheque is selected** (Authoriser default) |
+| `cheque-authoriser` | Cheque, Authoriser Only | Authoriser enters Cheque Number and Name; **Authorise stays off until both are entered and Check Name Match is selected** (Authoriser default) |
 | `cheque-both` | Cheque, Both | Collector's number prefilled, name blank; Authoriser completes it |
 
 - A "Prototype only. Payout paid by:" row at the top switches scenario.
-- The Payment Method Details card shows Paid By, Amount and the account or cheque details (`components/payout-review/RecordedDestination.tsx`). The Approver never edits cheque details.
+- The Payment Method Details card shows Method, Amount and the account or cheque details (`components/payout-review/RecordedDestination.tsx`). The Approver never edits cheque details.
 - **Cheque Details Entered By** lists the usernames of the people who actually entered details (for example `M.Santos (Collector), R.Nguyen (Authoriser)`), or `Not entered yet`. The Authoriser's name is added once they enter or change details and check them.
-- When the Authoriser enters cheque details, the Cheque Number and Cheque Name fields sit **inside the card** in place of the two rows (no separate form below). After Validate Cheque the card shows the values with a pencil to edit.
+- When the Authoriser enters cheque details, the Cheque Number and Cheque Name fields sit **inside the card** in place of the two rows (no separate form below). After Check Name Match the card shows the values with a pencil to edit.
 - **Return for Correction** (both roles): a dialog requires a reason, then the reviewer is sent to the Collector's returned-payout page for that payment method.
 - When cheque details are needed, a warning above the buttons tells the Authoriser where to enter them.
 - "Identity Documents Provided To Staff Member" and "Identity manually verified" show Yes/No `VerificationPill`s.
 - The Approvals rows (verification label and ID Name Match) share one size and colour.
 - The second name in Name Verification is labelled by method (`comparedNameLabel`): Name on cheque, Account name provided, Provided bank account name.
-- Authoriser check label: "Cheque Verification" for cheques, "Account Name Check" otherwise. Approver shows "Account Name Check" for Funds Transfer only.
+- Authoriser check label: "Cheque Verification" for cheques, "Account Name Check" otherwise. Approver shows "Account Name Check" for EFT only.
 
 Files: `components/approver/ApproverPayoutView.tsx`, `components/authoriser/{AuthoriserPayoutView,AuthorisationPanel,ChequeDetailsEditor}.tsx`, `components/payout-review/{RecordedDestination,ReturnForCorrectionDialog,ScenarioSwitcher,IdentityConfirmation}.tsx`, `components/ui/TextArea.tsx`, `lib/payout-review-scenarios.ts`, `lib/return-payout.ts`, `lib/approver-data.ts`, `lib/authoriser-data.ts`.
 
@@ -130,7 +135,7 @@ Files: `components/approver/ApproverPayoutView.tsx`, `components/authoriser/{Aut
 - `html/MBT-jira-user-stories.html` and `html/CHE-jira-user-stories.html`: every story now has a **Prototype** box with a status badge, screenshots and "Open live" links. A coverage table sits at the top. Images are embedded (base64), so each file works alone. Cross-links between the two files and within each file were fixed. "Payout Destination Details" was renamed in them.
 - `html/screenshots/`: 25 PNGs at 1440 wide.
 - `docs/linear-updates.md`: 27 Linear-ready entries (name, short description, screenshots, how it works, live links) plus a table of stories with no screen yet. Its images are relative links, so they only show where the folder structure is kept.
-- `html/feedback-changes.html`: report of the 2026-10-12 reviewer feedback. Seven entries, each with the issue, the first-build screenshot, the feedback (quoted), the fixed screenshot and the workflow after. Cropped screenshots are made by `html/tools/feedback.py`: "before" images come from git commit `914eb5b`, "after" images from `html/screenshots/`. Run `python feedback.py` after `shots.mjs` if the UI changes again.
+- `html/feedback-changes.html`: report of reviewer feedback in two rounds. **Round 1** (2026-10-12, Oshada and Akila): 8 entries, first build (commit `914eb5b`) to the build after round 1 (commit `158fefc`). **Round 2** (2026-10-13, Figma comments): 11 entries plus a table of comments not followed, from `158fefc` to the current screenshots in `html/screenshots/`. Each entry has the issue, the feedback (quoted), the before and after crops, and the workflow after. Built by `html/tools/feedback.py` (round 1 content) and `html/tools/feedback_round2.py` (round 2 content and crop boxes). Run `python feedback.py` after `shots.mjs`. When round 2 is committed, pin its "after" to that commit the way round 1 is pinned.
 - `html/linear-updates.html`: the same 27 entries as **one self-contained page** with the screenshots embedded. This is the one to share with people who only get a single file.
 - `docs/design.md`: updated with every new component and route.
 - `html/tools/`: the scripts that make the screenshots and embed them (see section 7).
@@ -151,7 +156,7 @@ Story coverage (from the HTML coverage tables):
 ## 5. Decisions made
 
 - Prototype scope only. No real backend, auth or persistence (project rule).
-- Funds Transfer is always available. Payment File and Cheque are per-venue switches.
+- EFT is always available. Payment File and Cheque are per-venue switches.
 - Cheque has three modes: Collector Only, Authoriser Only, Both. The mode is **recorded at submission** and review pages show it. Later venue changes do not reroute a submitted payout.
 - Authorise needs both cheque details when the Authoriser is responsible. Both-mode lets the Collector leave fields blank.
 - Return for Correction takes the reviewer into the Collector flow and carries the reason.
@@ -251,7 +256,7 @@ MBT-14, MBT-23, CHE-24, CHE-25 (backend rules); MBT-28, MBT-29, CHE-26, CHE-27 (
 
 ## 9. Open questions for the user
 
-1. Are the names in section 3 acceptable to Brien and Minosha? (Payment File for Your Bank, Funds Transfer, How the Rest Is Paid, Return for Correction, Who Enters the Cheque Details.) After they are agreed: rename the remaining "Manual Bank Transfer" and "Bank Transfer" places, update the story HTML and `docs/linear-updates.md`, and update the skill's term guide.
+1. Are the names in section 3 acceptable to Brien and Minosha? (Manual Bank Transfer, EFT, How the Rest Is Paid, Return for Correction, Who Enters the Cheque Details.) After they are agreed: rename the remaining "Manual Bank Transfer" and "Bank Transfer" places, update the story HTML and `docs/linear-updates.md`, and update the skill's term guide.
 2. Is the payment-file export CSV 7 columns (what was built) or 8 (what the stories say)? Is the on-screen header "Amount" and the CSV header "Bank Transfer Amount" still right?
 3. Should the saved ABA reference be editable, and does it have a real format? (Open since the first export work.)
 4. Where is the live prototype deployed from? Nothing here deploys it; the live links work only after the branch is deployed.
@@ -288,3 +293,50 @@ Feedback came from Oshada and Akila on the Venue Settings screen, the review pag
 The screenshots, both story pages, `docs/linear-updates.md` and `html/linear-updates.html` were regenerated after these changes.
 
 Still open from this round: the Collector's typed amounts are not kept when they are sent back to Payment Breakdown (prototype only; the amounts live in component state).
+
+## 13. Figma review comments, round 2 (2026-10-13)
+
+Board: https://www.figma.com/board/wps619UWOeRFJ8YpBxZvzs/Payouts-new-UIs (comments by PromptLane, a day old). The comments are not returned by the Figma connector. They can be read by opening the board in the browser as a guest and hovering each pin (use `?node-id=` in the URL to focus one screenshot). A guest cannot open threads, so **replies are unreadable**; the "Check Name Match" comment has 2 replies and an image that were not seen.
+
+**Rule the user set:** where a Figma comment conflicts with earlier feedback, the earlier feedback wins. Later the user also said to use "EFT" and "Manual Bank Transfer", which overrides that rule for those two names.
+
+### Comments and what was done
+
+| Screen | Comment (short) | Result |
+|---|---|---|
+| Venue Settings | Where does the daily limit come from? | Already removed |
+| Venue Settings | Title "Payouts configuration"; one line "Choose how winners can be paid"; add "applies to new payouts only" near save | Done |
+| Venue Settings | Funds transfer: disabled toggle set to On; use EFT | **Kept the "Always available" badge** (earlier decision); **EFT adopted** (user) |
+| Venue Settings | "Manual bank transfer" name; describe what it is | Name adopted (user); description: "Paid by uploading a payment file to the bank's online portal." |
+| Venue Settings | Concise descriptions, avoid "you/your" | Done |
+| Venue Settings | Remove "choose who enters" from the Cheque description | Already done |
+| Venue Settings | Label "Cheque detail entry" | **Not adopted**: Oshada asked for "Who can enter cheque details?" |
+| Venue Settings | Simpler option lines | Done ("Collector enters the cheque details. Authoriser can view them." and so on) |
+| Venue Settings | Buttons consistent with the Collector view | Done: equal width, outline left, primary right |
+| Review card | "Paid by" is confusing, use "Method" | Done |
+| Review card | Pending message belongs with status | Done: "Pending until included in a payment file." under the status pill (suggestion approved by the user) |
+| Review card | Method / Entered by: name of the collector | Already done in round 1 |
+| Review card | Make "Not entered yet" a different colour | Done: warning-tone pill (`NotEnteredYet`) |
+| Authoriser card | "Enter cheque details" is enough; mark fields mandatory | Done: one short line "Enter cheque details before authorising."; asterisks; Authorise stays disabled (user approved) |
+| Authoriser card | "Validate Cheque" misleading, use "Check Name Match" | Done on the Collector and Authoriser screens |
+| Payment Breakdown | Label "Non-cash payout method" | **Not adopted** (see wording table) |
+| Details screen warning | Clearer; "choose another non-cash payment method" | Wording clarified: "It was switched off for this venue. Choose another way to pay the rest." |
+| Details screen | Payment file description not needed | Removed |
+| Collector, cheque (both) | Description not needed (fields say optional) | Removed |
+| Collector, cheque (Authoriser Only) | Skip this screen | Done: Collector goes straight to Summary, which says "To be entered by the Authoriser" |
+| Return dialog | Direct description, asterisk on Reason, character limit and scrolling, no "For example" | Done: 500-character limit with a counter, scrolling box, asterisk |
+| Correct Returned Payout | Text under the form not needed | Removed |
+| Correct Returned Payout | "Only approvers return payouts? no need for the role in brackets"; mind how long reasons show | **Role kept** (stories say Approver and Authoriser can both return). Long reasons wrap and are limited to 500 characters |
+| Settings saved message | Green background like other success messages | Done (success token) |
+| Cheque card after checking | Data repeated / "Not entered yet" wrong | Already fixed in round 1 |
+
+### Files changed in this round
+`lib/venue-data.ts` (labels, option text), `lib/collector-data.ts` (`AUTHORISER_ONLY_CHEQUE_DETAILS`), `lib/return-payout.ts` (`RETURN_REASON_MAX_LENGTH`), `components/ui/{FormField,DetailList,Toast,WarningAlert}.tsx`, new `components/ui/NotEnteredYet.tsx`, new `components/payout-review/PayoutStatusNote.tsx`, `components/payout-review/{RecordedDestination,ReturnForCorrectionDialog}.tsx`, `components/authoriser/{AuthoriserPayoutView,ChequeDetailsEditor}.tsx`, `components/approver/ApproverPayoutView.tsx`, `components/admin/VenueSettingsForm.tsx`, `components/collector/{ChequeDetailsFields,PayoutDestinationDetailsForm,SecondaryIdForm,ReturnedPayoutView,PaymentBreakdownForm}.tsx`.
+
+### Documents
+Screenshots, both story pages, `docs/linear-updates.md` and `html/linear-updates.html` were regenerated with the new UI and names. `html/tools/feedback.py` now takes its "after" images from git commit `158fefc` (the build after round 1), so regenerating screenshots does not change the round 1 report. The round 2 report was added to `html/feedback-changes.html` (before: commit `158fefc`; after: the current screenshots). One bug found while making it: the Collector Summary showed a "Cheque Verification: Match" card when the Authoriser will enter the cheque details. It is now hidden in that case.
+
+### Open
+- The unread replies on the "Check Name Match" comment.
+- Whether Brien and Minosha accept "Manual Bank Transfer" and "EFT" (see section 3).
+- Commit the round 2 changes, then pin the round 2 "after" images to that commit in `feedback_round2.py`.

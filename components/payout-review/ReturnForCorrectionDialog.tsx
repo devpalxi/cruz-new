@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import Button from "@/components/ui/Button";
+import FormField from "@/components/ui/FormField";
 import Modal from "@/components/ui/Modal";
 import TextArea from "@/components/ui/TextArea";
+import { RETURN_REASON_MAX_LENGTH } from "@/lib/return-payout";
 
 type ReturnForCorrectionDialogProps = {
   open: boolean;
@@ -47,24 +49,29 @@ export default function ReturnForCorrectionDialog({ open, onCancel, onConfirm }:
         </>
       }
     >
-      <p>
-        Tell the Collector what needs correcting. They will see your message, fix the details and send the payout back.
-      </p>
-      <label htmlFor="return-reason" className="mt-4 block text-base font-semibold text-label">
-        Reason
-      </label>
-      <TextArea
-        id="return-reason"
-        rows={3}
-        value={reason}
-        onChange={(e) => {
-          setReason(e.target.value);
-          setShowError(false);
-        }}
-        placeholder="For example: the BSB does not match the account name."
-        className="mt-2"
-      />
-      {showError && <p className="mt-1 text-base text-danger">Enter a reason before returning the payout.</p>}
+      <p>Enter the reason for returning this payout. The Collector will see it.</p>
+      <div className="mt-4">
+        <FormField label="Reason" htmlFor="return-reason" required>
+          <TextArea
+            id="return-reason"
+            rows={4}
+            maxLength={RETURN_REASON_MAX_LENGTH}
+            value={reason}
+            onChange={(e) => {
+              setReason(e.target.value);
+              setShowError(false);
+            }}
+            placeholder="The BSB does not match the account name."
+            className="max-h-[10rem] resize-none overflow-y-auto"
+          />
+        </FormField>
+        <div className="mt-1 flex justify-between gap-4 text-base">
+          <span className="text-danger">{showError ? "Enter a reason before returning the payout." : ""}</span>
+          <span className="text-subtle">
+            {reason.length}/{RETURN_REASON_MAX_LENGTH}
+          </span>
+        </div>
+      </div>
     </Modal>
   );
 }

@@ -4,19 +4,33 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Button from "@/components/ui/Button";
 import CheckboxRow from "@/components/ui/CheckboxRow";
-import { SELECTED_DESTINATION_KEY } from "@/lib/collector-data";
+import {
+  AUTHORISER_ONLY_CHEQUE_DETAILS,
+  COLLECTOR_VENUE_ID,
+  PAYOUT_DESTINATION_DETAILS_KEY,
+  SELECTED_DESTINATION_KEY,
+} from "@/lib/collector-data";
+import { useVenues } from "@/lib/use-venues";
 import MedicareCardForm, { EMPTY_MEDICARE } from "./MedicareCardForm";
 
 export default function SecondaryIdForm() {
   const router = useRouter();
+  const { venues } = useVenues();
+  const venue = venues.find((v) => v.id === COLLECTOR_VENUE_ID);
   const [skip, setSkip] = useState(false);
   const [showMedicare, setShowMedicare] = useState(false);
   const [medicare, setMedicare] = useState(EMPTY_MEDICARE);
 
   // A non-cash destination picked on Payment Breakdown needs its details captured next;
   // a cash-only payout goes straight to the Summary.
+  // When only the Authoriser enters the cheque details, the Collector skips the details step.
   function continueFlow() {
     const destination = sessionStorage.getItem(SELECTED_DESTINATION_KEY);
+    if (destination && JSON.parse(destination) === "cheque" && venue?.chequeMode === "authoriser") {
+      sessionStorage.setItem(PAYOUT_DESTINATION_DETAILS_KEY, JSON.stringify(AUTHORISER_ONLY_CHEQUE_DETAILS));
+      router.push("/collector/summary");
+      return;
+    }
     router.push(destination ? "/collector/payout-destination-details" : "/collector/summary");
   }
 

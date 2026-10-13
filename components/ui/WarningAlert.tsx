@@ -24,7 +24,9 @@ export default function WarningAlert({ title, message, tone = "warning" }: Warni
             <Icon size="1rem" strokeWidth={1.75} />
             {title}
           </p>
-          {message && <p className="mt-1 text-[0.9375rem] leading-5 text-label">{message}</p>}
+          {message && (
+            <p className="mt-1 whitespace-pre-line break-words text-[0.9375rem] leading-5 text-label">{message}</p>
+          )}
         </>
       ) : (
         <p className={`flex items-center gap-1.5 text-[0.9375rem] leading-5 ${text}`}>

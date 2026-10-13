@@ -13,6 +13,7 @@ import DocketRow from "@/components/payout-review/DocketRow";
 import IdentityConfirmation from "@/components/payout-review/IdentityConfirmation";
 import IdvHistoryTable from "@/components/payout-review/IdvHistoryTable";
 import NameComparison from "@/components/payout-review/NameComparison";
+import PayoutStatusNote from "@/components/payout-review/PayoutStatusNote";
 import RecordedDestination from "@/components/payout-review/RecordedDestination";
 import ReturnForCorrectionDialog from "@/components/payout-review/ReturnForCorrectionDialog";
 import { MOCK_AUTHORISATION } from "@/lib/authoriser-data";
@@ -63,6 +64,7 @@ export default function AuthoriserPayoutView({ scenario }: { scenario: ReviewSce
           </StatusPill>
         </div>
       </div>
+      <PayoutStatusNote scenario={scenario} />
 
       <div className="mt-[1.375rem]">
         <CollapsibleSections
@@ -144,10 +146,7 @@ export default function AuthoriserPayoutView({ scenario }: { scenario: ReviewSce
 
       {authoriserEntersCheque && !chequeComplete && (
         <div className="mt-4">
-          <WarningAlert
-            title="Cheque details are needed before you can authorise."
-            message="Enter the Cheque Number and Cheque Name under Payment Method Details, then select Validate Cheque."
-          />
+          <WarningAlert message="Enter cheque details before authorising." />
         </div>
       )}
 

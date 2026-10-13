@@ -143,7 +143,7 @@ await shot("08-collector-payment-file-details-errors");
 await prep({ venue: { chequeMode: "collector" }, store: { "cruz.selectedPayoutDestination": "cheque" } });
 await go("/collector/payout-destination-details");
 await setInput("cheque-number", "");
-await clickText("Validate Cheque");
+await clickText("Check Name Match");
 await shot("09-collector-cheque-collector-only");
 
 await prep({ venue: { chequeMode: "authoriser" }, store: { "cruz.selectedPayoutDestination": "cheque" } });
@@ -180,7 +180,7 @@ await shot("18-return-for-correction-dialog", false);
 // Authoriser enters the missing cheque name, then checks it
 await go("/authoriser/payout?scenario=cheque-both");
 await setInput("authoriser-cheque-name", "Vivek Mishra");
-await clickText("Validate Cheque");
+await clickText("Check Name Match");
 await shot("21-authoriser-cheque-details-checked");
 
 // Return and land on the Collector's correction page

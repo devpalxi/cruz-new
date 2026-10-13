@@ -6,11 +6,11 @@ One entry per story that has a screen in the prototype. Each entry has the issue
 
 Stories with no screen yet are listed at the end.
 
-**Before you paste:** issue names and short descriptions are copied from the story files, so they still say *Manual Bank Transfer* and *payout destination*. The screens say *Payment File for Your Bank* and *Payment Method Details*. Pick one set of names, then update the stories (and these entries) to match.
+**Before you paste:** issue names and short descriptions are copied from the story files, so they still say *Manual Bank Transfer* and *payout destination*. The screens say *Manual Bank Transfer* and *Payment Method Details*. Pick one set of names, then update the stories (and these entries) to match.
 
 **Live links for the Collector:** Payment Method Details opens from the flow. Choose a method under How the Rest Is Paid on Payment Breakdown first, then continue. The review pages have a *Prototype only* row at the top to switch between payouts. Venue settings are kept for the current browser tab only.
 
-**Wording to confirm with Brien or Minosha before sharing:** *Payment File for Your Bank*, *Funds Transfer*, *How the Rest Is Paid*, *Payment Method Details*, *Account Name Check*, *Return for Correction*.
+**Wording to confirm with Brien or Minosha before sharing:** *Manual Bank Transfer*, *EFT*, *How the Rest Is Paid*, *Payment Method Details*, *Account Name Check*, *Return for Correction*.
 
 
 ---
@@ -27,14 +27,14 @@ Stories with no screen yet are listed at the end.
 
 ![Venues list as an Admin (edit icon shows on hover)](../html/screenshots/01-venues-admin.png)
 
-![Venue Settings: Funds Transfer (always available), Payment File for Your Bank with Venue Code, and Cheque with who can enter cheque details](../html/screenshots/03-venue-settings-all-on.png)
+![Venue Settings: EFT (always available), Manual Bank Transfer with Venue Code, and Cheque with who can enter cheque details](../html/screenshots/03-venue-settings-all-on.png)
 
 **How it works:** Open Manage, then Venues. Pick a venue from your client's list. The venue screen opens with its name at the top and its saved payment settings. An Admin only sees their own client's venues.
 
 **Live link:**
 
 - [Venues list as an Admin (edit icon shows on hover)](https://cruz-new.vercel.app/admin/venues)
-- [Venue Settings: Funds Transfer (always available), Payment File for Your Bank with Venue Code, and Cheque with who can enter cheque details](https://cruz-new.vercel.app/admin/venues/riverside-rsl-club?role=super-admin)
+- [Venue Settings: EFT (always available), Manual Bank Transfer with Venue Code, and Cheque with who can enter cheque details](https://cruz-new.vercel.app/admin/venues/riverside-rsl-club?role=super-admin)
 
 ### MBT-02 Open the shared venue screen from Super Admin All Venues
 
@@ -46,14 +46,14 @@ Stories with no screen yet are listed at the end.
 
 ![Venues list as a Super Admin, with the Client column](../html/screenshots/02-venues-super-admin.png)
 
-![Venue Settings: Funds Transfer (always available), Payment File for Your Bank with Venue Code, and Cheque with who can enter cheque details](../html/screenshots/03-venue-settings-all-on.png)
+![Venue Settings: EFT (always available), Manual Bank Transfer with Venue Code, and Cheque with who can enter cheque details](../html/screenshots/03-venue-settings-all-on.png)
 
 **How it works:** Open Manage, then Venues as a Super Admin (add ?role=super-admin to the link). Every client's venues are listed with a Client column. Select a venue to open its settings. The client and venue name show at the top.
 
 **Live link:**
 
 - [Venues list as a Super Admin, with the Client column](https://cruz-new.vercel.app/admin/venues?role=super-admin)
-- [Venue Settings: Funds Transfer (always available), Payment File for Your Bank with Venue Code, and Cheque with who can enter cheque details](https://cruz-new.vercel.app/admin/venues/riverside-rsl-club?role=super-admin)
+- [Venue Settings: EFT (always available), Manual Bank Transfer with Venue Code, and Cheque with who can enter cheque details](https://cruz-new.vercel.app/admin/venues/riverside-rsl-club?role=super-admin)
 
 ### MBT-03 Enable Manual Bank Transfer for a venue
 
@@ -63,13 +63,13 @@ Stories with no screen yet are listed at the end.
 
 **Screenshots:**
 
-![Venue Settings: Funds Transfer (always available), Payment File for Your Bank with Venue Code, and Cheque with who can enter cheque details](../html/screenshots/03-venue-settings-all-on.png)
+![Venue Settings: EFT (always available), Manual Bank Transfer with Venue Code, and Cheque with who can enter cheque details](../html/screenshots/03-venue-settings-all-on.png)
 
-**How it works:** On the venue screen, turn on Payment File for Your Bank. A Venue Code field appears under it. The line under the title says your team uploads a payment file to your bank's online portal. It is off until you turn it on, and the switch shows On or Off in words.
+**How it works:** On the venue screen, turn on Manual Bank Transfer. A Venue Code field appears under it. The line under the title says it is paid by uploading a payment file to the bank's online portal. It is off until you turn it on, and the switch shows On or Off in words.
 
 **Live link:**
 
-- [Venue Settings: Funds Transfer (always available), Payment File for Your Bank with Venue Code, and Cheque with who can enter cheque details](https://cruz-new.vercel.app/admin/venues/riverside-rsl-club?role=super-admin)
+- [Venue Settings: EFT (always available), Manual Bank Transfer with Venue Code, and Cheque with who can enter cheque details](https://cruz-new.vercel.app/admin/venues/riverside-rsl-club?role=super-admin)
 
 ### MBT-04 Set the venue code used in Manual Bank exports
 
@@ -79,13 +79,13 @@ Stories with no screen yet are listed at the end.
 
 **Screenshots:**
 
-![Venue Settings: Funds Transfer (always available), Payment File for Your Bank with Venue Code, and Cheque with who can enter cheque details](../html/screenshots/03-venue-settings-all-on.png)
+![Venue Settings: EFT (always available), Manual Bank Transfer with Venue Code, and Cheque with who can enter cheque details](../html/screenshots/03-venue-settings-all-on.png)
 
-**How it works:** With Payment File for Your Bank on, type the Venue Code. The help text says it is included in the file and that leading zeros are kept (for example 0042).
+**How it works:** With Manual Bank Transfer on, type the Venue Code. The help text says it is included in the file and that leading zeros are kept (for example 0042).
 
 **Live link:**
 
-- [Venue Settings: Funds Transfer (always available), Payment File for Your Bank with Venue Code, and Cheque with who can enter cheque details](https://cruz-new.vercel.app/admin/venues/riverside-rsl-club?role=super-admin)
+- [Venue Settings: EFT (always available), Manual Bank Transfer with Venue Code, and Cheque with who can enter cheque details](https://cruz-new.vercel.app/admin/venues/riverside-rsl-club?role=super-admin)
 
 ### MBT-05 Save venue settings using shared save behaviour
 
@@ -113,13 +113,13 @@ _Note: Cancel sits beside Save and puts back the saved values._
 
 **Screenshots:**
 
-![Venue Settings: Funds Transfer (always available), Payment File for Your Bank with Venue Code, and Cheque with who can enter cheque details](../html/screenshots/03-venue-settings-all-on.png)
+![Venue Settings: EFT (always available), Manual Bank Transfer with Venue Code, and Cheque with who can enter cheque details](../html/screenshots/03-venue-settings-all-on.png)
 
 **How it works:** Change a setting, then select Cancel. The screen goes back to the last saved values.
 
 **Live link:**
 
-- [Venue Settings: Funds Transfer (always available), Payment File for Your Bank with Venue Code, and Cheque with who can enter cheque details](https://cruz-new.vercel.app/admin/venues/riverside-rsl-club?role=super-admin)
+- [Venue Settings: EFT (always available), Manual Bank Transfer with Venue Code, and Cheque with who can enter cheque details](https://cruz-new.vercel.app/admin/venues/riverside-rsl-club?role=super-admin)
 
 ### MBT-07 Disable Manual Bank Transfer for new submissions
 
@@ -131,13 +131,13 @@ _Note: Turning the switch off removes the option for new payouts._
 
 **Screenshots:**
 
-![Venue Settings: Funds Transfer (always available), Payment File for Your Bank with Venue Code, and Cheque with who can enter cheque details](../html/screenshots/03-venue-settings-all-on.png)
+![Venue Settings: EFT (always available), Manual Bank Transfer with Venue Code, and Cheque with who can enter cheque details](../html/screenshots/03-venue-settings-all-on.png)
 
-**How it works:** Turn Payment File for Your Bank off and Save. It stops being offered to Collectors for new payouts. Payouts already submitted keep their payment method.
+**How it works:** Turn Manual Bank Transfer off and Save. It stops being offered to Collectors for new payouts. Payouts already submitted keep their payment method.
 
 **Live link:**
 
-- [Venue Settings: Funds Transfer (always available), Payment File for Your Bank with Venue Code, and Cheque with who can enter cheque details](https://cruz-new.vercel.app/admin/venues/riverside-rsl-club?role=super-admin)
+- [Venue Settings: EFT (always available), Manual Bank Transfer with Venue Code, and Cheque with who can enter cheque details](https://cruz-new.vercel.app/admin/venues/riverside-rsl-club?role=super-admin)
 
 ### MBT-08 Record and preserve the submitted bank destination
 
@@ -149,13 +149,13 @@ _Note: The review shows the method recorded when the payout was submitted._
 
 **Screenshots:**
 
-![Authoriser review: Payment File for Your Bank payout](../html/screenshots/14-authoriser-payment-file.png)
+![Authoriser review: Manual Bank Transfer payout](../html/screenshots/14-authoriser-payment-file.png)
 
 **How it works:** Open any payout from the Approver or Authoriser. Payment Method Details shows how the payout was set up to be paid when it was submitted. A payment file payout also says it stays pending until the file is uploaded to the bank.
 
 **Live link:**
 
-- [Authoriser review: Payment File for Your Bank payout](https://cruz-new.vercel.app/authoriser/payout?scenario=payment-file)
+- [Authoriser review: Manual Bank Transfer payout](https://cruz-new.vercel.app/authoriser/payout?scenario=payment-file)
 
 ### MBT-09 Continue with a cash-only payout
 
@@ -199,13 +199,13 @@ _Note: When a saved method is no longer available, the Collector is sent back to
 
 **Screenshots:**
 
-![Collector: Payment File for Your Bank details with messages for missing or invalid fields](../html/screenshots/08-collector-payment-file-details-errors.png)
+![Collector: Manual Bank Transfer details with messages for missing or invalid fields](../html/screenshots/08-collector-payment-file-details-errors.png)
 
-**How it works:** Choose Payment File for Your Bank on Payment Breakdown, then continue to Payment Method Details. Enter Account Name, BSB and Account Number. Select Validate Account with fields empty or wrong to see the messages.
+**How it works:** Choose Manual Bank Transfer on Payment Breakdown, then continue to Payment Method Details. Enter Account Name, BSB and Account Number. Select Validate Account with fields empty or wrong to see the messages.
 
 **Live link:**
 
-- [Collector: Payment File for Your Bank details with messages for missing or invalid fields](https://cruz-new.vercel.app/collector/payment-breakdown)
+- [Collector: Manual Bank Transfer details with messages for missing or invalid fields](https://cruz-new.vercel.app/collector/payment-breakdown)
 
 ### MBT-12 Review or return Manual Bank details
 
@@ -215,22 +215,22 @@ _Note: When a saved method is no longer available, the Collector is sent back to
 
 **Screenshots:**
 
-![Authoriser review: Payment File for Your Bank payout](../html/screenshots/14-authoriser-payment-file.png)
+![Authoriser review: Manual Bank Transfer payout](../html/screenshots/14-authoriser-payment-file.png)
 
-![Approver review: Payment File for Your Bank payout](../html/screenshots/19-approver-payment-file.png)
+![Approver review: Manual Bank Transfer payout](../html/screenshots/19-approver-payment-file.png)
 
 ![Return for Correction asks for a reason](../html/screenshots/18-return-for-correction-dialog.png)
 
-![Collector: a returned Payment File for Your Bank payout with the reviewer's reason](../html/screenshots/23-collector-returned-payment-file.png)
+![Collector: a returned Manual Bank Transfer payout with the reviewer's reason](../html/screenshots/23-collector-returned-payment-file.png)
 
 **How it works:** Open the Approver or Authoriser review for a payment file payout. The account details and amount are shown. Select Return for Correction, enter a reason, and you are taken to the Collector's correction page showing that reason.
 
 **Live link:**
 
-- [Authoriser review: Payment File for Your Bank payout](https://cruz-new.vercel.app/authoriser/payout?scenario=payment-file)
-- [Approver review: Payment File for Your Bank payout](https://cruz-new.vercel.app/approver/payout?scenario=payment-file)
+- [Authoriser review: Manual Bank Transfer payout](https://cruz-new.vercel.app/authoriser/payout?scenario=payment-file)
+- [Approver review: Manual Bank Transfer payout](https://cruz-new.vercel.app/approver/payout?scenario=payment-file)
 - [Return for Correction asks for a reason](https://cruz-new.vercel.app/authoriser/payout?scenario=cheque-both)
-- [Collector: a returned Payment File for Your Bank payout with the reviewer's reason](https://cruz-new.vercel.app/collector/returned-payout?type=payment-file)
+- [Collector: a returned Manual Bank Transfer payout with the reviewer's reason](https://cruz-new.vercel.app/collector/returned-payout?type=payment-file)
 
 
 ---
@@ -247,14 +247,14 @@ _Note: When a saved method is no longer available, the Collector is sent back to
 
 ![Venues list as a Super Admin, with the Client column](../html/screenshots/02-venues-super-admin.png)
 
-![Venue Settings: Funds Transfer (always available), Payment File for Your Bank with Venue Code, and Cheque with who can enter cheque details](../html/screenshots/03-venue-settings-all-on.png)
+![Venue Settings: EFT (always available), Manual Bank Transfer with Venue Code, and Cheque with who can enter cheque details](../html/screenshots/03-venue-settings-all-on.png)
 
 **How it works:** On the venue screen, turn Cheque on. Who enters the cheque details appears under it. The same Save and Cancel apply as for the other payment methods.
 
 **Live link:**
 
 - [Venues list as a Super Admin, with the Client column](https://cruz-new.vercel.app/admin/venues?role=super-admin)
-- [Venue Settings: Funds Transfer (always available), Payment File for Your Bank with Venue Code, and Cheque with who can enter cheque details](https://cruz-new.vercel.app/admin/venues/riverside-rsl-club?role=super-admin)
+- [Venue Settings: EFT (always available), Manual Bank Transfer with Venue Code, and Cheque with who can enter cheque details](https://cruz-new.vercel.app/admin/venues/riverside-rsl-club?role=super-admin)
 
 ### CHE-02 Choose cheque collection responsibility
 
@@ -266,7 +266,7 @@ _Note: This is CRP-326._
 
 **Screenshots:**
 
-![Venue Settings: Funds Transfer (always available), Payment File for Your Bank with Venue Code, and Cheque with who can enter cheque details](../html/screenshots/03-venue-settings-all-on.png)
+![Venue Settings: EFT (always available), Manual Bank Transfer with Venue Code, and Cheque with who can enter cheque details](../html/screenshots/03-venue-settings-all-on.png)
 
 ![Saving with Cheque on and no choice of who can enter cheque details shows a message](../html/screenshots/04-venue-settings-cheque-needs-mode.png)
 
@@ -274,7 +274,7 @@ _Note: This is CRP-326._
 
 **Live link:**
 
-- [Venue Settings: Funds Transfer (always available), Payment File for Your Bank with Venue Code, and Cheque with who can enter cheque details](https://cruz-new.vercel.app/admin/venues/riverside-rsl-club?role=super-admin)
+- [Venue Settings: EFT (always available), Manual Bank Transfer with Venue Code, and Cheque with who can enter cheque details](https://cruz-new.vercel.app/admin/venues/riverside-rsl-club?role=super-admin)
 - [Saving with Cheque on and no choice of who can enter cheque details shows a message](https://cruz-new.vercel.app/admin/venues/northside-sports-club?role=super-admin)
 
 ### CHE-03 Disable Cheque for new submissions
@@ -285,13 +285,13 @@ _Note: This is CRP-326._
 
 **Screenshots:**
 
-![Venue Settings: Funds Transfer (always available), Payment File for Your Bank with Venue Code, and Cheque with who can enter cheque details](../html/screenshots/03-venue-settings-all-on.png)
+![Venue Settings: EFT (always available), Manual Bank Transfer with Venue Code, and Cheque with who can enter cheque details](../html/screenshots/03-venue-settings-all-on.png)
 
 **How it works:** Turn Cheque off and Save. Cheque stops being offered for new payouts at that venue. Cheque payouts already submitted keep their details and can still be finished.
 
 **Live link:**
 
-- [Venue Settings: Funds Transfer (always available), Payment File for Your Bank with Venue Code, and Cheque with who can enter cheque details](https://cruz-new.vercel.app/admin/venues/riverside-rsl-club?role=super-admin)
+- [Venue Settings: EFT (always available), Manual Bank Transfer with Venue Code, and Cheque with who can enter cheque details](https://cruz-new.vercel.app/admin/venues/riverside-rsl-club?role=super-admin)
 
 ### CHE-04 Preserve the submitted cheque destination and capture mode
 
@@ -366,7 +366,7 @@ _Note: Optional fields are shown, and a method that was switched off sends the C
 
 ![Collector: Cheque details when the Collector enters them (both required)](../html/screenshots/09-collector-cheque-collector-only.png)
 
-**How it works:** With Collector Only, Payment Method Details shows Cheque Number and Cheque Name, both required. The name starts as the winner's name. Select Validate Cheque with a field empty to see the message.
+**How it works:** With Collector Only, Payment Method Details shows Cheque Number and Cheque Name, both required. The name starts as the winner's name. Select Check Name Match with a field empty to see the message.
 
 **Live link:**
 
@@ -415,15 +415,15 @@ _Note: Optional fields are shown, and a method that was switched off sends the C
 
 **Screenshots:**
 
-![Collector: Cheque when the Authoriser enters the details (nothing to enter)](../html/screenshots/10-collector-cheque-authoriser-only.png)
+![Collector: when only the Authoriser enters the cheque details, the Collector skips the details step and the Summary says so](../html/screenshots/10-collector-cheque-authoriser-only.png)
 
 ![Authoriser review: the Authoriser enters the cheque details inside the card; Authorise stays off until done](../html/screenshots/16-authoriser-cheque-authoriser-only.png)
 
-**How it works:** With Authoriser Only, the Collector sees that there is nothing to enter and continues. In the Authoriser review, the Authoriser enters Cheque Number and Cheque Name inside the Payment Method Details card. Authorise stays off until both are entered and checked.
+**How it works:** With Authoriser Only, the Collector skips the Payment Method Details step and goes straight to the Summary, which says the Authoriser will enter the cheque details. In the Authoriser review, the Authoriser enters Cheque Number and Cheque Name inside the Payment Method Details card. A short line says to enter cheque details before authorising. Authorise stays off until both are entered and checked.
 
 **Live link:**
 
-- [Collector: Cheque when the Authoriser enters the details (nothing to enter)](https://cruz-new.vercel.app/collector/payment-breakdown)
+- [Collector: when only the Authoriser enters the cheque details, the Collector skips the details step and the Summary says so](https://cruz-new.vercel.app/collector/payment-breakdown)
 - [Authoriser review: the Authoriser enters the cheque details inside the card; Authorise stays off until done](https://cruz-new.vercel.app/authoriser/payout?scenario=cheque-authoriser)
 
 ### CHE-12 Capture authoriser-only cheque details
@@ -438,7 +438,7 @@ _Note: Optional fields are shown, and a method that was switched off sends the C
 
 ![Authoriser review: cheque details completed; the card now names both people who entered details](../html/screenshots/21-authoriser-cheque-details-checked.png)
 
-**How it works:** In the Authoriser review, enter Cheque Number and Cheque Name, then select Validate Cheque. The values then appear in the card with a pencil to edit them again, and Cheque Details Entered By shows the Authoriser. Authorise can be used once the confirm box is ticked.
+**How it works:** In the Authoriser review, enter Cheque Number and Cheque Name, then select Check Name Match. The values then appear in the card with a pencil to edit them again, and Cheque Details Entered By shows the Authoriser. Authorise can be used once the confirm box is ticked.
 
 **Live link:**
 
@@ -512,7 +512,7 @@ _Note: Shown in the Payment Method Details card, including who entered the detai
 
 ![Authoriser review: the Authoriser enters the cheque details inside the card; Authorise stays off until done](../html/screenshots/16-authoriser-cheque-authoriser-only.png)
 
-**How it works:** Open any cheque payout in the Approver or Authoriser review. Payment Method Details shows Paid By, Amount, Cheque Details Entered By, the Cheque Number and the Cheque Name.
+**How it works:** Open any cheque payout in the Approver or Authoriser review. Payment Method Details shows Method, Amount, Cheque Details Entered By, the Cheque Number and the Cheque Name.
 
 **Live link:**
 

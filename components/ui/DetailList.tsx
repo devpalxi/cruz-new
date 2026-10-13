@@ -1,5 +1,7 @@
+import type { ReactNode } from "react";
+
 type DetailListProps = {
-  rows: { label: string; value: string }[];
+  rows: { label: string; value: ReactNode }[];
   labelClassName?: string;
 };
 

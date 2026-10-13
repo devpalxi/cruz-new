@@ -20,7 +20,7 @@ export default function Toast({ message, onClose }: ToastProps) {
   return (
     <div
       role="status"
-      className="fixed bottom-8 right-8 z-50 flex max-w-[30rem] items-start gap-3 rounded-lg border border-success-line bg-surface px-5 py-4 text-lg text-ink shadow-lg"
+      className="fixed bottom-8 right-8 z-50 flex max-w-[30rem] items-start gap-3 rounded-lg border border-success-line bg-success-soft px-5 py-4 text-lg text-ink shadow-lg"
     >
       <CircleCheck size="1.5rem" className="mt-0.5 shrink-0 text-success" />
       <span className="flex-1">{message}</span>

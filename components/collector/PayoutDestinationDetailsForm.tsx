@@ -9,6 +9,7 @@ import FormField from "@/components/ui/FormField";
 import TextInput from "@/components/ui/TextInput";
 import WarningAlert from "@/components/ui/WarningAlert";
 import {
+  AUTHORISER_ONLY_CHEQUE_DETAILS,
   COLLECTOR_VENUE_ID,
   isDestinationAvailable,
   MOCK_MEMBERSHIP_NUMBER,
@@ -35,7 +36,7 @@ const DESTINATION_ICONS: Record<PayoutDestinationType, ReactNode> = {
 const VALIDATE_LABELS: Record<PayoutDestinationType, string> = {
   bank: "Validate Account",
   "manual-bank": "Validate Account",
-  cheque: "Validate Cheque",
+  cheque: "Check Name Match",
   "membership-card": "Validate Membership Card",
 };
 
@@ -78,7 +79,6 @@ export default function PayoutDestinationDetailsForm() {
 
   const destination = PAYOUT_DESTINATIONS.find((d) => d.type === destinationType) ?? null;
   const isBankLike = destination?.type === "bank" || destination?.type === "manual-bank";
-  const isPaymentFile = destination?.type === "manual-bank";
   const isCheque = destination?.type === "cheque";
   const chequeMode = venue?.chequeMode || "collector";
 
@@ -146,8 +146,21 @@ export default function PayoutDestinationDetailsForm() {
     ];
   }
 
-  // Nothing to show while the Collector is being sent back
-  if (unavailable) return null;
+  // When only the Authoriser enters the cheque details there is nothing for the Collector to do here, so skip ahead.
+  const skipToSummary = ready && isCheque && chequeMode === "authoriser";
+
+  useEffect(() => {
+    if (!skipToSummary) return;
+    try {
+      sessionStorage.setItem(PAYOUT_DESTINATION_DETAILS_KEY, JSON.stringify(AUTHORISER_ONLY_CHEQUE_DETAILS));
+    } catch {
+      // Storage blocked: the Summary shows its sample details
+    }
+    router.replace("/collector/summary");
+  }, [skipToSummary, router]);
+
+  // Nothing to show while the Collector is being sent on or back
+  if (unavailable || skipToSummary) return null;
 
   return (
     <form
@@ -181,13 +194,6 @@ export default function PayoutDestinationDetailsForm() {
       {destination && (
         <div className="flex flex-col gap-[2.625rem]">
           <AmountCard icon={DESTINATION_ICONS[destination.type]} title={destination.label}>
-            {isPaymentFile && (
-              <p className="mb-[1.375rem] text-base text-subtle">
-                Your venue arranges this payment itself. The details below go into the payment file your team uploads
-                to your bank. The bank is not paid automatically.
-              </p>
-            )}
-
             {isBankLike && (
               <BankAccountFields
                 accountName={accountName}

@@ -50,7 +50,8 @@ export default function VenueSettingsForm({ venue, onSave }: VenueSettingsFormPr
     <div className="mt-4">
       <h1 className="text-[2.1rem] font-semibold leading-[2.6rem] text-title-navy">{venue.name}</h1>
 
-      <h2 className="mt-[2.2rem] text-xl font-semibold text-ink">How Winners Are Paid</h2>
+      <h2 className="mt-[2.2rem] text-xl font-semibold text-ink">Payouts configuration</h2>
+      <p className="mt-1 text-base text-subtle">Choose how winners can be paid.</p>
 
       <div className="mt-4 flex flex-col gap-4">
         <AlwaysAvailableMethodRow
@@ -61,7 +62,7 @@ export default function VenueSettingsForm({ venue, onSave }: VenueSettingsFormPr
         <PaymentMethodRow
           id="payment-file-enabled"
           title={PAYMENT_FILE_LABEL}
-          description="Your team uploads a payment file to your bank's online portal."
+          description="Paid by uploading a payment file to the bank's online portal."
           checked={draft.paymentFileEnabled}
           onChange={(paymentFileEnabled) => update({ paymentFileEnabled })}
         >
@@ -95,11 +96,11 @@ export default function VenueSettingsForm({ venue, onSave }: VenueSettingsFormPr
       </div>
 
       <p className="mt-8 text-base text-subtle">Changes apply to new payouts only. Submitted payouts are not affected.</p>
-      <div className="mt-3 flex gap-6">
-        <Button variant="outline" onClick={handleCancel} className="h-[2.875rem] w-[14rem]">
+      <div className="mt-3 flex gap-10">
+        <Button variant="outline" onClick={handleCancel} className="h-[2.875rem] flex-1">
           Cancel
         </Button>
-        <Button onClick={handleSave} className="h-[2.875rem] w-[14rem]">
+        <Button onClick={handleSave} className="h-[2.875rem] flex-1">
           Save
         </Button>
       </div>

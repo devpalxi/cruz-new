@@ -76,7 +76,7 @@ All sizes are rem-based and `html` is set to `font-size: 80%` (12.8px), because 
 | `CurrencyInput` | `components/ui/CurrencyInput.tsx` | `$` prefix + AUD suffix input |
 | `AmountCard` | `components/collector/AmountCard.tsx` | White rounded card with icon + title |
 | `Accordion` | `components/ui/Accordion.tsx` | Single-open accordion; open header gets `header-open` bg + 3px `line-soft` ring |
-| `DetailList` | `components/ui/DetailList.tsx` | Bold label / right-aligned value rows |
+| `DetailList` | `components/ui/DetailList.tsx` | Bold label / right-aligned value rows (a value can be text or a component such as `NotEnteredYet`) |
 | `WarningBadge` / `WarningAlert` | `components/ui/` | Amber `warn-*` pill and alert box |
 | `CopValidationCard` / `SummaryView` | `components/collector/` | Summary step pieces |
 | `UserMenu` / `BackLink` | `components/layout/` | Header nav (Dashboard link + avatar) + back link — shared by approver and authoriser |
@@ -93,12 +93,14 @@ All sizes are rem-based and `html` is set to `font-size: 80%` (12.8px), because 
 | `AuthoriserHeader` / `ManualExportView` / `ExportTable` / `BatchTable` / `ExportDateFilter` / `ExportConfirmDialog` / `AbaReferenceDialog` | `components/authoriser/` | Manual Bank Transfer Export pieces (CSV built in `lib/manual-export-data.ts`, downloaded via `lib/download.ts`) |
 | `VenuesView` / `VenuesTable` / `VenueSettingsView` / `VenueSettingsForm` / `PaymentMethodRow` / `ChequeModeOptions` | `components/admin/` | Venues list (Manage → Venues) and the Venue Settings screen: payment method switches, Venue Code, cheque collection mode, Save / Cancel. Mock data in `lib/venue-data.ts`; saved edits kept per browser tab by `lib/use-venues.ts` |
 | `Switch` / `RadioOption` | `components/ui/` | On/off switch (`role="switch"`, shows the word On or Off beside it, can point to its description with `describedBy`); radio with a label and a help line |
-| `AlwaysAvailableMethodRow` | `components/admin/` | Venue Settings card for a method that cannot be switched off (Funds Transfer). Same card as the switchable methods, with an "Always available" badge where the switch would be, so it is clear there is nothing to set |
+| `AlwaysAvailableMethodRow` | `components/admin/` | Venue Settings card for a method that cannot be switched off (EFT). Same card as the switchable methods, with an "Always available" badge where the switch would be, so it is clear there is nothing to set |
 | `ChequeDetailsFields` | `components/collector/` | Cheque Number / Cheque Name for the Collector. Shows required fields, optional fields, or a note that the Authoriser enters them, depending on the venue's cheque setting |
-| `RecordedDestination` / `ReturnForCorrectionDialog` / `ScenarioSwitcher` | `components/payout-review/` | Summary card (read-only; the Authoriser's cheque editor can replace the cheque rows via `chequeSlot`, and Cheque Details Entered By lists usernames) "how the non-cash amount is paid" summary shared by Approver and Authoriser; the Return for Correction dialog (reason required); prototype-only switcher between payout types. Mock payouts in `lib/payout-review-scenarios.ts` |
+| `RecordedDestination` / `ReturnForCorrectionDialog` / `ScenarioSwitcher` | `components/payout-review/` | Summary card of how the non-cash amount is paid, shared by Approver and Authoriser (the Authoriser's cheque editor can replace the cheque rows via `chequeSlot`; Cheque Details Entered By lists usernames); the Return for Correction dialog (reason required); prototype-only switcher between payout types. Mock payouts in `lib/payout-review-scenarios.ts` |
 | `ChequeDetailsEditor` | `components/authoriser/` | Authoriser enters or completes Cheque Number / Cheque Name; Authorise stays off until both are entered and checked |
 | `ReturnedPayoutView` | `components/collector/` | Collector corrects a returned cheque or payment-file payout and sends it back for review |
 | `TextArea` | `components/ui/` | Shared multi-line input |
+| `NotEnteredYet` | `components/ui/` | Warning-tone pill for a value nobody has entered yet (review cards) |
+| `PayoutStatusNote` | `components/payout-review/` | One line under the status on the review pages, shown for a Manual Bank Transfer payout ("Pending until included in a payment file.") |
 | `PaymentBreakdownForm` | `components/collector/PaymentBreakdownForm.tsx` | Step 2 form |
 | `BeforeYouStartView` / `EmailAddressForm` / `SecondaryIdForm` / `MedicareCardForm` / `ApprovalView` | `components/collector/` | Before you start (pre-step, not in the stepper), Email Address, Secondary ID (skip checkbox or Medicare form), Approval confirmation |
 | `PrimaryIdFlow` | `components/collector/PrimaryIdFlow.tsx` | Primary ID state machine: `IdDocumentPicker` → `IdDocumentDetailsForm` → `IdNameForm` → `IdDobForm` → `IdAddressForm` → `IdReviewScreen` (+ `IdentityCheckPanel`, `IdCheckActionRow`, `ReviewSection`) |
@@ -150,3 +152,10 @@ Any verification outcome — Account Name Check, ID Name Match, and similar Matc
 - `/collector/before-you-start` → `/collector/email-address` → `/collector/primary-id` → `/collector/secondary-id` (all built). Secondary ID routes to `/collector/payout-destination-details` for a non-cash destination, or `/collector/summary` for cash only. Summary Submit → `/collector/approval` (built; the original Approval screen wasn't captured, so it's a simple "awaiting approval" confirmation)
 - `/collector/[step]` — placeholder for any collector step without its own route (none left in the current stepper)
 - Stepper items are links; every step navigates to its route
+
+## Required fields and limits
+
+- `FormField` takes `required` to add a red asterisk after the label. Optional fields are labelled "(optional)" instead.
+- The Return for Correction reason is required (asterisk), limited to 500 characters with a counter, and the box scrolls.
+- The success message (`Toast`) uses the success tint (`bg-success-soft`) like other success alerts.
+- When only the Authoriser enters cheque details, the Collector skips Payment Method Details and goes from Secondary ID straight to Summary.
