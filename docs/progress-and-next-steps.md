@@ -1,6 +1,6 @@
 # Progress and Next Steps: Configurable Payouts (Manual Bank + Cheque)
 
-Last updated: 2026-10-10. Written so the work can be picked up on another day with no other context.
+Last updated: 2026-10-15. Written so the work can be picked up on another day with no other context.
 
 Read this together with `CLAUDE.md`, `docs/ui-rules.md` and `docs/design.md`. The skill `.claude/skills/customer-wording/SKILL.md` governs all wording a customer could read.
 
@@ -44,7 +44,7 @@ Names were first chosen with the `customer-wording` skill (Brien, a venue owner,
 
 | Used on screens | Replaces | Status |
 |---|---|---|
-| **EFT** | Funds Transfer, Bank Transfer | **User decision, 2026-10-13** (a Figma comment asked for it). Always on for every venue |
+| **Electronic Fund Transfer** | Funds Transfer, then EFT | **User decision, 2026-10-14**: written in full, not EFT (the constant is still `FUNDS_TRANSFER_LABEL` in `lib/venue-data.ts`). Always on for every venue |
 | **Manual Bank Transfer** | Payment File for Your Bank | **User decision, 2026-10-13** (a Figma comment asked for it). See the warning below |
 | Cheque | Cheque | Fine |
 | How the Rest Is Paid | Non Cash Details (dropdown label on Payment Breakdown) | Suggested by the skill. A Figma comment asked for "Non-cash payout method"; **not adopted** because Brien did not understand "non-cash destination" |
@@ -78,7 +78,7 @@ All screens are prototype-only. State is mock data plus `sessionStorage` (resets
 |---|---|
 | `/admin/venues` | Admin view: venues of the Admin's own client (Riverside RSL Group). Columns: Venue Name, Payment Method, Daily Limit. Edit pencil appears on row hover. Row click opens settings. |
 | `/admin/venues?role=super-admin` | Super Admin view: all clients, plus a Client column. `?role=super-admin` is a prototype stand-in for logging in as a Super Admin. |
-| `/admin/venues/[id]` (+ `?role=super-admin`) | Venue Settings. EFT (always available: the same card as the others, with an "Always available" badge where the switch would be). The venue's client and daily limit are not shown on this screen. Switch for Manual Bank Transfer, with Venue Code (text, keeps leading zeros). Switch for Cheque, with three radio options for who enters the cheque details. Save and Cancel. |
+| `/admin/venues/[id]` (+ `?role=super-admin`) | Venue Settings. Electronic Fund Transfer (the same card as the others, with a disabled switch fixed to On and no badge; user decision 2026-10-14, following the Figma comment). The venue's client and daily limit are not shown on this screen. Switch for Manual Bank Transfer, with Venue Code (text, keeps leading zeros). Switch for Cheque, with three radio options for who enters the cheque details. Save and Cancel. |
 | Home page `/` | "Super Admin Pages" button opens the Super Admin list. |
 
 Behaviour:
@@ -95,7 +95,7 @@ Files: `app/admin/venues/page.tsx`, `app/admin/venues/[id]/page.tsx`, `component
 
 - **Payment Breakdown** (`/collector/payment-breakdown`): the dropdown **How the Rest Is Paid** lists only the methods the Collector's venue has switched on. The Collector's venue is fixed to `riverside-rsl-club` (`COLLECTOR_VENUE_ID` in `lib/collector-data.ts`). Membership Card is still always offered (outside these epics). Cash only: leave the dropdown empty.
 - **Payment Method Details** (`/collector/payout-destination-details`), reads the chosen method from `sessionStorage` key `cruz.selectedPayoutDestination`:
-  - EFT and Manual Bank Transfer: Account Name, BSB (6 digits), Account Number (digits). Messages appear when the Collector selects Validate Account with bad or empty fields. The Venue Code field is **no longer on this screen** (it comes from Venue Settings). The payment file version has an explanation above the form.
+  - Electronic Fund Transfer and Manual Bank Transfer: Account Name, BSB (6 digits), Account Number (digits). Messages appear when the Collector selects Validate Account with bad or empty fields. The Venue Code field is **no longer on this screen** (it comes from Venue Settings). The payment file version has an explanation above the form.
   - Cheque, by the venue's setting:
     - Collector Only: Cheque Number and Cheque Name required (name starts as the winner's name); needs Check Name Match.
     - Authoriser Only: nothing to enter; a note says so; Next is available.
@@ -111,7 +111,7 @@ Files: `components/collector/{PaymentBreakdownForm,PayoutDestinationDetailsForm,
 
 | scenario | Paid by | Authoriser behaviour |
 |---|---|---|
-| `funds-transfer` | EFT | read-only account details (Approver default) |
+| `funds-transfer` | Electronic Fund Transfer | read-only account details (Approver default) |
 | `payment-file` | Manual Bank Transfer | read-only account details; note that it stays pending until the file is uploaded |
 | `cheque-collector` | Cheque, Collector Only | cheque details read-only |
 | `cheque-authoriser` | Cheque, Authoriser Only | Authoriser enters Cheque Number and Name; **Authorise stays off until both are entered and Check Name Match is selected** (Authoriser default) |
@@ -126,7 +126,7 @@ Files: `components/collector/{PaymentBreakdownForm,PayoutDestinationDetailsForm,
 - "Identity Documents Provided To Staff Member" and "Identity manually verified" show Yes/No `VerificationPill`s.
 - The Approvals rows (verification label and ID Name Match) share one size and colour.
 - The second name in Name Verification is labelled by method (`comparedNameLabel`): Name on cheque, Account name provided, Provided bank account name.
-- Authoriser check label: "Cheque Verification" for cheques, "Account Name Check" otherwise. Approver shows "Account Name Check" for EFT only.
+- Authoriser check label: "Cheque Verification" for cheques, "Account Name Check" otherwise. Approver shows "Account Name Check" for Electronic Fund Transfer only.
 
 Files: `components/approver/ApproverPayoutView.tsx`, `components/authoriser/{AuthoriserPayoutView,AuthorisationPanel,ChequeDetailsEditor}.tsx`, `components/payout-review/{RecordedDestination,ReturnForCorrectionDialog,ScenarioSwitcher,IdentityConfirmation}.tsx`, `components/ui/TextArea.tsx`, `lib/payout-review-scenarios.ts`, `lib/return-payout.ts`, `lib/approver-data.ts`, `lib/authoriser-data.ts`.
 
@@ -144,19 +144,54 @@ Story coverage (from the HTML coverage tables):
 
 | | MBT | CHE |
 |---|---|---|
-| Built | 11 | 14 |
+| Built | 11 | 21 (14 + CHE-17 to 23) |
 | Partly built | 1 (MBT-10) | 1 (CHE-07) |
 | Existing page, not yet checked | 8 | 0 |
-| Screen not built yet | 3 (MBT-17, 18, 24) | 8 (CHE-05, 17 to 23) |
+| Screen not built yet | 3 (MBT-17, 18, 24) | 1 (CHE-05) |
 | No screen needed | 5 | 5 |
 | Out of scope | 2 (MBT-26, 27) | 0 |
 
 ---
 
+### 4.5 Cheque name match (CHE-17 to CHE-23), built 2026-10-15
+
+Decisions from the user: the Authoriser resolves; the Approver and the Collector Summary show the result read-only; percentages on screen (70%, not 0.7); four cases in the switcher.
+
+| Where | What it shows |
+|---|---|
+| Authoriser review, section **Name Verification** (cheques only) | **Cheque Name Check** card: Verified ID Name (or Captured Name) beside Cheque Name, Name Similarity, Threshold, Result pill (`VerificationPill`: Match, No Match, Unable to Compare). For No Match: required **Rationale** (500 characters, counter) and the acknowledgement checkbox |
+| Authoriser review, **Name Check History** (appears when there is a record) | One card per decision: date, Authoriser, both names, similarity, threshold, rationale, acknowledged, **Active** or **Historical** |
+| Authoriser and Approver review, **Payment Status** (cheques only) | **Pending Payment**, then each outstanding condition (cheque details, name difference, original waiting time, daily limit), "Payment completes automatically", and "Payment Completed does not mean the winner has collected the cheque." |
+| Approver review | Same card and history, read-only. "Names differ. The Authoriser records a reason before the payout is completed." The Approvals panel no longer shows ID Name Match for cheques |
+| Collector Summary | Same card, read-only, for a cheque (hidden when only the Authoriser enters cheque details). A blank name shows Unable to Compare |
+| Collector cheque step | **Check Name Match** now compares the name with the winner's name and says if it differs. The Collector can still continue; the Authoriser resolves it |
+
+Rules (all in `lib/name-match.ts`, mock only, no server):
+- Ignores case, extra spaces and `. , '`; hyphens count as spaces. Re-ordered names are equal. An initial scores 0.5 of a part; a small typo scores its closeness (80% or more of the letters). Score = points / the longer name's part count.
+- Match when the rounded percentage is at or above the threshold (default 70%: 70 is Match, 69 is No Match). Examples: Vivek Mishra vs Vivek Mishra Jr = 67% No Match; J Smith vs John Smith = 75% Match.
+- No ID: the comparison name is the **Captured Name** and the line "Name is not verified using ID documents." shows, even for a Match. No name at all: Unable to Compare with the reason and no score.
+- Names change (Authoriser edits and checks the cheque details): the score is redone, the rationale and tick are cleared, and a decision already made moves to history as Historical (CHE-18). The payout keeps its original threshold (a constant for now; CHE-05 will set it).
+
+Prototype payouts (switcher on both review pages; `lib/payout-review-scenarios.ts`): Cheque: Collector Only (Match), Cheque: Name differs (No Match, with an earlier historical decision and a waiting time), Cheque: Captured name, Cheque: Cannot compare (with a daily limit hold). The demo payouts also show "Drivers Licence" or "No ID document" and the Identity Confirmation lines to match their name source.
+
+Authorise stays off while a No Match has no rationale and tick. The short line above the buttons says which one is missing (cheque details come first).
+
+Files: new `lib/name-match.ts`, `lib/cheque-payment-status.ts`, `components/payout-review/{ChequeNameCheck,NameCheckHistory,ChequePaymentStatus,NameBox}.tsx`. Changed: `lib/payout-review-scenarios.ts`, `components/authoriser/{AuthoriserPayoutView,AuthorisationPanel,ChequeDetailsEditor}.tsx`, `components/approver/{ApproverPayoutView,ApprovalPanel,NameMatchStatus}.tsx`, `components/payout-review/NameComparison.tsx` (NameBox moved out), `components/collector/{PayoutDestinationDetailsForm,SummaryView}.tsx`. `docs/design.md` was **not** updated this round (user asked to touch only the two documents); add the new components and routes there next time.
+
+Lessons from the earlier feedback and Figma comments, applied here:
+- One short line, no repeated explanation, no "you/your" (round 1 and 2 comments on wording).
+- Results are pills with an icon and text, in the warning tone for "needs a look" (the Not entered yet comment); no plain coloured text.
+- Required fields have an asterisk and a character limit with a counter (the Return for Correction comments); the primary button stays off and a one-line message says why.
+- Same data looks the same on every role's page, so one `ChequeNameCheck` is used by the Authoriser, Approver and Collector.
+- Clear names: Title Case labels, no technical words ("similarity", not "fuzzy"). Names already agreed stay as they are.
+- A message says why and what to do (the method-unavailable comment).
+- Where the Collector cannot act, they are not shown a step for it; the Approver only reads.
+- Colours come from tokens only. Two known hard-coded colours (in `WarningAlert` and `StatusPill`) are used by the new screens but were not added to.
+
 ## 5. Decisions made
 
 - Prototype scope only. No real backend, auth or persistence (project rule).
-- EFT is always available. Payment File and Cheque are per-venue switches.
+- Electronic Fund Transfer is always available (a disabled switch set to On). Manual Bank Transfer and Cheque are per-venue switches.
 - Cheque has three modes: Collector Only, Authoriser Only, Both. The mode is **recorded at submission** and review pages show it. Later venue changes do not reroute a submitted payout.
 - Authorise needs both cheque details when the Authoriser is responsible. Both-mode lets the Collector leave fields blank.
 - Return for Correction takes the reviewer into the Collector flow and carries the reason.
@@ -189,6 +224,8 @@ node shots.mjs                  # needs the dev server on http://localhost:3000;
 python embed.py                 # re-embeds screenshots into both story HTML files (safe to re-run)
 python linear.py                # rewrites docs/linear-updates.md and html/linear-updates.html
 node verify.mjs                 # checks no broken images or anchors
+node shots_namecheck.mjs        # the name check screenshots (26 to 36), cropped to the relevant sections
+python linear.py --md           # also rewrites docs/linear-updates.md (without --md only html/linear-updates.html is written)
 ```
 
 - `embed.py` holds the **story to screenshot map and statuses** (`MBT`, `CHE`, `SHOTS`). When a story gets a screen, add its screenshot name there and change its status.
@@ -201,22 +238,13 @@ node verify.mjs                 # checks no broken images or anchors
 
 ## 8. What is left to build (in the suggested order)
 
-### 8.1 Cheque name match (CHE-17 to CHE-23). Highest value.
+### 8.1 Cheque name match (CHE-17 to CHE-23): built 2026-10-15
 
-Needs a similarity score on every cheque payout. Mock it: a small client-side function that normalises names and returns a percentage. Do not invent a real algorithm service.
-
-- **CHE-17 Show names and similarity.** In Collector capture, Summary and the reviews, show Cheque Name, the comparison name, **Name Similarity %**, the **applied threshold**, and **Match / No match**.
-  - Comparison name label: **Verified ID Name** when an ID document verified it; **Captured Name** plus the text **"Name is not verified using ID documents"** when no ID was submitted. Show that text even when the result is Match.
-  - Rules: ignore case, extra spaces and common punctuation; keep the original text for display; reordered parts are equal (John Smith = Smith John); initials or missing parts are only partial matches (J Smith, John Michael Smith vs John Smith).
-  - Match when score is greater than or equal to the threshold (default 0.7: 0.70 is Match, 0.69 is No match).
-- **CHE-18 Refresh when names change.** Recalculate when the cheque name, comparison name or its source changes (also after a returned payout is corrected). Clear the earlier acknowledgement and resolution; require a fresh rationale if the new result is No match. Past decisions stay in history. Keep the payout's original threshold.
-- **CHE-19 No-ID payouts.** Use the captured recipient name; show "Name is not verified using ID documents". If no name is available, show **Unable to compare** with the reason. Never invent a score.
-- **CHE-20 Authoriser rationale.** For No match, a required **Rationale** note beside the names, score and threshold (follow the sanctions/PEP resolution pattern). Whitespace-only does not count. Only the Authoriser can resolve; Collector and Approver cannot.
-- **CHE-21 Acknowledgement.** An unchecked checkbox: "I acknowledge that the cheque name differs from the verified ID name and confirm completion of this payout." For captured names, say "captured recipient name" instead. Needs both the rationale and the tick. Cleared when names change. Ticking alone does not skip the wait or other conditions.
-- **CHE-22 History.** Read-only record of both names, source, score, threshold, rationale, acknowledgement, Authoriser and time; active decision shown, earlier ones marked historical.
-- **CHE-23 Status.** **Pending Payment** until all conditions are met, listing what is missing: cheque details, name resolution, remaining original wait, any daily-limit reason. Say payment completes automatically. Payment Completed appears only after the completion event and does not mean the winner collected the cheque.
-- Where it plugs in: `NameComparison` and the Authoriser/Approver `Approvals` panels, plus `ChequeDetailsFields` / `PayoutDestinationDetailsForm` and the Summary. Add scenarios to `lib/payout-review-scenarios.ts` (match, no match, captured name, unable to compare). The existing name panel currently always shows a match.
-- Use `VerificationPill` for Match / No match. Remember the wording rule: say "name check" style plain words, not "fuzzy".
+Done. See section 4.5. Still open inside it:
+- **Unable to Compare does not block Authorise.** The stories only require a rationale for No Match. Confirm that a payout with no name to compare should still be authorisable.
+- **The returned-payout correction page does not redo the check** (CHE-18 mentions a corrected payout). The Authoriser editing the cheque details does.
+- The Collector's cheque step compares with the winner's name from a mock; there is no Collector no-ID flow to show a Captured Name there.
+- Wording to confirm with Brien or Minosha: Cheque Name Check, Verified ID Name, Captured Name, Name Similarity, Threshold, Rationale, Unable to Compare, Name Check History, Pending Payment.
 
 ### 8.2 Manual Bank export page: audit against MBT-13 and MBT-15 to 25
 
@@ -232,7 +260,7 @@ The page exists (`/authoriser/manual-bank-export`, built earlier; see `memory.md
 
 ### 8.3 CHE-05 Global cheque name-match threshold
 
-Super Admin global settings screen: **Cheque Name Match Threshold**, default 0.7, number between 0 and 1 inclusive, help text (0.7 = 70% similarity), Save and Cancel, note that changes apply to new payouts only and do not re-evaluate payouts in progress. Admins cannot edit it. Show who changed it and when. Do this alongside 8.1 because 8.1 displays the threshold.
+Super Admin global settings screen: **Cheque Name Match Threshold**, default 0.7, number between 0 and 1 inclusive, help text (0.7 = 70% similarity), Save and Cancel, note that changes apply to new payouts only and do not re-evaluate payouts in progress. Admins cannot edit it. Show who changed it and when. The name match (4.5) now displays a fixed 70% threshold; this screen should supply it.
 
 ### 8.4 Gaps inside "built" stories
 
@@ -264,7 +292,12 @@ MBT-14, MBT-23, CHE-24, CHE-25 (backend rules); MBT-28, MBT-29, CHE-26, CHE-27 (
 6. The user wrote "check amount" for the Authoriser Only cheque: this was read as the cheque details (number and name), not the amount. Confirm.
 7. Should the `?scenario=` and `?role=super-admin` prototype controls stay for the shareable build?
 
-## 10. Repo state at the time of writing
+## 10. Repo state at the time of writing (updated 2026-10-15)
+
+- Not committed: the name match work (4.5), the regenerated `html/screenshots/`, `html/linear-updates.html` and the tooling changes in `html/tools/`. `docs/linear-updates.md`, the two story pages and `html/feedback-changes.html` were deliberately **not** regenerated for these changes, so they have no name match entries. (The Electronic Fund Transfer card and name change were already committed.)
+- `html/linear-updates.html` has a blue **NEW CHANGES START HERE** banner before CHE-17, NEW badges on CHE-17 to 23 and UPDATED badges on the six earlier cheque entries whose screens changed.
+
+(Older note, 2026-10-10:)
 
 - Branch: `dineth`. The user has committed up to the "Payment Method Details" rename.
 - **Uncommitted at the time of writing:** the name-label fix (`lib/payout-review-scenarios.ts`, both review views), the two story HTML files, `html/screenshots/`, `html/tools/`, `docs/linear-updates.md` and this file. Check `git status`.

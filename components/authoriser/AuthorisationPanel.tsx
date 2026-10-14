@@ -1,4 +1,4 @@
-import VerificationPill from "@/components/ui/VerificationPill";
+import VerificationPill, { type VerificationTone } from "@/components/ui/VerificationPill";
 import ApproverDecision from "./ApproverDecision";
 
 type AuthorisationPanelProps = {
@@ -7,7 +7,9 @@ type AuthorisationPanelProps = {
   // accurate there. Cheque and Manual Bank Transfer only compare names client-side, so the
   // caller passes a matching label instead of the CoP name.
   copLabel?: string;
-  idNameMatch: string;
+  copTone?: VerificationTone;
+  // Left out when there is no ID document to match against
+  idNameMatch?: string;
   approverDecision: { approvedBy: string; at: string; riskLevel: string; note: string };
   note: string;
   onNoteChange: (value: string) => void;
@@ -18,6 +20,7 @@ type AuthorisationPanelProps = {
 export default function AuthorisationPanel({
   copStatus,
   copLabel = "Account Name Check",
+  copTone = "success",
   idNameMatch,
   approverDecision,
   note,
@@ -29,12 +32,14 @@ export default function AuthorisationPanel({
     <div className="px-[0.9375rem] text-base text-label">
       <p className="flex items-center gap-2 text-base text-ink">
         {copLabel}:
-        <VerificationPill tone="success">{copStatus}</VerificationPill>
+        <VerificationPill tone={copTone}>{copStatus}</VerificationPill>
       </p>
-      <p className="mt-3 flex items-center gap-2 text-base text-ink">
-        ID Name Match:
-        <VerificationPill tone="success">{idNameMatch}</VerificationPill>
-      </p>
+      {idNameMatch && (
+        <p className="mt-3 flex items-center gap-2 text-base text-ink">
+          ID Name Match:
+          <VerificationPill tone="success">{idNameMatch}</VerificationPill>
+        </p>
+      )}
 
       <div className="mt-[1.25rem]">
         <ApproverDecision {...approverDecision} />

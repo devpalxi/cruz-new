@@ -13,11 +13,22 @@ import CollectorInfo from "@/components/payout-review/CollectorInfo";
 import DocketRow from "@/components/payout-review/DocketRow";
 import IdentityConfirmation from "@/components/payout-review/IdentityConfirmation";
 import IdvHistoryTable from "@/components/payout-review/IdvHistoryTable";
+import ChequeNameCheck from "@/components/payout-review/ChequeNameCheck";
+import ChequePaymentStatus from "@/components/payout-review/ChequePaymentStatus";
+import NameCheckHistory from "@/components/payout-review/NameCheckHistory";
 import NameComparison from "@/components/payout-review/NameComparison";
 import PayoutStatusNote from "@/components/payout-review/PayoutStatusNote";
 import RecordedDestination from "@/components/payout-review/RecordedDestination";
 import ReturnForCorrectionDialog from "@/components/payout-review/ReturnForCorrectionDialog";
-import { comparedNameLabel, returnedTypeFor, type ReviewScenario } from "@/lib/payout-review-scenarios";
+import { chequePaymentConditions } from "@/lib/cheque-payment-status";
+import {
+  comparedNameLabel,
+  identityLinesFor,
+  memberRowsFor,
+  nameCheckFor,
+  returnedTypeFor,
+  type ReviewScenario,
+} from "@/lib/payout-review-scenarios";
 import { saveReturnedPayout } from "@/lib/return-payout";
 
 export default function ApproverPayoutView({ scenario }: { scenario: ReviewScenario }) {
@@ -30,6 +41,16 @@ export default function ApproverPayoutView({ scenario }: { scenario: ReviewScena
   const [returnOpen, setReturnOpen] = useState(false);
 
   const hasBankDestination = scenario.destinationType === "bank";
+  const isCheque = scenario.destinationType === "cheque";
+  // The Approver only reads the cheque name check. The Authoriser records the rationale.
+  const chequeName = scenario.cheque?.name ?? "";
+  const nameResult = nameCheckFor(scenario, chequeName);
+  const paymentConditions = chequePaymentConditions({
+    detailsEntered: Boolean(scenario.cheque?.number && scenario.cheque?.name),
+    nameStatus: nameResult?.status ?? "match",
+    nameResolved: false,
+    hold: scenario.paymentHold,
+  });
   const canApprove = risk !== "" && confirmed && (data.nameVerification.match || reviewed);
 
   const sections: (SectionItem | false)[] = [
@@ -55,8 +76,8 @@ export default function ApproverPayoutView({ scenario }: { scenario: ReviewScena
       title: "Member Identification",
       content: (
         <>
-          <DetailList rows={data.member} labelClassName="font-medium" />
-          <IdentityConfirmation lines={data.identityConfirmation} />
+          <DetailList rows={memberRowsFor(scenario, data.member)} labelClassName="font-medium" />
+          <IdentityConfirmation lines={identityLinesFor(scenario, data.identityConfirmation)} />
         </>
       ),
     },
@@ -69,6 +90,29 @@ export default function ApproverPayoutView({ scenario }: { scenario: ReviewScena
       id: "name",
       title: "Name Verification",
       content: <NameComparison {...data.nameVerification} otherLabel={comparedNameLabel(scenario)} />,
+    },
+    isCheque &&
+      nameResult !== null && {
+        id: "name",
+        title: "Name Verification",
+        content: (
+          <ChequeNameCheck
+            result={nameResult}
+            chequeName={chequeName}
+            comparedName={scenario.nameCheck?.comparedName ?? ""}
+          />
+        ),
+      },
+    isCheque &&
+      Boolean(scenario.nameCheck?.history?.length) && {
+        id: "name-history",
+        title: "Name Check History",
+        content: <NameCheckHistory records={scenario.nameCheck?.history ?? []} />,
+      },
+    isCheque && {
+      id: "payment-status",
+      title: "Payment Status",
+      content: <ChequePaymentStatus conditions={paymentConditions} />,
     },
     {
       id: "results",
@@ -88,6 +132,7 @@ export default function ApproverPayoutView({ scenario }: { scenario: ReviewScena
         <ApprovalPanel
           copStatus={data.approvals.copStatus}
           showCop={hasBankDestination}
+          showNameMatch={!isCheque}
           nameMatch={data.approvals.nameMatch}
           reviewed={reviewed}
           onReviewedChange={setReviewed}

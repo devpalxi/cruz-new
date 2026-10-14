@@ -8,6 +8,8 @@ type NameMatchStatusProps = {
   copTone?: VerificationTone;
   // Shown only for an ambiguous "Close Match" — a clean Match or a clear No Match don't need it.
   copAlert?: { headline: string; message: string };
+  // Cheque payouts show their name check in its own section, so they leave this row out
+  showNameMatch?: boolean;
   // Label varies by destination: "ID Name Match" (Bank), "Account Name Match" (Manual Bank), "Bearer Name Match" (Cheque).
   nameMatchLabel?: string;
   match: boolean;
@@ -20,6 +22,7 @@ export default function NameMatchStatus({
   copStatus,
   copTone = "success",
   copAlert,
+  showNameMatch = true,
   nameMatchLabel = "ID Name Match",
   match,
   reviewed,
@@ -40,12 +43,14 @@ export default function NameMatchStatus({
         </div>
       )}
 
-      <p className={`${showCop && copStatus ? "mt-3" : ""} flex items-center gap-2 text-base text-ink`}>
-        {nameMatchLabel}:
-        <VerificationPill tone={match ? "success" : "danger"}>{match ? "Yes" : "No"}</VerificationPill>
-      </p>
+      {showNameMatch && (
+        <p className={`${showCop && copStatus ? "mt-3" : ""} flex items-center gap-2 text-base text-ink`}>
+          {nameMatchLabel}:
+          <VerificationPill tone={match ? "success" : "danger"}>{match ? "Yes" : "No"}</VerificationPill>
+        </p>
+      )}
 
-      {!match && (
+      {showNameMatch && !match && (
         <div className="mt-3 rounded-md border border-danger-line bg-danger-bg px-4 py-[0.9375rem]">
           <p className="text-[0.9375rem] leading-5 text-red-700">
             The name on the {showCop ? "bank account" : "payout destination"} does not match the name on the

@@ -4,6 +4,7 @@ import NameMatchStatus from "./NameMatchStatus";
 
 type ApprovalPanelProps = {
   showCop?: boolean;
+  showNameMatch?: boolean;
   copStatus?: string;
   nameMatchLabel?: string;
   nameMatch: boolean;
@@ -19,6 +20,7 @@ type ApprovalPanelProps = {
 
 export default function ApprovalPanel({
   showCop = true,
+  showNameMatch = true,
   copStatus,
   nameMatchLabel,
   nameMatch,
@@ -35,6 +37,7 @@ export default function ApprovalPanel({
     <div className="px-[0.9375rem] text-base text-label">
       <NameMatchStatus
         showCop={showCop}
+        showNameMatch={showNameMatch}
         copStatus={copStatus}
         nameMatchLabel={nameMatchLabel}
         match={nameMatch}

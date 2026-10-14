@@ -20,6 +20,7 @@ import {
   UNAVAILABLE_METHOD_NOTICE_KEY,
   type PayoutDestinationType,
 } from "@/lib/collector-data";
+import { evaluateNameMatch } from "@/lib/name-match";
 import { useVenues } from "@/lib/use-venues";
 import AmountCard from "./AmountCard";
 import BankAccountFields from "./BankAccountFields";
@@ -32,7 +33,7 @@ const DESTINATION_ICONS: Record<PayoutDestinationType, ReactNode> = {
   "membership-card": <FaIdCard size="2.2rem" />,
 };
 
-// This prototype only models the happy path — running validation always confirms a match.
+// Bank and Membership Card checks only model the happy path in this prototype. The cheque check compares the names.
 const VALIDATE_LABELS: Record<PayoutDestinationType, string> = {
   bank: "Validate Account",
   "manual-bank": "Validate Account",
@@ -43,7 +44,7 @@ const VALIDATE_LABELS: Record<PayoutDestinationType, string> = {
 const VALIDATED_MESSAGES: Record<PayoutDestinationType, string> = {
   bank: "Account name matches bank records. Proceeding to summary.",
   "manual-bank": "Account name matches bank records. Proceeding to summary.",
-  cheque: "Cheque bearer name matches. Proceeding to summary.",
+  cheque: "Cheque name matches the verified ID name. Proceeding to summary.",
   "membership-card": "Membership Card ID verified. Proceeding to summary.",
 };
 
@@ -135,6 +136,12 @@ export default function PayoutDestinationDetailsForm() {
     (isBankLike && !bankErrors.accountName && !bankErrors.bsb && !bankErrors.accountNumber) ||
     (isCheque && (!chequeCollectorRequired || (!chequeErrors.chequeNumber && !chequeErrors.chequeName))) ||
     (destination.type === "membership-card" && membershipCardId !== "");
+
+  const chequeCheck =
+    isCheque && chequeName.trim() !== ""
+      ? evaluateNameMatch({ chequeName, comparedName: MOCK_WINNER_NAME, source: "id" })
+      : null;
+  const chequeNameDiffers = chequeCheck?.status === "no-match";
 
   const canContinue = !unavailable && fieldsComplete && (!needsValidation || validated);
 
@@ -229,7 +236,14 @@ export default function PayoutDestinationDetailsForm() {
 
             {validated && (
               <div className="mt-[1.375rem]">
-                <WarningAlert tone="success" title={VALIDATED_MESSAGES[destination.type]} />
+                {chequeNameDiffers ? (
+                  <WarningAlert
+                    title={`Cheque name differs from the verified ID name (${chequeCheck?.percent}% similar). Proceeding to summary.`}
+                    message="The Authoriser will review the difference."
+                  />
+                ) : (
+                  <WarningAlert tone="success" title={VALIDATED_MESSAGES[destination.type]} />
+                )}
               </div>
             )}
           </AmountCard>

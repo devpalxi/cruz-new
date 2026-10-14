@@ -1,5 +1,6 @@
 import { Check, TriangleAlert } from "lucide-react";
 import InsetCard from "@/components/ui/InsetCard";
+import NameBox from "./NameBox";
 
 type NameComparisonProps = {
   idName: string;
@@ -8,15 +9,6 @@ type NameComparisonProps = {
   otherLabel?: string;
   match: boolean;
 };
-
-function NameBox({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex h-[4.8125rem] flex-1 flex-col items-center justify-center rounded-md border border-line-soft bg-field">
-      <span className="text-[0.75rem] font-medium uppercase tracking-wide text-subtle">{label}</span>
-      <span className="mt-1 text-lg font-semibold text-ink">{value}</span>
-    </div>
-  );
-}
 
 export default function NameComparison({
   idName,

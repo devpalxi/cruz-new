@@ -6,7 +6,6 @@ import Button from "@/components/ui/Button";
 import DetailList from "@/components/ui/DetailList";
 import FormField from "@/components/ui/FormField";
 import TextInput from "@/components/ui/TextInput";
-import WarningAlert from "@/components/ui/WarningAlert";
 
 export type ChequeEditorState = { number: string; name: string; complete: boolean };
 
@@ -80,7 +79,6 @@ export default function ChequeDetailsEditor({
             <Pencil size="1.125rem" />
           </button>
         </div>
-        <WarningAlert tone="success" title="Cheque bearer name matches." />
       </div>
     );
   }

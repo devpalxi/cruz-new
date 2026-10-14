@@ -11,6 +11,8 @@ import {
   type PayoutDestinationDetails,
 } from "@/lib/collector-data";
 import { EMAIL_CAPTURE_KEY, ID_CAPTURE_KEY, buildMemberIdentificationRows } from "@/lib/id-document-config";
+import { evaluateNameMatch } from "@/lib/name-match";
+import ChequeNameCheck from "@/components/payout-review/ChequeNameCheck";
 import CopValidationCard from "./CopValidationCard";
 
 export default function SummaryView() {
@@ -44,6 +46,13 @@ export default function SummaryView() {
     d.rows.some((row) => row.value === AUTHORISER_ONLY_CHEQUE_DETAILS.rows[0].value),
   );
 
+  // The cheque name is compared with the winner's name from the ID step. A blank name cannot be compared.
+  const isCheque = destinations[0]?.type === "cheque";
+  const savedChequeName = destinations[0]?.rows.find((row) => row.label === "Cheque Name")?.value ?? "";
+  const chequeName = savedChequeName === "Not entered yet" ? "" : savedChequeName;
+  const winnerName = memberRows.find((row) => row.label === "Full Name")?.value ?? "";
+  const nameResult = evaluateNameMatch({ chequeName, comparedName: winnerName, source: "id" });
+
   return (
     <div>
       <h1 className="text-[2.5rem] font-bold leading-[2.875rem] text-brand">Payout #{payoutId}</h1>
@@ -76,18 +85,16 @@ export default function SummaryView() {
 
       {destinations.length > 0 && !chequeLeftToAuthoriser && (
         <div className="mt-[1.875rem]">
-          <CopValidationCard
-            status={cop.status}
-            headline={cop.headline}
-            message={cop.message}
-            title={
-              destinations[0].type === "cheque"
-                ? "Cheque Verification"
-                : destinations[0].type === "manual-bank"
-                  ? "Manual Bank Transfer Verification"
-                  : "CoP Validation"
-            }
-          />
+          {isCheque ? (
+            <ChequeNameCheck result={nameResult} chequeName={chequeName} comparedName={winnerName} />
+          ) : (
+            <CopValidationCard
+              status={cop.status}
+              headline={cop.headline}
+              message={cop.message}
+              title={destinations[0].type === "manual-bank" ? "Manual Bank Transfer Verification" : "CoP Validation"}
+            />
+          )}
         </div>
       )}
 
