@@ -7,7 +7,7 @@ LIVE = "https://cruz-new.vercel.app"
 SHOTS = {
     "01-venues-admin": ("Venues list as an Admin (edit icon shows on hover)", "/admin/venues"),
     "02-venues-super-admin": ("Venues list as a Super Admin, with the Client column", "/admin/venues?role=super-admin"),
-    "03-venue-settings-all-on": ("Venue Settings: EFT (always available), Manual Bank Transfer with Venue Code, and Cheque with who can enter cheque details", "/admin/venues/riverside-rsl-club?role=super-admin"),
+    "03-venue-settings-all-on": ("Venue Settings: Electronic Fund Transfer (always available, switch fixed to On), Manual Bank Transfer with Venue Code, and Cheque with who can enter cheque details", "/admin/venues/riverside-rsl-club?role=super-admin"),
     "04-venue-settings-cheque-needs-mode": ("Saving with Cheque on and no choice of who can enter cheque details shows a message", "/admin/venues/northside-sports-club?role=super-admin"),
     "05-venue-settings-saved": ("Settings saved: confirmation message shown", "/admin/venues/northside-sports-club?role=super-admin"),
     "06-venue-no-access": ("An Admin opening another client's venue sees an access message", "/admin/venues/harbourview-hotel"),
@@ -17,7 +17,7 @@ SHOTS = {
     "10-collector-cheque-authoriser-only": ("Collector: when only the Authoriser enters the cheque details, the Collector skips the details step and the Summary says so", "/collector/payment-breakdown"),
     "11-collector-cheque-both": ("Collector: Cheque when both enter the details (fields optional)", "/collector/payment-breakdown"),
     "12-collector-method-no-longer-available": ("Collector: the chosen method was switched off, so the Collector is sent back to Payment Breakdown with a message", "/collector/payment-breakdown"),
-    "13-authoriser-funds-transfer": ("Authoriser review: EFT payout", "/authoriser/payout?scenario=funds-transfer"),
+    "13-authoriser-funds-transfer": ("Authoriser review: Electronic Fund Transfer payout", "/authoriser/payout?scenario=funds-transfer"),
     "14-authoriser-payment-file": ("Authoriser review: Manual Bank Transfer payout", "/authoriser/payout?scenario=payment-file"),
     "15-authoriser-cheque-collector-only": ("Authoriser review: cheque details entered by the Collector, read-only", "/authoriser/payout?scenario=cheque-collector"),
     "16-authoriser-cheque-authoriser-only": ("Authoriser review: the Authoriser enters the cheque details inside the card; Authorise stays off until done", "/authoriser/payout?scenario=cheque-authoriser"),

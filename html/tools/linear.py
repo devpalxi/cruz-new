@@ -80,7 +80,7 @@ out.append(
     "switch between payouts. Venue settings are kept for the current browser tab only.\n"
 )
 out.append(
-    "**Wording to confirm with Brien or Minosha before sharing:** *Manual Bank Transfer*, *EFT*, "
+    "**Wording to confirm with Brien or Minosha before sharing:** *Manual Bank Transfer*, *Electronic Fund Transfer*, "
     "*How the Rest Is Paid*, *Payment Method Details*, *Account Name Check*, *Return for Correction*.\n"
 )
 
@@ -118,7 +118,8 @@ for t, status, note in not_built:
     out.append(f"| {t} | {status} | {note} |")
 out.append("")
 
-open(os.path.join(ROOT, "..", "docs", "linear-updates.md"), "w", encoding="utf8").write("\n".join(out))
+if "--md" in sys.argv:  # docs/linear-updates.md is rewritten only on request
+    open(os.path.join(ROOT, "..", "docs", "linear-updates.md"), "w", encoding="utf8").write("\n".join(out))
 print("entries:", sum(1 for k in list(MBT.values()) + list(CHE.values()) if k[0] in ("built", "partly")), "not built:", len(not_built))
 
 # ---------- Self-contained HTML version (images embedded once) ----------
@@ -174,7 +175,7 @@ table{{border-collapse:collapse;width:100%;font-size:.94rem}}th,td{{border:1px s
 </style></head><body>
 <h1>Linear updates: new configurable payout screens</h1>
 <p>Live prototype: <a href="{LIVE}">{LIVE}</a>. One entry per story that has a screen. Each has the issue name, a short description, screenshots, and how it works with live links. This file works on its own: the screenshots are inside it.</p>
-<div class="callout"><strong>Before you paste:</strong> issue names and short descriptions are copied from the story files, so they still say <em>Manual Bank Transfer</em> and <em>payout destination</em>. The screens say <em>Manual Bank Transfer</em> and <em>Payment Method Details</em>. Pick one set of names, then update the stories to match. Names to confirm with Brien or Minosha: Manual Bank Transfer, EFT, How the Rest Is Paid, Payment Method Details, Account Name Check, Return for Correction.</div>
+<div class="callout"><strong>Before you paste:</strong> issue names and short descriptions are copied from the story files, so they still say <em>Manual Bank Transfer</em> and <em>payout destination</em>. The screens say <em>Manual Bank Transfer</em> and <em>Payment Method Details</em>. Pick one set of names, then update the stories to match. Names to confirm with Brien or Minosha: Manual Bank Transfer, Electronic Fund Transfer, How the Rest Is Paid, Payment Method Details, Account Name Check, Return for Correction.</div>
 <div class="callout"><strong>Live links for the Collector:</strong> Payment Method Details opens from the flow. Choose a method under How the Rest Is Paid on Payment Breakdown first, then continue. The review pages have a <em>Prototype only</em> row at the top to switch between payouts. Venue settings are kept for the current browser tab only. Links work once this branch is deployed.</div>
 {"".join(body)}
 <h2>Stories with no screen yet</h2>

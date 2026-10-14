@@ -10,7 +10,7 @@ APPROVER_FILE = "19-approver-payment-file"
 
 CROPS2 = {
     "r2_1_b": ("a", VS, (370, 230, 1070, 610), "Venue Settings: “How Winners Are Paid”, Funds Transfer, Payment File for Your Bank"),
-    "r2_1_a": ("n", VS, (370, 230, 1070, 635), "Venue Settings: “Payouts configuration”, EFT, Manual Bank Transfer"),
+    "r2_1_a": ("n", VS, (370, 230, 1070, 635), "Venue Settings: “Payouts configuration”, Electronic Fund Transfer with a disabled On switch, Manual Bank Transfer"),
     "r2_2_b": ("a", VS, (370, 615, 1070, 1005), "Cheque options with longer lines"),
     "r2_2_a": ("n", VS, (370, 640, 1070, 1025), "Cheque options with one short line each"),
     "r2_3_b": ("a", VS, (370, 1020, 1070, 1100), "Fixed-width buttons, left aligned"),
@@ -46,20 +46,20 @@ ENTRIES2 = [
         title="Heading, names and one-line descriptions on Venue Settings",
         where="Venue Settings",
         who="PromptLane (Figma)",
-        feedback="i feel Payouts configuration is a better title. desc: “Choose how winners can be paid” remove last 2 sentences. agree with oshadha on adding changes applied to new payouts only message when saving.   •   descriptions overall should be concise. let’s not use “you”/“your” a lot.   •   Manual bank transfer is better. desc: is it needed to mention what is done with this here instead of describing what it is.   •   Instead of Funds transfer EFT (Electronic Funds Transfer) is better imo.",
+        feedback="i feel Payouts configuration is a better title. desc: “Choose how winners can be paid” remove last 2 sentences. agree with oshadha on adding changes applied to new payouts only message when saving.   •   descriptions overall should be concise. let’s not use “you”/“your” a lot.   •   Manual bank transfer is better. desc: is it needed to mention what is done with this here instead of describing what it is.   •   Instead of Funds transfer EFT (Electronic Funds Transfer) is better imo.   •   agree with oshadha on always available style. can have a disabled toggle set to On.",
         issue="The section was called “How Winners Are Paid” with no explanation line, the descriptions spoke to the reader (“Your team uploads a payment file to your bank’s online portal”) and described an action rather than the method, and the two methods used longer names.",
-        note="Names: EFT and Manual Bank Transfer were chosen by the team after these comments. Not adopted: a disabled toggle set to On for EFT, because the team asked for the “Always available” badge instead.",
+        note="Names: the team chose Electronic Fund Transfer (written in full, not EFT) and Manual Bank Transfer. The comment on the always-available card is followed in full: the “Always available” badge stays and a disabled switch set to On sits beside it.",
         before=["r2_1_b"],
         after=["r2_1_a"],
         steps=[
             "Open Manage, then Venues, and select a venue.",
             "The section is called “Payouts configuration”, with “Choose how winners can be paid.” under it.",
-            "EFT shows an “Always available” badge. Manual Bank Transfer and Cheque have On/Off switches.",
+            "Electronic Fund Transfer shows an “Always available” badge and a switch that is fixed to On and cannot be changed. Manual Bank Transfer and Cheque have On/Off switches.",
             "Each method has one line that says what it is, for example “Paid by uploading a payment file to the bank’s online portal.”",
             "The same names appear in the Venues list, the Collector’s “How the Rest Is Paid” list and the review pages.",
         ],
         live=("/admin/venues/riverside-rsl-club?role=super-admin", "Venue Settings (Super Admin view)"),
-        changed="VenueSettingsForm, venue-data (names)",
+        changed="VenueSettingsForm, AlwaysAvailableMethodRow, Switch, venue-data (names)",
     ),
     dict(
         title="Simpler lines for the cheque options",
@@ -238,7 +238,6 @@ ENTRIES2 = [
 
 # Comments that were read and not followed (earlier feedback or a team decision came first)
 NOT_ADOPTED = [
-    ("Funds transfer: “disabled toggle set to On”", "The team asked for the same card as the others with an “Always available” badge."),
     ("Dropdown label “Non-cash payout method” (and the matching warning wording)", "Brien did not understand “non-cash destination”, so the screens keep “How the Rest Is Paid”."),
     ("Cheque label “Cheque detail entry”", "Oshada’s earlier comment asked for “Who can enter cheque details?”."),
     ("Remove “(Approver)” from “returned by …”", "Stories CHE-09 and MBT-12 let both the Approver and the Authoriser return a payout."),

@@ -5,12 +5,14 @@ type SwitchProps = {
   label: string;
   // Id of the text that explains what the switch does, so screen readers read it with the switch
   describedBy?: string;
+  // A switch that shows its state but cannot be changed (a setting that is always on)
+  disabled?: boolean;
 };
 
 // A real button with role="switch", so Space and Enter work. The state is shown in words as well as colour.
-export default function Switch({ id, checked, onChange, label, describedBy }: SwitchProps) {
+export default function Switch({ id, checked, onChange, label, describedBy, disabled = false }: SwitchProps) {
   return (
-    <span className="flex shrink-0 items-center gap-3">
+    <span className={`flex shrink-0 items-center gap-3 ${disabled ? "opacity-60" : ""}`}>
       <span aria-hidden="true" className={`w-[1.75rem] text-right text-base font-medium ${checked ? "text-ink" : "text-subtle"}`}>
         {checked ? "On" : "Off"}
       </span>
@@ -21,8 +23,9 @@ export default function Switch({ id, checked, onChange, label, describedBy }: Sw
         aria-checked={checked}
         aria-label={label}
         aria-describedby={describedBy}
+        disabled={disabled}
         onClick={() => onChange(!checked)}
-        className={`relative h-[1.75rem] w-[3.25rem] shrink-0 rounded-full transition-colors outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 ${
+        className={`relative h-[1.75rem] w-[3.25rem] shrink-0 rounded-full transition-colors outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 disabled:cursor-not-allowed ${
           checked ? "bg-brand" : "bg-line"
         }`}
       >

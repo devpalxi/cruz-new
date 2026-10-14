@@ -14,7 +14,7 @@ export type Venue = {
 };
 
 // One name per thing: change these labels here and every screen follows.
-export const FUNDS_TRANSFER_LABEL = "EFT";
+export const FUNDS_TRANSFER_LABEL = "Electronic Fund Transfer";
 export const PAYMENT_FILE_LABEL = "Manual Bank Transfer";
 export const CHEQUE_LABEL = "Cheque";
 
