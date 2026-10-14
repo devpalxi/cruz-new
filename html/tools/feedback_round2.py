@@ -10,7 +10,7 @@ APPROVER_FILE = "19-approver-payment-file"
 
 CROPS2 = {
     "r2_1_b": ("a", VS, (370, 230, 1070, 610), "Venue Settings: “How Winners Are Paid”, Funds Transfer, Payment File for Your Bank"),
-    "r2_1_a": ("n", VS, (370, 230, 1070, 635), "Venue Settings: “Payouts configuration”, Electronic Fund Transfer with a disabled On switch, Manual Bank Transfer"),
+    "r2_1_a": ("n", VS, (370, 230, 1070, 635), "Venue Settings: “Payouts configuration”, Electronic Fund Transfer with a disabled On switch, no badge, Manual Bank Transfer"),
     "r2_2_b": ("a", VS, (370, 615, 1070, 1005), "Cheque options with longer lines"),
     "r2_2_a": ("n", VS, (370, 640, 1070, 1025), "Cheque options with one short line each"),
     "r2_3_b": ("a", VS, (370, 1020, 1070, 1100), "Fixed-width buttons, left aligned"),
@@ -48,13 +48,13 @@ ENTRIES2 = [
         who="PromptLane (Figma)",
         feedback="i feel Payouts configuration is a better title. desc: “Choose how winners can be paid” remove last 2 sentences. agree with oshadha on adding changes applied to new payouts only message when saving.   •   descriptions overall should be concise. let’s not use “you”/“your” a lot.   •   Manual bank transfer is better. desc: is it needed to mention what is done with this here instead of describing what it is.   •   Instead of Funds transfer EFT (Electronic Funds Transfer) is better imo.   •   agree with oshadha on always available style. can have a disabled toggle set to On.",
         issue="The section was called “How Winners Are Paid” with no explanation line, the descriptions spoke to the reader (“Your team uploads a payment file to your bank’s online portal”) and described an action rather than the method, and the two methods used longer names.",
-        note="Names: the team chose Electronic Fund Transfer (written in full, not EFT) and Manual Bank Transfer. The comment on the always-available card is followed in full: the “Always available” badge stays and a disabled switch set to On sits beside it.",
+        note="Names: the team chose Electronic Fund Transfer (written in full, not EFT) and Manual Bank Transfer. The comment on the always-available card is followed: the card now has a disabled switch set to On, and the “Always available” badge was removed at the team’s request.",
         before=["r2_1_b"],
         after=["r2_1_a"],
         steps=[
             "Open Manage, then Venues, and select a venue.",
             "The section is called “Payouts configuration”, with “Choose how winners can be paid.” under it.",
-            "Electronic Fund Transfer shows an “Always available” badge and a switch that is fixed to On and cannot be changed. Manual Bank Transfer and Cheque have On/Off switches.",
+            "Electronic Fund Transfer has a switch that is fixed to On and cannot be changed. Manual Bank Transfer and Cheque have On/Off switches.",
             "Each method has one line that says what it is, for example “Paid by uploading a payment file to the bank’s online portal.”",
             "The same names appear in the Venues list, the Collector’s “How the Rest Is Paid” list and the review pages.",
         ],

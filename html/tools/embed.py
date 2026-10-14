@@ -7,7 +7,7 @@ LIVE = "https://cruz-new.vercel.app"
 SHOTS = {
     "01-venues-admin": ("Venues list as an Admin (edit icon shows on hover)", "/admin/venues"),
     "02-venues-super-admin": ("Venues list as a Super Admin, with the Client column", "/admin/venues?role=super-admin"),
-    "03-venue-settings-all-on": ("Venue Settings: Electronic Fund Transfer (always available, switch fixed to On), Manual Bank Transfer with Venue Code, and Cheque with who can enter cheque details", "/admin/venues/riverside-rsl-club?role=super-admin"),
+    "03-venue-settings-all-on": ("Venue Settings: Electronic Fund Transfer (switch fixed to On), Manual Bank Transfer with Venue Code, and Cheque with who can enter cheque details", "/admin/venues/riverside-rsl-club?role=super-admin"),
     "04-venue-settings-cheque-needs-mode": ("Saving with Cheque on and no choice of who can enter cheque details shows a message", "/admin/venues/northside-sports-club?role=super-admin"),
     "05-venue-settings-saved": ("Settings saved: confirmation message shown", "/admin/venues/northside-sports-club?role=super-admin"),
     "06-venue-no-access": ("An Admin opening another client's venue sees an access message", "/admin/venues/harbourview-hotel"),
