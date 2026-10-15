@@ -51,9 +51,9 @@ Names were first chosen with the `customer-wording` skill (Brien, a venue owner,
 | Payment Method Details | Payout Destination Details (section and Collector step) | User decision |
 | Account Name Check | CoP Status | User decision |
 | Method | Paid By (row label on the review cards) | From a Figma comment |
-| Payouts configuration | How Winners Are Paid (Venue Settings heading) | From a Figma comment; line under it: "Choose how winners can be paid." |
+| Payouts settings | How Winners Are Paid, then Payouts configuration (Venue Settings heading) | **User decision, 2026-10-15**: a reply on Figma comment #3 says the heading was requested as "Payouts settings". Line under it: "Choose how winners can be paid." |
 | Check Name Match | Validate Cheque (button) | From a Figma comment (the thread said it was already discussed) |
-| Who can enter cheque details? | Who Enters the Cheque Details | Oshada's earlier comment, kept over a Figma suggestion ("Cheque detail entry") |
+| Cheque detail entry | Who can enter cheque details? | **User decision, 2026-10-15**: follows Figma comment #8, with the line "Select who can enter the cheque details." This replaces Oshada's earlier wording, so tell Oshada. The save message still says "Choose who can enter cheque details before saving." |
 | Return for Correction / Send Back for Review / Correct Returned Payout | (new) | Our wording, unconfirmed |
 
 **Warning:** the skill's term guide, built from the Oct 9 meeting with Brien, says "Manual Bank Transfer" reads as "a transfer someone does by hand" and suggests "Payment file for your bank". The user chose to go with the reviewer's request. The term guide in `.claude/skills/customer-wording/SKILL.md` has **not** been updated (Minosha reviewed it), so it still says the opposite. Ask before editing it, and tell Brien or Minosha about the change.
@@ -338,12 +338,12 @@ Board: https://www.figma.com/board/wps619UWOeRFJ8YpBxZvzs/Payouts-new-UIs (comme
 | Screen | Comment (short) | Result |
 |---|---|---|
 | Venue Settings | Where does the daily limit come from? | Already removed |
-| Venue Settings | Title "Payouts configuration"; one line "Choose how winners can be paid"; add "applies to new payouts only" near save | Done |
+| Venue Settings | Title "Payouts configuration" (renamed "Payouts settings" on 2026-10-15 after a reply on the comment); one line "Choose how winners can be paid"; add "applies to new payouts only" near save | Done |
 | Venue Settings | Funds transfer: disabled toggle set to On; use EFT | **Kept the "Always available" badge** (earlier decision); **EFT adopted** (user) |
 | Venue Settings | "Manual bank transfer" name; describe what it is | Name adopted (user); description: "Paid by uploading a payment file to the bank's online portal." |
 | Venue Settings | Concise descriptions, avoid "you/your" | Done |
 | Venue Settings | Remove "choose who enters" from the Cheque description | Already done |
-| Venue Settings | Label "Cheque detail entry" | **Not adopted**: Oshada asked for "Who can enter cheque details?" |
+| Venue Settings | Label "Cheque detail entry" | **Not adopted in round 2** (Oshada asked for "Who can enter cheque details?"); **adopted 2026-10-15** by user decision (see section 3) |
 | Venue Settings | Simpler option lines | Done ("Collector enters the cheque details. Authoriser can view them." and so on) |
 | Venue Settings | Buttons consistent with the Collector view | Done: equal width, outline left, primary right |
 | Review card | "Paid by" is confusing, use "Method" | Done |

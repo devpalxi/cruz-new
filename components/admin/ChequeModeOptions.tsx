@@ -8,7 +8,7 @@ type ChequeModeOptionsProps = {
 
 export default function ChequeModeOptions({ value, onChange }: ChequeModeOptionsProps) {
   return (
-    <div role="radiogroup" aria-label="Who can enter cheque details" className="flex flex-col gap-3">
+    <div role="radiogroup" aria-label="Cheque detail entry" className="flex flex-col gap-3">
       {CHEQUE_MODES.map((mode) => (
         <RadioOption
           key={mode.value}
