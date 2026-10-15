@@ -52,7 +52,7 @@ export default function AuthoriserPayoutView({ scenario }: { scenario: ReviewSce
   const authoriserEntersCheque = chequeNeedsAuthoriser(scenario);
   const chequeComplete = cheque.complete;
 
-  // Cheque Details Entered By lists the people who actually entered details: the Collector (as recorded)
+  // Entered By lists the people who actually entered details: the Collector (as recorded)
   // and the Authoriser once they have entered or changed something and checked it.
   const authoriserEntered =
     chequeComplete &&

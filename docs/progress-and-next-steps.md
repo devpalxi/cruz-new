@@ -51,6 +51,7 @@ Names were first chosen with the `customer-wording` skill (Brien, a venue owner,
 | Payment Method Details | Payout Destination Details (section and Collector step) | User decision |
 | Account Name Check | CoP Status | User decision |
 | Method | Paid By (row label on the review cards) | From a Figma comment |
+| Entered By | Cheque Details Entered By (row label on the review cards) | **User decision, 2026-10-15**: follows Figma comment #20 ("Entered by"). Shows usernames with roles, for example "M.Santos (Collector), R.Nguyen (Authoriser)" |
 | Payouts settings | How Winners Are Paid, then Payouts configuration (Venue Settings heading) | **User decision, 2026-10-15**: a reply on Figma comment #3 says the heading was requested as "Payouts settings". Line under it: "Choose how winners can be paid." |
 | Check Name Match | Validate Cheque (button) | From a Figma comment (the thread said it was already discussed) |
 | Cheque detail entry | Who can enter cheque details? | **User decision, 2026-10-15**: follows Figma comment #8, with the line "Select who can enter the cheque details." This replaces Oshada's earlier wording, so tell Oshada. The save message still says "Choose who can enter cheque details before saving." |

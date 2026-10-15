@@ -21,7 +21,7 @@ export default function RecordedDestination({ scenario, chequeEnteredBy, chequeS
     { label: "Method", value: scenario.destinationTitle },
     { label: "Amount", value: `$${scenario.nonCashAmount}` },
     ...(isCheque
-      ? [{ label: "Cheque Details Entered By", value: enteredBy.length > 0 ? enteredBy.join(", ") : <NotEnteredYet /> }]
+      ? [{ label: "Entered By", value: enteredBy.length > 0 ? enteredBy.join(", ") : <NotEnteredYet /> }]
       : scenario.accountRows),
   ];
   const chequeRows = [
@@ -31,8 +31,9 @@ export default function RecordedDestination({ scenario, chequeEnteredBy, chequeS
 
   return (
     <div className="flex flex-col gap-3">
-      <DetailList rows={topRows} labelClassName="font-medium" />
-      {isCheque && (chequeSlot ?? <DetailList rows={chequeRows} labelClassName="font-medium" />)}
+      {/* One list when the cheque rows are read-only, so every row is spaced the same */}
+      <DetailList rows={isCheque && !chequeSlot ? [...topRows, ...chequeRows] : topRows} labelClassName="font-medium" />
+      {isCheque && chequeSlot}
     </div>
   );
 }
