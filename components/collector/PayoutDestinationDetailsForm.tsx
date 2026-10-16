@@ -238,7 +238,7 @@ export default function PayoutDestinationDetailsForm() {
               <div className="mt-[1.375rem]">
                 {chequeNameDiffers ? (
                   <WarningAlert
-                    title={`Cheque name differs from the verified ID name (${chequeCheck?.percent}% similar). Proceeding to summary.`}
+                    title="Cheque name differs from the verified ID name. Proceeding to summary."
                     message="The Authoriser will review the difference."
                   />
                 ) : (

@@ -1,37 +1,20 @@
 import type { NameMatchStatus } from "./name-match";
 import type { ReviewScenario } from "./payout-review-scenarios";
 
-export type PaymentCondition = { label: string; done: boolean; detail?: string };
-
-type ConditionInput = {
+type WaitingForInput = {
   detailsEntered: boolean;
   nameStatus: NameMatchStatus;
-  // The Authoriser has recorded a rationale and ticked the acknowledgement
+  // The Authoriser has recorded a rationale and ticked the acknowledgement (or a saved decision exists)
   nameResolved: boolean;
   hold: ReviewScenario["paymentHold"];
 };
 
-// What a cheque payout still needs before payment completes by itself. The status stays Pending Payment until all are met.
-export function chequePaymentConditions({ detailsEntered, nameStatus, nameResolved, hold }: ConditionInput): PaymentCondition[] {
-  const conditions: PaymentCondition[] = [
-    {
-      label: "Cheque details entered",
-      done: detailsEntered,
-      detail: detailsEntered ? undefined : "Cheque Number and Cheque Name must be entered and checked.",
-    },
-  ];
-  if (nameStatus === "no-match") {
-    conditions.push({
-      label: "Name difference resolved",
-      done: nameResolved,
-      detail: nameResolved ? undefined : "The Authoriser records a rationale and acknowledges the difference.",
-    });
-  }
-  if (hold?.waitRemaining) {
-    conditions.push({ label: "Original waiting time", done: false, detail: `${hold.waitRemaining} remaining.` });
-  }
-  if (hold?.dailyLimitReason) {
-    conditions.push({ label: "Daily limit", done: false, detail: hold.dailyLimitReason });
-  }
-  return conditions;
+// What a cheque payout still needs before payment completes by itself. The status stays Pending Payment until none are left.
+export function chequeWaitingFor({ detailsEntered, nameStatus, nameResolved, hold }: WaitingForInput): string[] {
+  const waiting: string[] = [];
+  if (!detailsEntered) waiting.push("cheque details");
+  if (nameStatus === "no-match" && !nameResolved) waiting.push("name difference");
+  if (hold?.waitRemaining) waiting.push(`waiting time (${hold.waitRemaining})`);
+  if (hold?.dailyLimitReason) waiting.push("daily limit");
+  return waiting;
 }

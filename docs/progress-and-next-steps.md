@@ -154,40 +154,37 @@ Story coverage (from the HTML coverage tables):
 
 ---
 
-### 4.5 Cheque name match (CHE-17 to CHE-23), built 2026-10-15
+### 4.5 Cheque name match (CHE-17 to CHE-23), rebuilt 2026-10-17
 
-Decisions from the user: the Authoriser resolves; the Approver and the Collector Summary show the result read-only; percentages on screen (70%, not 0.7); four cases in the switcher.
+Jira: CHE-17 [CRP-341](https://cruzmoney.atlassian.net/browse/CRP-341) (a subtask of CRP-342, CHE-05), CHE-18 CRP-343, CHE-19 CRP-344, CHE-20 CRP-345, CHE-21 CRP-346, CHE-22 CRP-347, CHE-23 CRP-348, all under epic CRP-321. CHE-05 is CRP-342. Base link: `https://cruzmoney.atlassian.net/browse/`. The hosted prototype is now `https://cruz-ui-designs-b9fc26ac-221b-4be9-bb88-8648ddaff046.vercel.app` (`html/tools/embed.py` and `html/linear-updates.html` now use it; `docs/linear-updates.md` and the story pages still have the old link).
+
+Team direction (2026-10-17): **no Name Similarity percentage and no threshold on screen.** Payout details show the saved comparison and the Authoriser's resolution read-only, and earlier decisions are in a payout history. The Jira text of CHE-17 still says percentage and threshold; it needs updating.
 
 | Where | What it shows |
 |---|---|
-| Authoriser review, section **Name Verification** (cheques only) | **Cheque Name Check** card: Verified ID Name (or Captured Name) beside Cheque Name, Name Similarity, Threshold, Result pill (`VerificationPill`: Match, No Match, Unable to Compare). For No Match: required **Rationale** (500 characters, counter) and the acknowledgement checkbox |
-| Authoriser review, **Name Check History** (appears when there is a record) | One card per decision: date, Authoriser, both names, similarity, threshold, rationale, acknowledged, **Active** or **Historical** |
-| Authoriser and Approver review, **Payment Status** (cheques only) | **Pending Payment**, then each outstanding condition (cheque details, name difference, original waiting time, daily limit), "Payment completes automatically", and "Payment Completed does not mean the winner has collected the cheque." |
-| Approver review | Same card and history, read-only. "Names differ. The Authoriser records a reason before the payout is completed." The Approvals panel no longer shows ID Name Match for cheques |
-| Collector Summary | Same card, read-only, for a cheque (hidden when only the Authoriser enters cheque details). A blank name shows Unable to Compare |
-| Collector cheque step | **Check Name Match** now compares the name with the winner's name and says if it differs. The Collector can still continue; the Authoriser resolves it |
+| Review pages, section **Name Verification** (cheques only) | **Cheque Name Check** card: Verified ID Name (or Captured Name) beside Cheque Name, and a **Result** pill (Match, No Match, Unable to Compare). Captured names also show "Name is not verified using ID documents." |
+| Authoriser, No Match | Inside the card: required **Rationale** (500 characters, counter) and the acknowledgement checkbox. Authorise stays off until both are done and the cheque details are entered and checked |
+| Authoriser, Approvals panel | The Approver Decision box is separate (the Approver has already approved). For a No Match the Authoriser's own decision shows as **Name Difference**: "Rationale needed", then "Resolved by R.Nguyen (Authoriser)". **ID Name Match** follows the real result (Yes or No) and is hidden when the names cannot be compared or there is no ID. Added 2026-10-17 |
+| Approver and Collector Summary | The same card, read-only. For a difference: "Names differ. The Authoriser records a reason before the payout is completed." |
+| Saved decision (CHE-22) | In the card, read-only: Rationale, Acknowledged, Resolved By, Resolved On |
+| **Payout History** section (only when there are earlier decisions) | One card per earlier decision, marked **Historical**. When the Authoriser changes the cheque name after a decision, the old decision moves here and the new check starts fresh (CHE-18) |
+| Under the payout status (CHE-23) | "Pending Payment. Waiting for: cheque details, name difference, waiting time (...), daily limit." or "All conditions are met.", then "Payment completes automatically. Payment Completed does not mean the winner has collected the cheque." |
+| Collector cheque step | Check Name Match says if the cheque name differs from the winner's name |
 
-Rules (all in `lib/name-match.ts`, mock only, no server):
-- Ignores case, extra spaces and `. , '`; hyphens count as spaces. Re-ordered names are equal. An initial scores 0.5 of a part; a small typo scores its closeness (80% or more of the letters). Score = points / the longer name's part count.
-- Match when the rounded percentage is at or above the threshold (default 70%: 70 is Match, 69 is No Match). Examples: Vivek Mishra vs Vivek Mishra Jr = 67% No Match; J Smith vs John Smith = 75% Match.
-- No ID: the comparison name is the **Captured Name** and the line "Name is not verified using ID documents." shows, even for a Match. No name at all: Unable to Compare with the reason and no score.
-- Names change (Authoriser edits and checks the cheque details): the score is redone, the rationale and tick are cleared, and a decision already made moves to history as Historical (CHE-18). The payout keeps its original threshold (a constant for now; CHE-05 will set it).
+Removed on request (2026-10-16): the Payment Status section (replaced by the line under the status), the Name Check History section (replaced by Payout History), and the similarity and threshold rows.
 
-Prototype payouts (switcher on both review pages; `lib/payout-review-scenarios.ts`): Cheque: Collector Only (Match), Cheque: Name differs (No Match, with an earlier historical decision and a waiting time), Cheque: Captured name, Cheque: Cannot compare (with a daily limit hold). The demo payouts also show "Drivers Licence" or "No ID document" and the Identity Confirmation lines to match their name source.
+Rules (`lib/name-match.ts`, mock, no server): ignore case, extra spaces and `. , '`; hyphens count as spaces; re-ordered names are equal; an initial scores half a part; a small typo scores its closeness. The score decides Match or No Match (70% default, compared as whole percentages) but is never displayed. No ID: the comparison name is the **Captured Name**. No name at all: Unable to Compare with the reason.
 
-Authorise stays off while a No Match has no rationale and tick. The short line above the buttons says which one is missing (cheque details come first).
+Prototype payouts (switcher on both review pages): Cheque: Collector Only (Match), Cheque: Name differs (with an earlier Historical decision and a waiting time), Cheque: Difference resolved (saved decision and history), Cheque: Captured name, Cheque: Cannot compare (with a daily limit hold).
 
-Files: new `lib/name-match.ts`, `lib/cheque-payment-status.ts`, `components/payout-review/{ChequeNameCheck,NameCheckHistory,ChequePaymentStatus,NameBox}.tsx`. Changed: `lib/payout-review-scenarios.ts`, `components/authoriser/{AuthoriserPayoutView,AuthorisationPanel,ChequeDetailsEditor}.tsx`, `components/approver/{ApproverPayoutView,ApprovalPanel,NameMatchStatus}.tsx`, `components/payout-review/NameComparison.tsx` (NameBox moved out), `components/collector/{PayoutDestinationDetailsForm,SummaryView}.tsx`. `docs/design.md` was **not** updated this round (user asked to touch only the two documents); add the new components and routes there next time.
+Files: `lib/name-match.ts`, `lib/cheque-payment-status.ts`, `components/payout-review/{ChequeNameCheck,NameCheckHistory,ChequePaymentNote,NameBox}.tsx`; changed `lib/payout-review-scenarios.ts`, the Authoriser, Approver and Collector review and summary components. `docs/design.md` was not updated.
 
-Lessons from the earlier feedback and Figma comments, applied here:
-- One short line, no repeated explanation, no "you/your" (round 1 and 2 comments on wording).
-- Results are pills with an icon and text, in the warning tone for "needs a look" (the Not entered yet comment); no plain coloured text.
-- Required fields have an asterisk and a character limit with a counter (the Return for Correction comments); the primary button stays off and a one-line message says why.
-- Same data looks the same on every role's page, so one `ChequeNameCheck` is used by the Authoriser, Approver and Collector.
-- Clear names: Title Case labels, no technical words ("similarity", not "fuzzy"). Names already agreed stay as they are.
-- A message says why and what to do (the method-unavailable comment).
-- Where the Collector cannot act, they are not shown a step for it; the Approver only reads.
-- Colours come from tokens only. Two known hard-coded colours (in `WarningAlert` and `StatusPill`) are used by the new screens but were not added to.
+Screenshots (`html/screenshots/26` to `40`, made by `html/tools/shots_namecheck.mjs`, cropped to the relevant section) are mapped to tickets in `html/linear-updates.html`, ready to paste into Figma.
+
+Still open:
+- Unable to Compare does not block Authorise (the stories only require a rationale for No Match).
+- The returned-payout correction page does not redo the check.
+- Wording to confirm with Brien or Minosha: Cheque Name Check, Verified ID Name, Captured Name, Rationale, Payout History, Pending Payment.
 
 ## 5. Decisions made
 
@@ -241,7 +238,7 @@ python linear.py --md           # also rewrites docs/linear-updates.md (without 
 
 ### 8.1 Cheque name match (CHE-17 to CHE-23): built 2026-10-15
 
-Done. See section 4.5. Still open inside it:
+Done and rebuilt 2026-10-17. See section 4.5. Still open inside it:
 - **Unable to Compare does not block Authorise.** The stories only require a rationale for No Match. Confirm that a payout with no name to compare should still be authorisable.
 - **The returned-payout correction page does not redo the check** (CHE-18 mentions a corrected payout). The Authoriser editing the cheque details does.
 - The Collector's cheque step compares with the winner's name from a mock; there is no Collector no-ID flow to show a Captured Name there.

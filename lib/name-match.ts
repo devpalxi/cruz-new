@@ -1,6 +1,7 @@
 // Cheque name match (prototype only). A small, local stand-in for the real similarity check:
 // it ignores case, extra spaces and common punctuation, treats re-ordered names as equal and
 // gives partial credit for initials and missing parts. No server is called.
+// The score decides Match or No Match but is not shown on screen.
 
 // Default threshold. A Super Admin setting (CHE-05) will replace this; changes apply to new payouts only.
 export const NAME_MATCH_THRESHOLD = 0.7;
@@ -13,10 +14,6 @@ export type NameMatchStatus = "match" | "no-match" | "unable";
 export type NameMatchResult = {
   status: NameMatchStatus;
   source: NameSource;
-  // 0 to 1, or null when the names cannot be compared. Never made up.
-  score: number | null;
-  percent: number | null;
-  thresholdPercent: number;
   // Why the names could not be compared
   reason?: string;
 };
@@ -28,6 +25,12 @@ export const NAME_SOURCE_LABELS: Record<NameSource, string> = {
 };
 
 export const NAME_NOT_VERIFIED_NOTE = "Name is not verified using ID documents.";
+
+export const NAME_RESULT_TEXT: Record<NameMatchStatus, string> = {
+  match: "Match",
+  "no-match": "No Match",
+  unable: "Unable to Compare",
+};
 
 export function normaliseName(name: string): string {
   return name
@@ -97,34 +100,20 @@ export function evaluateNameMatch({
   source,
   threshold = NAME_MATCH_THRESHOLD,
 }: EvaluateInput): NameMatchResult {
-  const thresholdPercent = Math.round(threshold * 100);
-
   if (chequeName.trim() === "") {
-    return { status: "unable", source, score: null, percent: null, thresholdPercent, reason: "Cheque name is not entered yet." };
+    return { status: "unable", source, reason: "Cheque name is not entered yet." };
   }
   if (source === "none" || comparedName.trim() === "") {
-    return {
-      status: "unable",
-      source,
-      score: null,
-      percent: null,
-      thresholdPercent,
-      reason: "No ID name or captured recipient name is available.",
-    };
+    return { status: "unable", source, reason: "No ID name or captured recipient name is available." };
   }
 
-  const score = nameSimilarity(chequeName, comparedName);
-  const percent = Math.round(score * 100);
-  return {
-    status: percent >= thresholdPercent ? "match" : "no-match",
-    source,
-    score,
-    percent,
-    thresholdPercent,
-  };
+  // Compared as whole percentages, so 70% meets a 0.7 threshold and 69% does not
+  const percent = Math.round(nameSimilarity(chequeName, comparedName) * 100);
+  return { status: percent >= Math.round(threshold * 100) ? "match" : "no-match", source };
 }
 
-// One saved decision about a name difference (CHE-22)
+// One decision about a name difference, kept with the payout. The Authoriser's decision in force is the
+// active one; earlier ones are kept as history.
 export type NameCheckRecord = {
   id: string;
   recordedAt: string;
@@ -132,10 +121,6 @@ export type NameCheckRecord = {
   chequeName: string;
   comparedName: string;
   source: NameSource;
-  percent: number;
-  thresholdPercent: number;
   rationale: string;
   acknowledged: boolean;
-  // The active decision is the one that applies to the payout now. Earlier ones are kept as history.
-  active: boolean;
 };

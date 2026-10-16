@@ -36,14 +36,29 @@ HOW = {
     "che-13": "With Collector and Authoriser Both, the Collector can fill in both cheque details, one of them, or neither, and still continue. Anything left blank shows as Not entered yet on the Summary.",
     "che-14": "In the Authoriser review, anything the Collector left blank can be completed. In the example, the Collector entered the number and the Authoriser adds the name, so the card lists both people. Both are needed before Authorise is available.",
     "che-15": "On the Collector's cheque form, the Cheque Name starts as the winner's name and can be changed. The Cheque Number is typed as text, so leading zeros are kept.",
-    "che-17": "Open a cheque payout in the Authoriser or Approver review. Name Verification shows the Verified ID Name beside the Cheque Name, with the Name Similarity, the Threshold and a Match or No Match result. The Collector's Summary shows the same block under the payout details. Use the Prototype only row at the top to switch between Match, Name differs, Captured name and Cannot compare.",
-    "che-18": "In the Authoriser review for Cheque: Name differs, enter a rationale and tick the box, then edit the cheque details and select Check Name Match with a different name. The result is worked out again, the rationale and tick are cleared, and the earlier decision stays in Name Check History as Historical. On the Collector's cheque step, Check Name Match now says if the name differs from the winner's name.",
-    "che-19": "Open Cheque: Captured name. The name is labelled Captured Name, and the line Name is not verified using ID documents is shown even though the result is Match. Open Cheque: Cannot compare. With no name to compare with, the result is Unable to Compare, the reason is shown and no similarity is made up.",
-    "che-20": "Open Cheque: Name differs as the Authoriser. A required Rationale box (500 characters) sits under the names, similarity and threshold. Authorise stays off, and a short line says why, until a rationale is entered. A rationale with only spaces does not count. The Approver and the Collector see the result but cannot resolve it.",
-    "che-21": "Under the Rationale is an unticked box: I acknowledge that the cheque name differs from the verified ID name and confirm completion of this payout. For a captured name it says captured recipient name. Authorise needs the rationale, this tick and the usual confirmation.",
-    "che-22": "Name Check History lists each decision: date and time, Authoriser, both names, similarity, threshold, rationale and acknowledgement. The decision that applies now is marked Active and earlier ones Historical. The Approver sees the same list, read-only.",
-    "che-23": "Cheque payouts show Payment Status as Pending Payment, with what is still outstanding: cheque details, the name difference, the original waiting time and any daily limit reason. A line says payment completes automatically, and that Payment Completed does not mean the winner has collected the cheque.",
+    "che-17": "Open a cheque payout in the Authoriser or Approver review. Name Verification shows the Verified ID Name beside the Cheque Name, with a Match or No Match result. The Collector's Summary shows the same card under the payout details. The similarity percentage and threshold are not shown. Use the Prototype only row at the top to switch between the payouts.",
+    "che-18": "In the Authoriser review for Cheque: Name differs, record a rationale and tick the box, then edit the cheque details and select Check Name Match with a different name. The result is worked out again, the rationale and tick are cleared, and the earlier decision moves to Payout History as Historical. On the Collector's cheque step, Check Name Match says if the name differs from the winner's name.",
+    "che-19": "Open Cheque: Captured name. The name is labelled Captured Name, and the line Name is not verified using ID documents is shown even though the result is Match. Open Cheque: Cannot compare. With no name to compare with, the result is Unable to Compare and the reason is shown.",
+    "che-20": "Open Cheque: Name differs as the Authoriser. When the names differ, a required Rationale box (500 characters) appears under the result. Authorise stays off, and a short line says why, until a rationale is entered. A rationale with only spaces does not count. The Approver and the Collector see the result but cannot resolve it. In Approvals, the Authoriser's own decision shows as Name Difference: Rationale needed. It is separate from the Approver Decision, because the Approver has already approved and the Authoriser deals with the name difference himself.",
+    "che-21": "Under the Rationale is an unticked box: I acknowledge that the cheque name differs from the verified ID name and confirm completion of this payout. For a captured name it says captured recipient name. Authorise needs the rationale, this tick and the usual confirmation. Approvals then shows Name Difference: Resolved by the Authoriser. ID Name Match follows the real result (Yes or No) and is hidden when the names cannot be compared.",
+    "che-22": "Open Cheque: Difference resolved. Payout Details show the saved comparison and the Authoriser's decision, read-only: rationale, acknowledgement, who resolved it and when. Earlier decisions are listed in Payout History and marked Historical. The Approver sees the same.",
+    "che-23": "Cheque payouts show Pending Payment under the status, with what the payout is still waiting for: cheque details, the name difference, the original waiting time or a daily limit. A second line says payment completes automatically, and that Payment Completed does not mean the winner has collected the cheque.",
     "che-16": "Open any cheque payout in the Approver or Authoriser review. Payment Method Details shows Method, Amount, Cheque Details Entered By, the Cheque Number and the Cheque Name.",
+}
+
+
+JIRA_BASE = "https://cruzmoney.atlassian.net/browse/"
+# Jira keys we know (epic CRP-321 and its children). Other stories are added when their keys are confirmed.
+JIRA = {
+    "che-01": "CRP-323",
+    "che-02": "CRP-326",
+    "che-17": "CRP-341",
+    "che-18": "CRP-343",
+    "che-19": "CRP-344",
+    "che-20": "CRP-345",
+    "che-21": "CRP-346",
+    "che-22": "CRP-347",
+    "che-23": "CRP-348",
 }
 
 
@@ -156,7 +171,7 @@ for prefix, title, tag, story, note, shots, how, sid in entries:
         body.append(
             '<div class="newstart" id="new-changes"><p class="newstart-tag">NEW CHANGES START HERE</p>'
             "<h2>New in this update: cheque name match (CHE-17 to CHE-23)</h2>"
-            "<p>Everything below this banner is new. Entries above it were sent in earlier updates.</p></div>"
+            "<p>Everything below this banner is new. Entries above it were sent in earlier updates. Each new entry links to its Jira ticket.</p></div>"
         )
     is_new = sid in NEW_IDS
     is_updated = sid in UPDATED_IDS
@@ -167,6 +182,8 @@ for prefix, title, tag, story, note, shots, how, sid in entries:
     if is_updated:
         badges += '<span class="badge updated">UPDATED: screenshots now include the name check</span>'
     body.append(f"<p>{badges}</p>")
+    if sid in JIRA:
+        body.append(f'<p><strong>Jira:</strong> <a href="{JIRA_BASE}{JIRA[sid]}">{JIRA[sid]}</a></p>')
     body.append(f"<p><strong>Short description:</strong> {esc(story)}</p>")
     if note:
         body.append(f'<p class="note">{esc(note)}</p>')
@@ -207,7 +224,8 @@ table{{border-collapse:collapse;width:100%;font-size:.94rem}}th,td{{border:1px s
 <ul>
 <li>New entries are marked <span class="badge new">NEW</span> and sit under the blue banner near the end of the Cheque section.</li>
 <li>Six earlier cheque entries (CHE-04, 09, 11, 12, 14, 16) are marked <span class="badge updated">UPDATED</span>: their review screens now include the name check, so the screenshots were refreshed.</li>
-<li>The Collector's Check Name Match button now says if the cheque name differs from the winner's name. The Electronic Fund Transfer card change (disabled switch, no badge) is already in the screenshots.</li>
+<li>The name check shows the two names and a Match or No Match result. It does not show a similarity percentage or a threshold. The Authoriser enters the rationale and acknowledgement inside the review page. The saved decision then shows read-only under Payout Details, with earlier decisions in Payout History.</li>
+<li>The Collector's Check Name Match button says if the cheque name differs from the winner's name. Screens elsewhere also changed in earlier rounds: the heading is Payouts settings, the label is Non-Cash Payout Method, and the review row is Entered By.</li>
 </ul></div>
 {"".join(body)}
 <h2>Stories with no screen yet</h2>

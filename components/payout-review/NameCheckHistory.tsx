@@ -1,8 +1,8 @@
 import StatusPill from "@/components/ui/StatusPill";
 import { NAME_SOURCE_LABELS, type NameCheckRecord } from "@/lib/name-match";
 
-// Read-only record of each decision about a cheque name difference. The decision in force is marked Active,
-// earlier ones Historical. Shown the same way to the Approver and the Authoriser.
+// Earlier decisions about a cheque name difference on this payout, read-only and marked Historical.
+// Shown the same way to the Approver and the Authoriser.
 export default function NameCheckHistory({ records }: { records: NameCheckRecord[] }) {
   return (
     <div className="flex flex-col gap-3">
@@ -12,8 +12,8 @@ export default function NameCheckHistory({ records }: { records: NameCheckRecord
             <p className="text-base font-semibold text-ink">
               {record.recordedAt}, {record.authoriser} (Authoriser)
             </p>
-            <StatusPill tone={record.active ? "successStrong" : "info"} className="h-6 px-2 text-[0.875rem] font-medium">
-              {record.active ? "Active" : "Historical"}
+            <StatusPill tone="info" className="h-6 px-2 text-[0.875rem] font-medium">
+              Historical
             </StatusPill>
           </div>
           <dl className="mt-3 grid grid-cols-[auto_1fr] gap-x-6 gap-y-1.5 text-base text-ink">
@@ -21,10 +21,6 @@ export default function NameCheckHistory({ records }: { records: NameCheckRecord
             <dd>{record.chequeName}</dd>
             <dt className="font-medium">{NAME_SOURCE_LABELS[record.source]}:</dt>
             <dd>{record.comparedName}</dd>
-            <dt className="font-medium">Name Similarity:</dt>
-            <dd>
-              {record.percent}% (threshold {record.thresholdPercent}%)
-            </dd>
             <dt className="font-medium">Rationale:</dt>
             <dd className="break-words">{record.rationale}</dd>
             <dt className="font-medium">Acknowledged:</dt>

@@ -1,7 +1,7 @@
 import base64, re, os, json
 
 ROOT = r"D:\DN-75\Edu\DN\Palxi\Cruz-Money-2\cruz\html"
-LIVE = "https://cruz-new.vercel.app"
+LIVE = "https://cruz-ui-designs-b9fc26ac-221b-4be9-bb88-8648ddaff046.vercel.app"
 
 # screenshot name -> (caption, live path)
 SHOTS = {
@@ -29,17 +29,23 @@ SHOTS = {
     "22-collector-returned-cheque": ("Collector: a returned cheque payout with the reviewer's reason", "/collector/returned-payout?type=cheque"),
     "23-collector-returned-payment-file": ("Collector: a returned Manual Bank Transfer payout with the reviewer's reason", "/collector/returned-payout?type=payment-file"),
     "24-collector-cash-only": ("Collector: cash-only payout, nothing chosen under How the Rest Is Paid", "/collector/payment-breakdown"),
-    "26-authoriser-name-match": ("Authoriser review: cheque name and verified ID name match, with the similarity and threshold", "/authoriser/payout?scenario=cheque-collector"),
-    "27-authoriser-name-no-match": ("Authoriser review: the names differ; the Authoriser must record a rationale and acknowledge it", "/authoriser/payout?scenario=cheque-no-match"),
-    "28-authoriser-name-blocked-actions": ("Authorise stays off until the rationale and acknowledgement are given", "/authoriser/payout?scenario=cheque-no-match"),
-    "29-authoriser-name-no-match-resolved": ("Rationale and acknowledgement entered; the decision shows as Active in the history", "/authoriser/payout?scenario=cheque-no-match"),
-    "30-authoriser-name-resolved-actions": ("Authorise is available once the name difference is resolved and confirmed", "/authoriser/payout?scenario=cheque-no-match"),
-    "31-authoriser-name-changed": ("Names changed after a decision: the check is redone and the earlier decision moves to history", "/authoriser/payout?scenario=cheque-no-match"),
-    "32-authoriser-name-captured": ("Payout with no ID document: compared with the captured name, and marked as not verified", "/authoriser/payout?scenario=cheque-captured-name"),
-    "33-authoriser-name-unable": ("No name to compare with: Unable to Compare, with the reason and what holds payment", "/authoriser/payout?scenario=cheque-unable"),
-    "34-approver-name-no-match": ("Approver review: the same name check, read-only", "/approver/payout?scenario=cheque-no-match"),
-    "35-collector-cheque-name-differs": ("Collector: Check Name Match says the cheque name differs from the verified ID name", "/collector/payment-breakdown"),
-    "36-collector-summary-name-check": ("Collector Summary: the cheque name check, read-only", "/collector/payment-breakdown"),
+    "26-che17-authoriser-match": ("Authoriser review: the cheque name beside the verified ID name, with the result", "/authoriser/payout?scenario=cheque-collector"),
+    "27-che17-approver-no-match": ("Approver review: the names differ; the Authoriser records the reason (read-only here)", "/approver/payout?scenario=cheque-no-match"),
+    "28-che17-collector-summary": ("Collector Summary: the same name check, read-only", "/collector/payment-breakdown"),
+    "29-che17-collector-cheque-step-differs": ("Collector: Check Name Match says the cheque name differs from the verified ID name", "/collector/payment-breakdown"),
+    "30-che19-captured-name": ("No ID document: compared with the captured name, marked as not verified using ID documents", "/authoriser/payout?scenario=cheque-captured-name"),
+    "31-che19-unable-to-compare": ("No name to compare with: Unable to Compare, with the reason", "/authoriser/payout?scenario=cheque-unable"),
+    "32-che20-rationale-required": ("Authoriser review: the names differ, so a Rationale is required", "/authoriser/payout?scenario=cheque-no-match"),
+    "33-che20-authorise-off": ("Authorise stays off until the rationale and acknowledgement are given", "/authoriser/payout?scenario=cheque-no-match"),
+    "34-che21-acknowledged": ("Rationale entered and the acknowledgement ticked", "/authoriser/payout?scenario=cheque-no-match"),
+    "35-che21-authorise-on": ("Authorise is available once the difference is acknowledged and the payout confirmed", "/authoriser/payout?scenario=cheque-no-match"),
+    "36-che18-names-changed": ("Cheque name changed and checked again: the result is redone and the earlier decision moves to Payout History", "/authoriser/payout?scenario=cheque-no-match"),
+    "37-che22-authoriser-saved-decision": ("Authoriser review: the saved decision shown read-only, earlier decisions in Payout History", "/authoriser/payout?scenario=cheque-resolved"),
+    "38-che22-approver-saved-decision": ("Approver review: the same saved decision and Payout History, read-only", "/approver/payout?scenario=cheque-resolved"),
+    "39-che23-pending-payment-waiting": ("Under the status: Pending Payment and what it is waiting for", "/authoriser/payout?scenario=cheque-no-match"),
+    "40-che23-pending-payment-all-met": ("Under the status: Pending Payment with all conditions met", "/approver/payout?scenario=cheque-collector"),
+    "41-che20-approvals-rationale-needed": ("Approvals: the Authoriser's own Name Difference decision still needs a rationale (the Approver's decision is separate)", "/authoriser/payout?scenario=cheque-no-match"),
+    "42-che21-approvals-resolved": ("Approvals: the name difference is resolved by the Authoriser", "/authoriser/payout?scenario=cheque-no-match"),
     "25-manual-bank-export-existing": ("Existing Manual Bank export page (built earlier; not yet checked against this story)", "/authoriser/manual-bank-export"),
 }
 
@@ -102,13 +108,13 @@ CHE = {
     "che-14": (BUILT, ["17-authoriser-cheque-both", "21-authoriser-cheque-details-checked"], ""),
     "che-15": (BUILT, ["09-collector-cheque-collector-only"], "The cheque name starts as the winner's name."),
     "che-16": (BUILT, ["15-authoriser-cheque-collector-only", "16-authoriser-cheque-authoriser-only"], "Shown in the Payment Method Details card, including who entered the details."),
-    "che-17": (BUILT, ["26-authoriser-name-match", "27-authoriser-name-no-match", "34-approver-name-no-match", "36-collector-summary-name-check"], "Shown on the Authoriser and Approver reviews and on the Collector Summary."),
-    "che-18": (BUILT, ["31-authoriser-name-changed", "35-collector-cheque-name-differs"], "The returned-payout correction page does not redo the check yet."),
-    "che-19": (BUILT, ["32-authoriser-name-captured", "33-authoriser-name-unable"], ""),
-    "che-20": (BUILT, ["27-authoriser-name-no-match", "28-authoriser-name-blocked-actions"], "Only the Authoriser can resolve a name difference."),
-    "che-21": (BUILT, ["29-authoriser-name-no-match-resolved", "30-authoriser-name-resolved-actions"], ""),
-    "che-22": (BUILT, ["29-authoriser-name-no-match-resolved", "31-authoriser-name-changed"], ""),
-    "che-23": (BUILT, ["27-authoriser-name-no-match", "33-authoriser-name-unable"], "Shown on the Approver and Authoriser reviews."),
+    "che-17": (BUILT, ["26-che17-authoriser-match", "27-che17-approver-no-match", "28-che17-collector-summary", "29-che17-collector-cheque-step-differs"], "Shown as Cheque Name Check on the Authoriser, Approver and Collector pages. No similarity percentage or threshold is shown."),
+    "che-18": (BUILT, ["34-che21-acknowledged", "36-che18-names-changed"], "Before and after: the cheque name was changed and checked again."),
+    "che-19": (BUILT, ["30-che19-captured-name", "31-che19-unable-to-compare"], ""),
+    "che-20": (BUILT, ["32-che20-rationale-required", "33-che20-authorise-off", "41-che20-approvals-rationale-needed"], "Only the Authoriser can resolve a name difference."),
+    "che-21": (BUILT, ["34-che21-acknowledged", "35-che21-authorise-on", "42-che21-approvals-resolved"], ""),
+    "che-22": (BUILT, ["37-che22-authoriser-saved-decision", "38-che22-approver-saved-decision"], ""),
+    "che-23": (BUILT, ["39-che23-pending-payment-waiting", "40-che23-pending-payment-all-met"], "Shown under the status on the Approver and Authoriser reviews."),
     "che-24": (NOUI, [], "Backend rule: no screen."),
     "che-25": (NOUI, [], "Backend rule: no screen."),
     "che-26": (NOUI, [], "Notification: no screen in the prototype."),

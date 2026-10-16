@@ -10,6 +10,9 @@ type AuthorisationPanelProps = {
   copTone?: VerificationTone;
   // Left out when there is no ID document to match against
   idNameMatch?: string;
+  idNameMatchTone?: VerificationTone;
+  // The Authoriser's own decision on a cheque name difference (not the Approver's)
+  nameDifference?: { resolved: boolean; text: string };
   approverDecision: { approvedBy: string; at: string; riskLevel: string; note: string };
   note: string;
   onNoteChange: (value: string) => void;
@@ -22,6 +25,8 @@ export default function AuthorisationPanel({
   copLabel = "Account Name Check",
   copTone = "success",
   idNameMatch,
+  idNameMatchTone = "success",
+  nameDifference,
   approverDecision,
   note,
   onNoteChange,
@@ -37,7 +42,14 @@ export default function AuthorisationPanel({
       {idNameMatch && (
         <p className="mt-3 flex items-center gap-2 text-base text-ink">
           ID Name Match:
-          <VerificationPill tone="success">{idNameMatch}</VerificationPill>
+          <VerificationPill tone={idNameMatchTone}>{idNameMatch}</VerificationPill>
+        </p>
+      )}
+
+      {nameDifference && (
+        <p className="mt-3 flex items-center gap-2 text-base text-ink">
+          Name Difference:
+          <VerificationPill tone={nameDifference.resolved ? "success" : "warning"}>{nameDifference.text}</VerificationPill>
         </p>
       )}
 

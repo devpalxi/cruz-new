@@ -117,6 +117,17 @@ async function shotRange(name, fromText, toText, x = 320, width = 800) {
   });
   console.log("saved", name);
 }
+// Crops the top of the page: the payout number, the status and the notes under it
+async function shotHeader(name, x = 320, width = 800) {
+  await wait(300);
+  const box = await page.evaluate(() => {
+    const h1 = document.querySelector("main h1");
+    const collapse = [...document.querySelectorAll("main button")].find((b) => b.textContent.includes("Collapse All") || b.textContent.includes("Expand All"));
+    return { top: h1.getBoundingClientRect().top + window.scrollY, bottom: collapse.getBoundingClientRect().top + window.scrollY };
+  });
+  await page.screenshot({ path: `${OUT}/${name}.png`, clip: { x, y: box.top - 12, width, height: box.bottom - box.top + 4 }, captureBeyondViewport: true });
+  console.log("saved", name);
+}
 // Crops from the top of a section to the end of the page (the buttons)
 async function shotToEnd(name, fromText, x = 320, width = 800) {
   await wait(300);
@@ -137,49 +148,20 @@ async function shotToEnd(name, fromText, x = 320, width = 800) {
 }
 
 await prep();
+const NV = "Name Verification";
 
+// CHE-17: the cheque name beside the comparison name, with the result
 await go("/authoriser/payout?scenario=cheque-collector");
-await shotRange("26-authoriser-name-match", "Name Verification", "Payment Status");
-
-// The names differ: the Authoriser has to record a rationale, and Authorise stays off until then
-await go("/authoriser/payout?scenario=cheque-no-match");
-await clickText("Check Name Match");
-await shotRange("27-authoriser-name-no-match", "Name Verification", "Payment Status");
-await shotToEnd("28-authoriser-name-blocked-actions", "Approvals");
-
-// Rationale and acknowledgement given: the decision is Active in the history, and Authorise can be used
-await setInput("name-rationale", "Winner confirmed by phone that the cheque is made out to Vivek Mishra Jr.");
-await page.click("#name-acknowledged");
-await page.evaluate(() => {
-  const box = [...document.querySelectorAll("label")].find((l) => l.textContent.includes("I confirm this payout is authorised"));
-  box.querySelector("input").click();
-});
-await wait(300);
-await shotRange("29-authoriser-name-no-match-resolved", "Name Verification", "Payment Status");
-await shotToEnd("30-authoriser-name-resolved-actions", "Approvals");
-
-// The names change after a decision: the earlier decision becomes history and the new names are checked afresh
-await page.click('button[aria-label="Edit cheque details"]');
-await wait(300);
-await setInput("authoriser-cheque-name", "Vivek Mishra");
-await clickText("Check Name Match");
-await shotRange("31-authoriser-name-changed", "Name Verification", "Payment Status");
-
-await go("/authoriser/payout?scenario=cheque-captured-name");
-await shotRange("32-authoriser-name-captured", "Name Verification", "Payment Status");
-
-await go("/authoriser/payout?scenario=cheque-unable");
-await shotRange("33-authoriser-name-unable", "Name Verification", "Payment Status");
-
+await shotRange("26-che17-authoriser-match", NV, NV);
 await go("/approver/payout?scenario=cheque-no-match");
-await shotRange("34-approver-name-no-match", "Name Verification", "Payment Status");
+await shotRange("27-che17-approver-no-match", NV, NV);
 
 await prep({ venue: { chequeMode: "collector" }, store: { "cruz.selectedPayoutDestination": "cheque" } });
 await go("/collector/payout-destination-details");
 await setInput("cheque-number", "000417");
 await setInput("cheque-name", "Alex Morgan Jr");
 await clickText("Check Name Match");
-await shot("35-collector-cheque-name-differs", false);
+await shot("29-che17-collector-cheque-step-differs", false);
 await clickText("Next");
 await wait(1500);
 {
@@ -188,9 +170,52 @@ await wait(1500);
     const card = [...document.querySelectorAll("h3")].find((h) => h.textContent.trim() === "Cheque Name Check").parentElement;
     return { top: first.getBoundingClientRect().top + window.scrollY, bottom: card.getBoundingClientRect().bottom + window.scrollY };
   });
-  await page.screenshot({ path: `${OUT}/36-collector-summary-name-check.png`, clip: { x: 440, y: box.top - 8, width: 560, height: box.bottom - box.top + 16 }, captureBeyondViewport: true });
-  console.log("saved 36-collector-summary-name-check");
+  await page.screenshot({ path: `${OUT}/28-che17-collector-summary.png`, clip: { x: 440, y: box.top - 8, width: 560, height: box.bottom - box.top + 16 }, captureBeyondViewport: true });
+  console.log("saved 28-che17-collector-summary");
 }
+
+// CHE-19: no ID document
+await prep();
+await go("/authoriser/payout?scenario=cheque-captured-name");
+await shotRange("30-che19-captured-name", NV, NV);
+await go("/authoriser/payout?scenario=cheque-unable");
+await shotRange("31-che19-unable-to-compare", NV, NV);
+
+// CHE-20 and CHE-21: the Authoriser records a rationale and acknowledges the difference
+await go("/authoriser/payout?scenario=cheque-no-match");
+await clickText("Check Name Match");
+await shotRange("32-che20-rationale-required", NV, NV);
+await shotToEnd("33-che20-authorise-off", "Approvals");
+await shotRange("41-che20-approvals-rationale-needed", "Approvals", "Approvals");
+await setInput("name-rationale", "Winner confirmed by phone that the cheque is made out to Vivek Mishra Jr.");
+await page.click("#name-acknowledged");
+await page.evaluate(() => {
+  const box = [...document.querySelectorAll("label")].find((l) => l.textContent.includes("I confirm this payout is authorised"));
+  box.querySelector("input").click();
+});
+await wait(300);
+await shotRange("34-che21-acknowledged", NV, NV);
+await shotRange("42-che21-approvals-resolved", "Approvals", "Approvals");
+await shotToEnd("35-che21-authorise-on", "Approvals");
+
+// CHE-18: the names change after a decision, so the check is redone and the earlier decision moves to history
+await page.click('button[aria-label="Edit cheque details"]');
+await wait(300);
+await setInput("authoriser-cheque-name", "Vivek Mishra");
+await clickText("Check Name Match");
+await shotRange("36-che18-names-changed", NV, "Payout History");
+
+// CHE-22: the saved decision, read-only, and earlier decisions in the payout history
+await go("/authoriser/payout?scenario=cheque-resolved");
+await shotRange("37-che22-authoriser-saved-decision", NV, "Payout History");
+await go("/approver/payout?scenario=cheque-resolved");
+await shotRange("38-che22-approver-saved-decision", NV, "Payout History");
+
+// CHE-23: the status line under the payout status
+await go("/authoriser/payout?scenario=cheque-no-match");
+await shotHeader("39-che23-pending-payment-waiting");
+await go("/approver/payout?scenario=cheque-collector");
+await shotHeader("40-che23-pending-payment-all-met");
 
 await browser.close();
 console.log("done");

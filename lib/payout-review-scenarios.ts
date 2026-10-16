@@ -10,6 +10,7 @@ export type ReviewScenarioId =
   | "cheque-authoriser"
   | "cheque-both"
   | "cheque-no-match"
+  | "cheque-resolved"
   | "cheque-captured-name"
   | "cheque-unable";
 
@@ -33,8 +34,10 @@ export type ReviewScenario = {
   nameCheck?: {
     source: NameSource;
     comparedName: string;
-    // Earlier decisions about a name difference on this payout
+    // Earlier decisions about a name difference on this payout (shown as Historical)
     history?: NameCheckRecord[];
+    // The Authoriser's decision already saved for these names (shown read-only)
+    resolution?: NameCheckRecord;
   };
   // Conditions still holding back payment, apart from the Authoriser's own steps (prototype only)
   paymentHold?: { waitRemaining?: string; dailyLimitReason?: string };
@@ -126,15 +129,50 @@ export const REVIEW_SCENARIOS: ReviewScenario[] = [
           chequeName: "Vivek Mishra Snr",
           comparedName: "Vivek Mishra",
           source: "id",
-          percent: 67,
-          thresholdPercent: 70,
           rationale: "Winner confirmed by phone that the cheque is made out to Vivek Mishra Snr.",
           acknowledged: true,
-          active: false,
         },
       ],
     },
     paymentHold: { waitRemaining: "3 hours 20 minutes" },
+  },
+  {
+    id: "cheque-resolved",
+    switcherLabel: "Cheque: Difference resolved",
+    destinationType: "cheque",
+    destinationTitle: CHEQUE_LABEL,
+    chequeMode: "collector",
+    cashAmount: "140",
+    nonCashAmount: "500",
+    accountRows: [],
+    cheque: { number: "000422", name: "Vivek Mishra Jr" },
+    chequeEnteredBy: ["M.Santos (Collector)"],
+    nameCheck: {
+      source: "id",
+      comparedName: "Vivek Mishra",
+      resolution: {
+        id: "saved-1",
+        recordedAt: "15/10/2026 09:41am",
+        authoriser: "R.Nguyen",
+        chequeName: "Vivek Mishra Jr",
+        comparedName: "Vivek Mishra",
+        source: "id",
+        rationale: "Winner confirmed by phone that the cheque is made out to Vivek Mishra Jr.",
+        acknowledged: true,
+      },
+      history: [
+        {
+          id: "earlier-2",
+          recordedAt: "14/10/2026 02:05pm",
+          authoriser: "R.Nguyen",
+          chequeName: "Vivek Mishra Snr",
+          comparedName: "Vivek Mishra",
+          source: "id",
+          rationale: "Winner confirmed by phone that the cheque is made out to Vivek Mishra Snr.",
+          acknowledged: true,
+        },
+      ],
+    },
   },
   {
     id: "cheque-captured-name",

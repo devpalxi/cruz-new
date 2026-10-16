@@ -13,15 +13,15 @@ import DocketRow from "@/components/payout-review/DocketRow";
 import IdentityConfirmation from "@/components/payout-review/IdentityConfirmation";
 import IdvHistoryTable from "@/components/payout-review/IdvHistoryTable";
 import ChequeNameCheck from "@/components/payout-review/ChequeNameCheck";
-import ChequePaymentStatus from "@/components/payout-review/ChequePaymentStatus";
+import ChequePaymentNote from "@/components/payout-review/ChequePaymentNote";
 import NameCheckHistory from "@/components/payout-review/NameCheckHistory";
 import NameComparison from "@/components/payout-review/NameComparison";
 import PayoutStatusNote from "@/components/payout-review/PayoutStatusNote";
 import RecordedDestination from "@/components/payout-review/RecordedDestination";
 import ReturnForCorrectionDialog from "@/components/payout-review/ReturnForCorrectionDialog";
 import { MOCK_AUTHORISATION } from "@/lib/authoriser-data";
-import { chequePaymentConditions } from "@/lib/cheque-payment-status";
-import { evaluateNameMatch, type NameCheckRecord } from "@/lib/name-match";
+import { chequeWaitingFor } from "@/lib/cheque-payment-status";
+import { NAME_RESULT_TEXT, type NameCheckRecord } from "@/lib/name-match";
 import {
   chequeNeedsAuthoriser,
   comparedNameLabel,
@@ -35,7 +35,6 @@ import { saveReturnedPayout } from "@/lib/return-payout";
 import AuthorisationPanel from "./AuthorisationPanel";
 import ChequeDetailsEditor, { type ChequeEditorState } from "./ChequeDetailsEditor";
 
-const CHEQUE_RESULT_TEXT = { match: "Match", "no-match": "No Match", unable: "Unable to Compare" } as const;
 const CHEQUE_RESULT_TONE = { match: "success", "no-match": "danger", unable: "warning" } as const;
 
 export default function AuthoriserPayoutView({ scenario }: { scenario: ReviewScenario }) {
@@ -72,7 +71,9 @@ export default function AuthoriserPayoutView({ scenario }: { scenario: ReviewSce
 
   const active =
     resolution.forName === chequeName ? resolution : { forName: chequeName, rationale: "", acknowledged: false, at: "" };
-  const nameResolved = active.rationale.trim() !== "" && active.acknowledged;
+  // A decision already saved for these names counts as resolved and shows read-only
+  const savedDecision = nameSource?.resolution;
+  const nameResolved = Boolean(savedDecision) || (active.rationale.trim() !== "" && active.acknowledged);
   const nameBlocking = nameResult?.status === "no-match" && !nameResolved;
 
   const canAuthorise = confirmed && (!authoriserEntersCheque || chequeComplete) && !nameBlocking;
@@ -86,7 +87,6 @@ export default function AuthoriserPayoutView({ scenario }: { scenario: ReviewSce
     const previous = latest.current;
     if (previous.forName === chequeName) return;
     if (previous.rationale.trim() !== "" && previous.acknowledged && nameSource) {
-      const earlier = evaluateNameMatch({ chequeName: previous.forName, comparedName, source: nameSource.source });
       setRetired((list) => [
         ...list,
         {
@@ -96,11 +96,8 @@ export default function AuthoriserPayoutView({ scenario }: { scenario: ReviewSce
           chequeName: previous.forName,
           comparedName,
           source: nameSource.source,
-          percent: earlier.percent ?? 0,
-          thresholdPercent: earlier.thresholdPercent,
           rationale: previous.rationale,
           acknowledged: true,
-          active: false,
         },
       ]);
     }
@@ -116,32 +113,12 @@ export default function AuthoriserPayoutView({ scenario }: { scenario: ReviewSce
     });
   }
 
-  const historyRecords: NameCheckRecord[] = [
-    ...(nameSource?.history ?? []),
-    ...retired,
-    ...(nameResult?.status === "no-match" && nameResolved && nameResult.percent !== null && nameSource
-      ? [
-          {
-            id: "active",
-            recordedAt: active.at,
-            authoriser: data.user,
-            chequeName,
-            comparedName,
-            source: nameSource.source,
-            percent: nameResult.percent,
-            thresholdPercent: nameResult.thresholdPercent,
-            rationale: active.rationale.trim(),
-            acknowledged: true,
-            active: true,
-          },
-        ]
-      : []),
-  ];
+  const historyRecords: NameCheckRecord[] = [...(nameSource?.history ?? []), ...retired];
 
   const detailsEntered = authoriserEntersCheque
     ? chequeComplete
     : Boolean(scenario.cheque?.number && scenario.cheque?.name);
-  const paymentConditions = chequePaymentConditions({
+  const waitingFor = chequeWaitingFor({
     detailsEntered,
     nameStatus: nameResult?.status ?? "match",
     nameResolved,
@@ -168,6 +145,7 @@ export default function AuthoriserPayoutView({ scenario }: { scenario: ReviewSce
         </div>
       </div>
       <PayoutStatusNote scenario={scenario} />
+      {isCheque && <ChequePaymentNote waitingFor={waitingFor} />}
 
       <div className="mt-[1.375rem]">
         <CollapsibleSections
@@ -220,6 +198,7 @@ export default function AuthoriserPayoutView({ scenario }: { scenario: ReviewSce
                     result={nameResult}
                     chequeName={chequeName}
                     comparedName={comparedName}
+                    saved={savedDecision}
                     resolution={{
                       rationale: active.rationale,
                       onRationaleChange: (rationale) => updateResolution({ rationale }),
@@ -231,17 +210,8 @@ export default function AuthoriserPayoutView({ scenario }: { scenario: ReviewSce
                   <NameComparison {...data.nameVerification} otherLabel={comparedNameLabel(scenario)} />
                 ),
             },
-            ...(isCheque
-              ? [
-                  ...(historyRecords.length > 0
-                    ? [{ id: "name-history", title: "Name Check History", content: <NameCheckHistory records={historyRecords} /> }]
-                    : []),
-                  {
-                    id: "payment-status",
-                    title: "Payment Status",
-                    content: <ChequePaymentStatus conditions={paymentConditions} />,
-                  },
-                ]
+            ...(isCheque && historyRecords.length > 0
+              ? [{ id: "payout-history", title: "Payout History", content: <NameCheckHistory records={historyRecords} /> }]
               : []),
             {
               id: "results",
@@ -259,10 +229,26 @@ export default function AuthoriserPayoutView({ scenario }: { scenario: ReviewSce
               title: "Approvals",
               content: (
                 <AuthorisationPanel
-                  copStatus={isCheque && nameResult ? CHEQUE_RESULT_TEXT[nameResult.status] : data.approvals.copStatus}
+                  copStatus={isCheque && nameResult ? NAME_RESULT_TEXT[nameResult.status] : data.approvals.copStatus}
                   copTone={isCheque && nameResult ? CHEQUE_RESULT_TONE[nameResult.status] : "success"}
                   copLabel={copLabel}
-                  idNameMatch={isCheque && nameSource?.source !== "id" ? undefined : data.approvals.idNameMatch}
+                  idNameMatch={
+                    isCheque
+                      ? nameSource?.source === "id" && nameResult && nameResult.status !== "unable"
+                        ? nameResult.status === "match"
+                          ? "Yes"
+                          : "No"
+                        : undefined
+                      : data.approvals.idNameMatch
+                  }
+                  idNameMatchTone={nameResult?.status === "no-match" ? "danger" : "success"}
+                  nameDifference={
+                    isCheque && nameResult?.status === "no-match"
+                      ? nameResolved
+                        ? { resolved: true, text: `Resolved by ${savedDecision?.authoriser ?? data.user} (Authoriser)` }
+                        : { resolved: false, text: "Rationale needed" }
+                      : undefined
+                  }
                   approverDecision={data.approverDecision}
                   note={note}
                   onNoteChange={setNote}

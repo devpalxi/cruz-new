@@ -14,13 +14,13 @@ import DocketRow from "@/components/payout-review/DocketRow";
 import IdentityConfirmation from "@/components/payout-review/IdentityConfirmation";
 import IdvHistoryTable from "@/components/payout-review/IdvHistoryTable";
 import ChequeNameCheck from "@/components/payout-review/ChequeNameCheck";
-import ChequePaymentStatus from "@/components/payout-review/ChequePaymentStatus";
+import ChequePaymentNote from "@/components/payout-review/ChequePaymentNote";
 import NameCheckHistory from "@/components/payout-review/NameCheckHistory";
 import NameComparison from "@/components/payout-review/NameComparison";
 import PayoutStatusNote from "@/components/payout-review/PayoutStatusNote";
 import RecordedDestination from "@/components/payout-review/RecordedDestination";
 import ReturnForCorrectionDialog from "@/components/payout-review/ReturnForCorrectionDialog";
-import { chequePaymentConditions } from "@/lib/cheque-payment-status";
+import { chequeWaitingFor } from "@/lib/cheque-payment-status";
 import {
   comparedNameLabel,
   identityLinesFor,
@@ -45,12 +45,13 @@ export default function ApproverPayoutView({ scenario }: { scenario: ReviewScena
   // The Approver only reads the cheque name check. The Authoriser records the rationale.
   const chequeName = scenario.cheque?.name ?? "";
   const nameResult = nameCheckFor(scenario, chequeName);
-  const paymentConditions = chequePaymentConditions({
+  const waitingFor = chequeWaitingFor({
     detailsEntered: Boolean(scenario.cheque?.number && scenario.cheque?.name),
     nameStatus: nameResult?.status ?? "match",
-    nameResolved: false,
+    nameResolved: Boolean(scenario.nameCheck?.resolution),
     hold: scenario.paymentHold,
   });
+
   const canApprove = risk !== "" && confirmed && (data.nameVerification.match || reviewed);
 
   const sections: (SectionItem | false)[] = [
@@ -98,6 +99,7 @@ export default function ApproverPayoutView({ scenario }: { scenario: ReviewScena
         content: (
           <ChequeNameCheck
             result={nameResult}
+            saved={scenario.nameCheck?.resolution}
             chequeName={chequeName}
             comparedName={scenario.nameCheck?.comparedName ?? ""}
           />
@@ -105,15 +107,10 @@ export default function ApproverPayoutView({ scenario }: { scenario: ReviewScena
       },
     isCheque &&
       Boolean(scenario.nameCheck?.history?.length) && {
-        id: "name-history",
-        title: "Name Check History",
+        id: "payout-history",
+        title: "Payout History",
         content: <NameCheckHistory records={scenario.nameCheck?.history ?? []} />,
       },
-    isCheque && {
-      id: "payment-status",
-      title: "Payment Status",
-      content: <ChequePaymentStatus conditions={paymentConditions} />,
-    },
     {
       id: "results",
       title: "Verification Results",
@@ -161,6 +158,7 @@ export default function ApproverPayoutView({ scenario }: { scenario: ReviewScena
         </div>
       </div>
       <PayoutStatusNote scenario={scenario} />
+      {isCheque && <ChequePaymentNote waitingFor={waitingFor} />}
 
       <div className="mt-[1.375rem]">
         <CollapsibleSections items={sections.filter((section): section is SectionItem => Boolean(section))} />
