@@ -90,7 +90,7 @@ export default function PaymentBreakdownForm() {
         <div className="mb-[2.125rem]">
           <WarningAlert
             title={`${unavailableMethod} is no longer available at this venue.`}
-            message="It was switched off for this venue. Choose another way to pay the rest."
+            message="It was switched off for this venue. Choose another non-cash payout method."
           />
         </div>
       )}
@@ -120,9 +120,10 @@ export default function PaymentBreakdownForm() {
           </div>
         </AmountCard>
 
-        <FormField label="How the Rest Is Paid" htmlFor="destination-type">
+        <FormField label="Non-Cash Payout Method" htmlFor="destination-type">
           <SelectInput
             id="destination-type"
+            placeholder="Select non-cash payout method"
             options={destinationOptions}
             value={destinationType}
             onChange={(e) => {

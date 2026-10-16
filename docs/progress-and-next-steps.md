@@ -47,7 +47,7 @@ Names were first chosen with the `customer-wording` skill (Brien, a venue owner,
 | **Electronic Fund Transfer** | Funds Transfer, then EFT | **User decision, 2026-10-14**: written in full, not EFT (the constant is still `FUNDS_TRANSFER_LABEL` in `lib/venue-data.ts`). Always on for every venue |
 | **Manual Bank Transfer** | Payment File for Your Bank | **User decision, 2026-10-13** (a Figma comment asked for it). See the warning below |
 | Cheque | Cheque | Fine |
-| How the Rest Is Paid | Non Cash Details (dropdown label on Payment Breakdown) | Suggested by the skill. A Figma comment asked for "Non-cash payout method"; **not adopted** because Brien did not understand "non-cash destination" |
+| Non-Cash Payout Method | Non Cash Details, then How the Rest Is Paid (dropdown label on Payment Breakdown) | **User decision, 2026-10-15**: follows Figma comment #14, Title Case, placeholder "Select non-cash payout method". This reverses the earlier choice: Brien did not understand "non-cash destination", so tell Brien and Minosha. The term guide in the `customer-wording` skill still says the opposite |
 | Payment Method Details | Payout Destination Details (section and Collector step) | User decision |
 | Account Name Check | CoP Status | User decision |
 | Method | Paid By (row label on the review cards) | From a Figma comment |
@@ -94,7 +94,7 @@ Files: `app/admin/venues/page.tsx`, `app/admin/venues/[id]/page.tsx`, `component
 
 ### 4.2 Collector flow (MBT-09, 10, 11, CHE-06, 07, 08, 13, 15)
 
-- **Payment Breakdown** (`/collector/payment-breakdown`): the dropdown **How the Rest Is Paid** lists only the methods the Collector's venue has switched on. The Collector's venue is fixed to `riverside-rsl-club` (`COLLECTOR_VENUE_ID` in `lib/collector-data.ts`). Membership Card is still always offered (outside these epics). Cash only: leave the dropdown empty.
+- **Payment Breakdown** (`/collector/payment-breakdown`): the dropdown **Non-Cash Payout Method** lists only the methods the Collector's venue has switched on. The Collector's venue is fixed to `riverside-rsl-club` (`COLLECTOR_VENUE_ID` in `lib/collector-data.ts`). Membership Card is still always offered (outside these epics). Cash only: leave the dropdown empty.
 - **Payment Method Details** (`/collector/payout-destination-details`), reads the chosen method from `sessionStorage` key `cruz.selectedPayoutDestination`:
   - Electronic Fund Transfer and Manual Bank Transfer: Account Name, BSB (6 digits), Account Number (digits). Messages appear when the Collector selects Validate Account with bad or empty fields. The Venue Code field is **no longer on this screen** (it comes from Venue Settings). The payment file version has an explanation above the form.
   - Cheque, by the venue's setting:
