@@ -12,6 +12,7 @@ import {
 } from "@/lib/collector-data";
 import { EMAIL_CAPTURE_KEY, ID_CAPTURE_KEY, buildMemberIdentificationRows } from "@/lib/id-document-config";
 import { evaluateNameMatch } from "@/lib/name-match";
+import { DEFAULT_PAYOUT_TYPE, PAYOUT_TYPE_KEY, getPayoutType } from "@/lib/payout-types";
 import ChequeNameCheck from "@/components/payout-review/ChequeNameCheck";
 import CopValidationCard from "./CopValidationCard";
 
@@ -19,8 +20,21 @@ export default function SummaryView() {
   const { payoutId, createdAt, payment, member, destinations: fallbackDestinations, cop } = MOCK_SUMMARY;
   const [destinations, setDestinations] = useState<PayoutDestinationDetails[]>(fallbackDestinations);
   const [memberRows, setMemberRows] = useState(member);
+  // Payout Type chosen on step 1; EGM when the step was skipped (prototype only)
+  const [payoutType, setPayoutType] = useState({ id: DEFAULT_PAYOUT_TYPE as string, label: getPayoutType(DEFAULT_PAYOUT_TYPE).label });
+  // A machine only applies to a gaming machine win
+  const paymentRows = [
+    { label: "Payout Type", value: payoutType.label },
+    ...payment.filter((row) => payoutType.id === "egm" || row.label !== "Machine ID"),
+  ];
 
   useEffect(() => {
+    try {
+      const storedType = sessionStorage.getItem(PAYOUT_TYPE_KEY);
+      if (storedType) setPayoutType(JSON.parse(storedType));
+    } catch {
+      // Keep EGM if the stored value can't be read.
+    }
     try {
       const stored = sessionStorage.getItem(PAYOUT_DESTINATION_DETAILS_KEY);
       if (stored) setDestinations([JSON.parse(stored)]);
@@ -61,7 +75,7 @@ export default function SummaryView() {
       <div className="mt-[1.9375rem]">
         <CollapsibleSections
           items={[
-            { id: "payment", title: "Payment Breakdown", content: <DetailList rows={payment} /> },
+            { id: "payment", title: "Payment Breakdown", content: <DetailList rows={paymentRows} /> },
             { id: "member", title: "Member Identification", content: <DetailList rows={memberRows} /> },
             {
               id: "destination",

@@ -1,6 +1,6 @@
-import type { ManualExportRow } from "@/lib/manual-export-data";
+import { screenPayoutTypeLabel, type ManualExportRow } from "@/lib/manual-export-data";
 
-const headers = ["Payout ID", "Venue Code", "Amount", "BSB", "Account Number", "Account Name"];
+const headers = ["Payout ID", "Venue Code", "Amount", "Payout Type", "BSB", "Account Number", "Account Name"];
 
 // Payouts inside one export batch, shown when a batch row is expanded.
 export default function BatchPayoutsTable({ payouts }: { payouts: ManualExportRow[] }) {
@@ -24,6 +24,7 @@ export default function BatchPayoutsTable({ payouts }: { payouts: ManualExportRo
             <td className="py-2.5 pr-6">{p.id}</td>
             <td className="py-2.5 pr-6">{p.venueCode}</td>
             <td className="whitespace-nowrap py-2.5 pr-6">${p.amount.toFixed(2)}</td>
+            <td className="whitespace-nowrap py-2.5 pr-6">{screenPayoutTypeLabel(p)}</td>
             <td className="whitespace-nowrap py-2.5 pr-6 tabular-nums">{p.bsb}</td>
             <td className="whitespace-nowrap py-2.5 pr-6 tabular-nums">{p.accountNumber}</td>
             <td className="py-2.5 pr-6">{p.accountName}</td>

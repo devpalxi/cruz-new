@@ -1,5 +1,5 @@
 import PayoutStatusPill from "@/components/ui/PayoutStatusPill";
-import { formatDateTime, type ManualExportRow } from "@/lib/manual-export-data";
+import { formatDateTime, screenPayoutTypeLabel, type ManualExportRow } from "@/lib/manual-export-data";
 
 export type ExportTableRow = ManualExportRow & { exportedAt?: string; abaReference?: string };
 
@@ -7,6 +7,7 @@ const baseHeaders = [
   "Payout ID",
   "Venue Code",
   "Amount",
+  "Payout Type",
   "BSB",
   "Account Number",
   "Account Name",
@@ -50,6 +51,7 @@ export default function ExportTable({ rows, emptyText, showExportInfo = false }:
               <td className="pl-[1.9rem] pr-[1.25rem]">{row.id}</td>
               <td className="px-[1.25rem]">{row.venueCode}</td>
               <td className="w-[1%] whitespace-nowrap px-[1.25rem]">${row.amount.toFixed(2)}</td>
+              <td className="whitespace-nowrap px-[1.25rem]">{screenPayoutTypeLabel(row)}</td>
               <td className="whitespace-nowrap px-[1.25rem] tabular-nums">{row.bsb}</td>
               <td className="whitespace-nowrap px-[1.25rem] tabular-nums">{row.accountNumber}</td>
               <td className="px-[1.25rem]">{row.accountName}</td>

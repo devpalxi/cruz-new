@@ -26,6 +26,9 @@ export default function Home() {
         <Button href="/payout-destination-scenarios" variant="outline" className="h-[2.875rem] w-[17.875rem]">
           Payout Destination Scenarios
         </Button>
+        <Button href="/emails/patron" variant="outline" className="h-[2.875rem] w-[17.875rem]">
+          Patron Emails
+        </Button>
       </main>
     </div>
   );

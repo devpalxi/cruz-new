@@ -9,7 +9,9 @@ import FormField from "@/components/ui/FormField";
 import SearchCombobox from "@/components/ui/SearchCombobox";
 import SelectInput from "@/components/ui/SelectInput";
 import TextInput from "@/components/ui/TextInput";
-import { MACHINES_BY_VENUE, PAYOUT_TYPES, VENUES } from "@/lib/collector-data";
+import { MACHINES_BY_VENUE, VENUES } from "@/lib/collector-data";
+import { PAYOUT_TYPE_KEY, enabledPayoutTypes, payoutTypeLabel, type PayoutTypeId } from "@/lib/payout-types";
+import { useVenues } from "@/lib/use-venues";
 
 function nowForInput() {
   const d = new Date();
@@ -19,8 +21,9 @@ function nowForInput() {
 
 export default function PayoutDetailsForm() {
   const router = useRouter();
+  const { venues } = useVenues();
   const [payoutAt, setPayoutAt] = useState("");
-  const [payoutType, setPayoutType] = useState("");
+  const [payoutType, setPayoutType] = useState<PayoutTypeId | "">("");
   const [venue, setVenue] = useState("");
   const [machine, setMachine] = useState("");
   const [winAmount, setWinAmount] = useState("0");
@@ -31,11 +34,28 @@ export default function PayoutDetailsForm() {
     setPayoutAt(nowForInput());
   }, []);
 
+  // The Payout Type options are the types this venue switched on in Venue Settings (EGM is always there)
+  const venueSettings = venues.find((v) => v.id === venue) ?? null;
+  const typeIds = venueSettings ? enabledPayoutTypes(venueSettings) : [];
+  const typeOptions = typeIds.map((id) => ({ value: id, label: payoutTypeLabel(id, venueSettings) }));
+  // Only a gaming machine win has a machine
+  const needsMachine = payoutType === "egm";
+
+  function chooseVenue(nextVenue: string) {
+    setVenue(nextVenue);
+    setMachine("");
+    const next = venues.find((v) => v.id === nextVenue);
+    const nextIds = next ? enabledPayoutTypes(next) : [];
+    // With a single option there is nothing to choose; otherwise keep the choice if the venue offers it
+    if (nextIds.length === 1) setPayoutType(nextIds[0]);
+    else if (payoutType !== "" && !nextIds.includes(payoutType)) setPayoutType("");
+  }
+
   const amount = Number(winAmount);
   const canContinue =
     payoutType !== "" &&
     venue !== "" &&
-    machine !== "" &&
+    (!needsMachine || machine !== "") &&
     amount > 0 &&
     confirmAmount === winAmount;
 
@@ -43,6 +63,15 @@ export default function PayoutDetailsForm() {
     <form
       onSubmit={(e) => {
         e.preventDefault();
+        try {
+          // Prototype only: the Summary step reads the choice back
+          sessionStorage.setItem(
+            PAYOUT_TYPE_KEY,
+            JSON.stringify({ id: payoutType, label: payoutTypeLabel(payoutType as PayoutTypeId, venueSettings) }),
+          );
+        } catch {
+          // Storage blocked: the Summary shows its mock payout type
+        }
         router.push("/collector/payment-breakdown");
       }}
       className="flex flex-col gap-[2.125rem]"
@@ -57,39 +86,36 @@ export default function PayoutDetailsForm() {
         <FileDropzone prompt="Drag and drop docket image here, or click to browse." />
       </FormField>
 
+      <FormField label="Venue" htmlFor="venue">
+        <SelectInput id="venue" options={VENUES} value={venue} onChange={(e) => chooseVenue(e.target.value)} />
+      </FormField>
+
       <FormField label="Payout Type" htmlFor="payout-type">
         <SelectInput
           id="payout-type"
-          options={PAYOUT_TYPES}
+          options={typeOptions}
           value={payoutType}
-          onChange={(e) => setPayoutType(e.target.value)}
-        />
-      </FormField>
-
-      <FormField label="Venue" htmlFor="venue">
-        <SelectInput
-          id="venue"
-          options={VENUES}
-          value={venue}
           onChange={(e) => {
-            setVenue(e.target.value);
+            setPayoutType(e.target.value as PayoutTypeId | "");
             setMachine("");
           }}
+          disabled={venue === ""}
+          placeholder={venue === "" ? "Please select a venue first" : "Please Select"}
         />
       </FormField>
 
-      <FormField label="Machine" htmlFor="machine">
-        <SearchCombobox
-          id="machine"
-          options={MACHINES_BY_VENUE[venue] ?? []}
-          value={machine}
-          onChange={setMachine}
-          disabled={venue === ""}
-          placeholder="Search machines..."
-          disabledPlaceholder="Please select a venue first"
-          emptyText="No machines found"
-        />
-      </FormField>
+      {needsMachine && (
+        <FormField label="Machine" htmlFor="machine">
+          <SearchCombobox
+            id="machine"
+            options={MACHINES_BY_VENUE[venue] ?? []}
+            value={machine}
+            onChange={setMachine}
+            placeholder="Search machines..."
+            emptyText="No machines found"
+          />
+        </FormField>
+      )}
 
       <FormField label="Win Amount" htmlFor="win-amount">
         <TextInput

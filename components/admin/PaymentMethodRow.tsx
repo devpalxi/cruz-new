@@ -4,7 +4,7 @@ import Switch from "@/components/ui/Switch";
 type PaymentMethodRowProps = {
   id: string;
   title: string;
-  description: string;
+  description?: string;
   checked: boolean;
   onChange: (checked: boolean) => void;
   children?: ReactNode;
@@ -20,11 +20,13 @@ export default function PaymentMethodRow({ id, title, description, checked, onCh
           <label htmlFor={id} className="text-xl font-semibold text-ink">
             {title}
           </label>
-          <p id={descriptionId} className="mt-1 text-base text-subtle">
-            {description}
-          </p>
+          {description && (
+            <p id={descriptionId} className="mt-1 text-base text-subtle">
+              {description}
+            </p>
+          )}
         </div>
-        <Switch id={id} checked={checked} onChange={onChange} label={title} describedBy={descriptionId} />
+        <Switch id={id} checked={checked} onChange={onChange} label={title} describedBy={description ? descriptionId : undefined} />
       </div>
       {checked && children && <div className="mt-5 flex flex-col gap-5 border-t border-line-soft pt-5">{children}</div>}
     </section>

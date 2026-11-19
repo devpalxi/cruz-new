@@ -74,19 +74,18 @@ export function getManualBankNameMatch(accountName: string): boolean | null {
   return trimmed.toLowerCase() === MOCK_WINNER_NAME.trim().toLowerCase();
 }
 
-export const PAYOUT_TYPES = [
-  { value: "egm", label: "EGM" },
-  { value: "tab", label: "TAB" },
-  { value: "keno", label: "Keno" },
+// Venues the Collector can choose. Values match the venue ids in lib/venue-data.ts, so the payout types a
+// venue switched on in Venue Settings decide the Payout Type options (CRP-461).
+export const VENUES = [
+  { value: "riverside-rsl-club", label: "Riverside RSL Club" },
+  { value: "northside-sports-club", label: "Northside Sports Club" },
 ];
-
-export const VENUES = [{ value: "riverside-rsl", label: "Riverside RSL Club" }];
 
 export const MACHINES_BY_VENUE: Record<
   string,
   { value: string; title: string; meta: string }[]
 > = {
-  "riverside-rsl": [
+  "riverside-rsl-club": [
     { value: "EGM-001", title: "Aristocrat Lightning Link 1", meta: "ID: EGM-001 | Serial: SN-AR-00112" },
     { value: "EGM-002", title: "Aristocrat Lightning Link 2", meta: "ID: EGM-002 | Serial: SN-AR-00113" },
     { value: "EGM-003", title: "Aristocrat Lightning Link 3", meta: "ID: EGM-003 | Serial: SN-AR-00114" },
@@ -97,6 +96,11 @@ export const MACHINES_BY_VENUE: Record<
     { value: "EGM-008", title: "Aristocrat Queen of the Nile", meta: "ID: EGM-008 | Serial: SN-AR-00410" },
     { value: "EGM-009", title: "Everi Fortune Coin 1", meta: "ID: EGM-009 | Serial: SN-EVE-5501" },
     { value: "EGM-010", title: "Everi Fortune Coin 2", meta: "ID: EGM-010 | Serial: SN-EVE-5502" },
+  ],
+  "northside-sports-club": [
+    { value: "EGM-101", title: "Aristocrat Lightning Link 1", meta: "ID: EGM-101 | Serial: SN-AR-01112" },
+    { value: "EGM-102", title: "Aristocrat Dragon Link 1", meta: "ID: EGM-102 | Serial: SN-AR-01201" },
+    { value: "EGM-103", title: "Everi Fortune Coin 1", meta: "ID: EGM-103 | Serial: SN-EVE-6501" },
   ],
 };
 

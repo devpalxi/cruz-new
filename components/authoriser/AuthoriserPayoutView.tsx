@@ -32,12 +32,20 @@ import {
   type ReviewScenario,
 } from "@/lib/payout-review-scenarios";
 import { saveReturnedPayout } from "@/lib/return-payout";
+import { DEFAULT_PAYOUT_TYPE, withPayoutTypeRows, type PayoutTypeId } from "@/lib/payout-types";
+import { REVIEW_VENUE } from "@/lib/venue-data";
 import AuthorisationPanel from "./AuthorisationPanel";
 import ChequeDetailsEditor, { type ChequeEditorState } from "./ChequeDetailsEditor";
 
 const CHEQUE_RESULT_TONE = { match: "success", "no-match": "danger", unable: "warning" } as const;
 
-export default function AuthoriserPayoutView({ scenario }: { scenario: ReviewScenario }) {
+export default function AuthoriserPayoutView({
+  scenario,
+  payoutType = DEFAULT_PAYOUT_TYPE,
+}: {
+  scenario: ReviewScenario;
+  payoutType?: PayoutTypeId;
+}) {
   const router = useRouter();
   const data = MOCK_AUTHORISATION;
   const [note, setNote] = useState("");
@@ -125,11 +133,20 @@ export default function AuthoriserPayoutView({ scenario }: { scenario: ReviewSce
     hold: scenario.paymentHold,
   });
 
-  const payoutRows = [
-    { label: "Cash Amount", value: scenario.cashAmount },
-    { label: `${scenario.destinationTitle} Amount`, value: scenario.nonCashAmount },
-    ...data.payout.slice(2),
-  ];
+  const payoutRows = withPayoutTypeRows(
+    [
+      { label: "Cash Amount", value: scenario.cashAmount },
+      { label: `${scenario.destinationTitle} Amount`, value: scenario.nonCashAmount },
+      ...data.payout.slice(2),
+    ],
+    {
+      typeId: payoutType,
+      venue: REVIEW_VENUE,
+      payoutId: data.payoutId,
+      winnerName: data.nameVerification.idName,
+      paidToBank: !isCheque,
+    },
+  );
 
   return (
     <div className="rounded-xl bg-card p-5">
