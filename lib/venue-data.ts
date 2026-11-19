@@ -11,6 +11,23 @@ export type Venue = {
   venueCode: string;
   chequeEnabled: boolean;
   chequeMode: ChequeMode | "";
+  // Payout types the Collector can pick (CRP-461). EGM is always available.
+  memberCardEnabled: boolean;
+  gamingPromotionEnabled: boolean;
+  clubPromotionEnabled: boolean;
+  // Optional name for Member Card on this venue, for example "MyCash". Blank uses "Member Card".
+  memberCardName: string;
+};
+
+// Defaults for the payout type fields, also used for venues saved before these fields existed
+export const PAYOUT_TYPE_DEFAULTS: Pick<
+  Venue,
+  "memberCardEnabled" | "gamingPromotionEnabled" | "clubPromotionEnabled" | "memberCardName"
+> = {
+  memberCardEnabled: false,
+  gamingPromotionEnabled: false,
+  clubPromotionEnabled: false,
+  memberCardName: "",
 };
 
 // One name per thing: change these labels here and every screen follows.
@@ -49,6 +66,10 @@ export const SEED_VENUES: Venue[] = [
     venueCode: "0042",
     chequeEnabled: true,
     chequeMode: "both",
+    memberCardEnabled: true,
+    gamingPromotionEnabled: true,
+    clubPromotionEnabled: true,
+    memberCardName: "MyCash",
   },
   {
     id: "northside-sports-club",
@@ -59,6 +80,7 @@ export const SEED_VENUES: Venue[] = [
     venueCode: "",
     chequeEnabled: false,
     chequeMode: "",
+    ...PAYOUT_TYPE_DEFAULTS,
   },
   {
     id: "harbourview-hotel",
@@ -69,6 +91,7 @@ export const SEED_VENUES: Venue[] = [
     venueCode: "0107",
     chequeEnabled: false,
     chequeMode: "",
+    ...PAYOUT_TYPE_DEFAULTS,
   },
   {
     id: "bayside-tavern",
@@ -79,8 +102,12 @@ export const SEED_VENUES: Venue[] = [
     venueCode: "",
     chequeEnabled: true,
     chequeMode: "collector",
+    ...PAYOUT_TYPE_DEFAULTS,
   },
 ];
+
+// The venue the mock payouts on the Approver and Authoriser pages belong to (prototype only)
+export const REVIEW_VENUE: Venue = SEED_VENUES[0];
 
 export function paymentMethods(venue: Venue): string[] {
   const methods = [FUNDS_TRANSFER_LABEL];

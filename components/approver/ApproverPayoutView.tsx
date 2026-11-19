@@ -30,8 +30,16 @@ import {
   type ReviewScenario,
 } from "@/lib/payout-review-scenarios";
 import { saveReturnedPayout } from "@/lib/return-payout";
+import { DEFAULT_PAYOUT_TYPE, withPayoutTypeRows, type PayoutTypeId } from "@/lib/payout-types";
+import { REVIEW_VENUE } from "@/lib/venue-data";
 
-export default function ApproverPayoutView({ scenario }: { scenario: ReviewScenario }) {
+export default function ApproverPayoutView({
+  scenario,
+  payoutType = DEFAULT_PAYOUT_TYPE,
+}: {
+  scenario: ReviewScenario;
+  payoutType?: PayoutTypeId;
+}) {
   const router = useRouter();
   const data = MOCK_APPROVAL;
   const [note, setNote] = useState("");
@@ -61,11 +69,20 @@ export default function ApproverPayoutView({ scenario }: { scenario: ReviewScena
       content: (
         <>
           <DetailList
-            rows={[
-              { label: "Cash Amount", value: scenario.cashAmount },
-              { label: `${scenario.destinationTitle} Amount`, value: scenario.nonCashAmount },
-              ...data.payout.slice(2),
-            ]}
+            rows={withPayoutTypeRows(
+              [
+                { label: "Cash Amount", value: scenario.cashAmount },
+                { label: `${scenario.destinationTitle} Amount`, value: scenario.nonCashAmount },
+                ...data.payout.slice(2),
+              ],
+              {
+                typeId: payoutType,
+                venue: REVIEW_VENUE,
+                payoutId: data.payoutId,
+                winnerName: data.nameVerification.idName,
+                paidToBank: !isCheque,
+              },
+            )}
             labelClassName="font-medium"
           />
           <DocketRow />

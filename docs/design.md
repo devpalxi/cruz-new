@@ -101,6 +101,9 @@ All sizes are rem-based and `html` is set to `font-size: 80%` (12.8px), because 
 | `TextArea` | `components/ui/` | Shared multi-line input |
 | `NotEnteredYet` | `components/ui/` | Warning-tone pill for a value nobody has entered yet (review cards) |
 | `PayoutStatusNote` | `components/payout-review/` | One line under the status on the review pages, shown for a Manual Bank Transfer payout ("Pending until included in a payment file.") |
+| `PayoutTypeSettings` | `components/admin/` | Venue Settings "Payout Types" group (CRP-461): EGM fixed On (`AlwaysAvailableMethodRow`, now takes an `id`), switches for Member Card, Gaming Promotion and Club Promotion, and an optional Member Card Display Name (for example MyCash) |
+| `PayoutTypeSwitcher` | `components/payout-review/` | Prototype-only switcher between payout types (`?type=`), used on the review pages and Patron Emails. `ScenarioSwitcher` keeps the `type` value when switching |
+| `EmailPreview` / `PatronEmailsView` / `TypeText` | `components/emails/` | Mock email frame (From / To / Subject + body); the two patron emails; highlight for text that changes with the payout type |
 | `PaymentBreakdownForm` | `components/collector/PaymentBreakdownForm.tsx` | Step 2 form |
 | `BeforeYouStartView` / `EmailAddressForm` / `SecondaryIdForm` / `MedicareCardForm` / `ApprovalView` | `components/collector/` | Before you start (pre-step, not in the stepper), Email Address, Secondary ID (skip checkbox or Medicare form), Approval confirmation |
 | `PrimaryIdFlow` | `components/collector/PrimaryIdFlow.tsx` | Primary ID state machine: `IdDocumentPicker` → `IdDocumentDetailsForm` → `IdNameForm` → `IdDobForm` → `IdAddressForm` → `IdReviewScreen` (+ `IdentityCheckPanel`, `IdCheckActionRow`, `ReviewSection`) |
@@ -150,8 +153,14 @@ Any verification outcome — Account Name Check, ID Name Match, and similar Matc
 - `/approver/payout` and `/authoriser/payout` accept `?scenario=funds-transfer|payment-file|cheque-collector|cheque-authoriser|cheque-both` (prototype switcher at the top of each page). Both roles can Return for Correction
 - `/authoriser/payout` — authoriser final sign-off on a payout (visually identical shell to the approver page; separate from both collector and approver flows)
 - `/collector/before-you-start` → `/collector/email-address` → `/collector/primary-id` → `/collector/secondary-id` (all built). Secondary ID routes to `/collector/payout-destination-details` for a non-cash destination, or `/collector/summary` for cash only. Summary Submit → `/collector/approval` (built; the original Approval screen wasn't captured, so it's a simple "awaiting approval" confirmation)
+- `/approver/payout` and `/authoriser/payout` also accept `?type=egm|member-card|gaming-promotion|club-promotion` (CRP-461). Payout Details shows Payout Type first, Machine ID only for EGM, and Bank Statement Description when the payout goes to a bank account
+- `/emails/patron?type=…` — the two patron emails (after collection, when the money is sent); highlighted text changes with the payout type (placeholder wording)
 - `/collector/[step]` — placeholder for any collector step without its own route (none left in the current stepper)
 - Stepper items are links; every step navigates to its route
+
+## Payout types (CRP-461)
+
+`lib/payout-types.ts` is the single source for payout types: label, Venue Settings line, bank statement code and email wording, plus `buildBankDescription()` (`<Payout ID> <Code> <Initial Surname>`, upper case, cut to 18 characters). Codes and wording are placeholders until the venue's finance team confirms them. The Collector's Venue now comes before Payout Type; the options are the venue's switched-on types (EGM always), a venue with one type gets it chosen automatically, and Machine shows only for EGM. The Manual Bank Transfer CSV adds Payout Type and Bank Statement Description columns (9 columns). The export page shows a Payout Type column after Amount on all three tabs (in the expanded batch list on Awaiting ABA Reference), using the venue's Member Card name; the CSV keeps the standard name.
 
 ## Required fields and limits
 

@@ -15,6 +15,7 @@ import {
 import AlwaysAvailableMethodRow from "./AlwaysAvailableMethodRow";
 import ChequeModeOptions from "./ChequeModeOptions";
 import PaymentMethodRow from "./PaymentMethodRow";
+import PayoutTypeSettings from "./PayoutTypeSettings";
 
 type VenueSettingsFormProps = {
   venue: Venue;
@@ -97,6 +98,8 @@ export default function VenueSettingsForm({ venue, onSave }: VenueSettingsFormPr
           </div>
         </PaymentMethodRow>
       </div>
+
+      <PayoutTypeSettings venue={draft} onChange={update} />
 
       <p className="mt-8 text-base text-subtle">Changes apply to new payouts only. Submitted payouts are not affected.</p>
       <div className="mt-3 flex gap-10">

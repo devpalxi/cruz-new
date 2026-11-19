@@ -1,6 +1,8 @@
 import ApproverPayoutView from "@/components/approver/ApproverPayoutView";
 import AppHeader from "@/components/layout/AppHeader";
+import PayoutTypeSwitcher from "@/components/payout-review/PayoutTypeSwitcher";
 import ScenarioSwitcher from "@/components/payout-review/ScenarioSwitcher";
+import { parsePayoutTypeId } from "@/lib/payout-types";
 import { getReviewScenario } from "@/lib/payout-review-scenarios";
 import BackLink from "@/components/layout/BackLink";
 import UserMenu from "@/components/layout/UserMenu";
@@ -8,9 +10,10 @@ import { MOCK_APPROVAL } from "@/lib/approver-data";
 
 export const metadata = { title: "Approve Payout | Cruz Money" };
 
-export default async function ApproverPayoutPage({ searchParams }: { searchParams: Promise<{ scenario?: string }> }) {
-  const { scenario: scenarioId } = await searchParams;
+export default async function ApproverPayoutPage({ searchParams }: { searchParams: Promise<{ scenario?: string; type?: string }> }) {
+  const { scenario: scenarioId, type } = await searchParams;
   const scenario = getReviewScenario(scenarioId, "funds-transfer");
+  const payoutType = parsePayoutTypeId(type);
 
   return (
     <div className="flex min-h-screen flex-col bg-page">
@@ -19,8 +22,9 @@ export default async function ApproverPayoutPage({ searchParams }: { searchParam
         <BackLink href="/">Dashboard</BackLink>
       </div>
       <main className="mx-auto mt-[1.5625rem] w-full max-w-[60rem] px-4 pb-12 sm:px-0">
-        <ScenarioSwitcher basePath="/approver/payout" current={scenario.id} />
-        <ApproverPayoutView scenario={scenario} />
+        <ScenarioSwitcher basePath="/approver/payout" current={scenario.id} payoutType={payoutType} />
+        <PayoutTypeSwitcher basePath="/approver/payout" current={payoutType} keep={{ scenario: scenario.id }} />
+        <ApproverPayoutView scenario={scenario} payoutType={payoutType} />
       </main>
     </div>
   );
