@@ -104,6 +104,9 @@ All sizes are rem-based and `html` is set to `font-size: 80%` (12.8px), because 
 | `PayoutTypeSettings` | `components/admin/` | Venue Settings "Payout Types" group (CRP-461): EGM fixed On (`AlwaysAvailableMethodRow`, now takes an `id`), switches for Member Card, Gaming Promotion and Club Promotion, and an optional Member Card Display Name (for example MyCash) |
 | `PayoutTypeSwitcher` | `components/payout-review/` | Prototype-only switcher between payout types (`?type=`), used on the review pages and Patron Emails. `ScenarioSwitcher` keeps the `type` value when switching |
 | `EmailPreview` / `PatronEmailsView` / `TypeText` | `components/emails/` | Mock email frame (From / To / Subject + body); the two patron emails; highlight for text that changes with the payout type |
+| `IdentityCheckSettings` | `components/admin/` | Venue Settings "Identity Checks" group (CRP-186): a "Re-use Identity Checks" switch card (`PaymentMethodRow`); when on, a required "Re-use Period (days)", 1 to 365, checked on Save |
+| `ReturningWinnerView` | `components/collector/` | Returning Winner screen (CRP-186): saved record + last check `VerificationPill`, "Details Have Changed, Check Again" / "Details Are the Same, Use These"; or the reason a check can't be re-used (too old, ID document expired, not passed) |
+| `PrototypeSwitcher` | `components/ui/` | Generic prototype-only row of links that sets one query parameter (used for the returning-winner outcomes and the review pages' Identity check: New / Re-used) |
 | `PaymentBreakdownForm` | `components/collector/PaymentBreakdownForm.tsx` | Step 2 form |
 | `BeforeYouStartView` / `EmailAddressForm` / `SecondaryIdForm` / `MedicareCardForm` / `ApprovalView` | `components/collector/` | Before you start (pre-step, not in the stepper), Email Address, Secondary ID (skip checkbox or Medicare form), Approval confirmation |
 | `PrimaryIdFlow` | `components/collector/PrimaryIdFlow.tsx` | Primary ID state machine: `IdDocumentPicker` → `IdDocumentDetailsForm` → `IdNameForm` → `IdDobForm` → `IdAddressForm` → `IdReviewScreen` (+ `IdentityCheckPanel`, `IdCheckActionRow`, `ReviewSection`) |
@@ -161,6 +164,10 @@ Any verification outcome — Account Name Check, ID Name Match, and similar Matc
 ## Payout types (CRP-461)
 
 `lib/payout-types.ts` is the single source for payout types: label, Venue Settings line, bank statement code and email wording, plus `buildBankDescription()` (`<Payout ID> <Code> <Initial Surname>`, upper case, cut to 18 characters). Codes and wording are placeholders until the venue's finance team confirms them. The Collector's Venue now comes before Payout Type; the options are the venue's switched-on types (EGM always), a venue with one type gets it chosen automatically, and Machine shows only for EGM. The Manual Bank Transfer CSV adds Payout Type and Bank Statement Description columns (9 columns). The export page shows a Payout Type column after Amount on all three tabs (in the expanded batch list on Awaiting ABA Reference), using the venue's Member Card name; the CSV keeps the standard name.
+
+## Returning winner (CRP-186)
+
+`lib/returning-winner.ts` mocks the lookup. On Next, the Email Address step normalises the Membership # (spaces and punctuation ignored) and looks for an earlier winner of the client. A found record whose last check passed, is inside the venue's re-use period and whose ID document hasn't expired can be re-used: the saved details go to the Summary (with "Identity Check: Re-used" and "Checked On: <date>" rows) and the Collector skips to Secondary ID. Too old, expired document or not passed show the reason and lead to Primary ID. Not found, no number, a duplicate number or re-use switched off go straight to Primary ID. Routes: `/collector/returning-winner` (`?member=` picks a mock outcome: 1234567 re-usable, 2345678 too old, 3456789 document expired, 4567890 not passed). `/approver/payout` and `/authoriser/payout` take `?idv=reused`, which shows the re-used check and its note in IDV History.
 
 ## Required fields and limits
 

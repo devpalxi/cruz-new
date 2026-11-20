@@ -9,12 +9,14 @@ import WarningAlert from "@/components/ui/WarningAlert";
 import {
   CHEQUE_LABEL,
   FUNDS_TRANSFER_LABEL,
+  MAX_IDV_REUSE_DAYS,
   PAYMENT_FILE_LABEL,
   type Venue,
 } from "@/lib/venue-data";
 import AlwaysAvailableMethodRow from "./AlwaysAvailableMethodRow";
 import ChequeModeOptions from "./ChequeModeOptions";
 import PaymentMethodRow from "./PaymentMethodRow";
+import IdentityCheckSettings from "./IdentityCheckSettings";
 import PayoutTypeSettings from "./PayoutTypeSettings";
 
 type VenueSettingsFormProps = {
@@ -25,17 +27,25 @@ type VenueSettingsFormProps = {
 export default function VenueSettingsForm({ venue, onSave }: VenueSettingsFormProps) {
   const [draft, setDraft] = useState<Venue>(venue);
   const [chequeModeError, setChequeModeError] = useState(false);
+  const [reuseDaysError, setReuseDaysError] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
 
   function update(changes: Partial<Venue>) {
     setDraft((d) => ({ ...d, ...changes }));
     setChequeModeError(false);
+    setReuseDaysError(false);
   }
 
   function handleSave() {
     // Cheque needs one saved choice for who enters its details
     if (draft.chequeEnabled && draft.chequeMode === "") {
       setChequeModeError(true);
+      return;
+    }
+    // Re-use period: when re-use is on, a whole number of days up to the maximum
+    const days = draft.idvReuseDays.trim();
+    if (draft.idvReuseEnabled && !(/^\d+$/.test(days) && Number(days) >= 1 && Number(days) <= MAX_IDV_REUSE_DAYS)) {
+      setReuseDaysError(true);
       return;
     }
     onSave(draft);
@@ -45,6 +55,7 @@ export default function VenueSettingsForm({ venue, onSave }: VenueSettingsFormPr
   function handleCancel() {
     setDraft(venue);
     setChequeModeError(false);
+    setReuseDaysError(false);
   }
 
   return (
@@ -100,6 +111,8 @@ export default function VenueSettingsForm({ venue, onSave }: VenueSettingsFormPr
       </div>
 
       <PayoutTypeSettings venue={draft} onChange={update} />
+
+      <IdentityCheckSettings venue={draft} onChange={update} error={reuseDaysError} />
 
       <p className="mt-8 text-base text-subtle">Changes apply to new payouts only. Submitted payouts are not affected.</p>
       <div className="mt-3 flex gap-10">

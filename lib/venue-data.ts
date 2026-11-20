@@ -17,18 +17,27 @@ export type Venue = {
   clubPromotionEnabled: boolean;
   // Optional name for Member Card on this venue, for example "MyCash". Blank uses "Member Card".
   memberCardName: string;
+  // CRP-186: whether a returning winner's passed identity check can be re-used, and for how many days
+  idvReuseEnabled: boolean;
+  idvReuseDays: string;
 };
 
-// Defaults for the payout type fields, also used for venues saved before these fields existed
-export const PAYOUT_TYPE_DEFAULTS: Pick<
+// Defaults for fields added after the first Venue Settings build (payout types, identity check re-use).
+// Also applied to venues saved in this browser tab before these fields existed.
+export const NEW_VENUE_FIELD_DEFAULTS: Pick<
   Venue,
-  "memberCardEnabled" | "gamingPromotionEnabled" | "clubPromotionEnabled" | "memberCardName"
+  "memberCardEnabled" | "gamingPromotionEnabled" | "clubPromotionEnabled" | "memberCardName" | "idvReuseEnabled" | "idvReuseDays"
 > = {
   memberCardEnabled: false,
   gamingPromotionEnabled: false,
   clubPromotionEnabled: false,
   memberCardName: "",
+  idvReuseEnabled: false,
+  idvReuseDays: "",
 };
+
+// Longest re-use period a venue can set for an identity check (about 12 months)
+export const MAX_IDV_REUSE_DAYS = 365;
 
 // One name per thing: change these labels here and every screen follows.
 export const FUNDS_TRANSFER_LABEL = "Electronic Fund Transfer";
@@ -70,6 +79,8 @@ export const SEED_VENUES: Venue[] = [
     gamingPromotionEnabled: true,
     clubPromotionEnabled: true,
     memberCardName: "MyCash",
+    idvReuseEnabled: true,
+    idvReuseDays: "365",
   },
   {
     id: "northside-sports-club",
@@ -80,7 +91,7 @@ export const SEED_VENUES: Venue[] = [
     venueCode: "",
     chequeEnabled: false,
     chequeMode: "",
-    ...PAYOUT_TYPE_DEFAULTS,
+    ...NEW_VENUE_FIELD_DEFAULTS,
   },
   {
     id: "harbourview-hotel",
@@ -91,7 +102,7 @@ export const SEED_VENUES: Venue[] = [
     venueCode: "0107",
     chequeEnabled: false,
     chequeMode: "",
-    ...PAYOUT_TYPE_DEFAULTS,
+    ...NEW_VENUE_FIELD_DEFAULTS,
   },
   {
     id: "bayside-tavern",
@@ -102,7 +113,7 @@ export const SEED_VENUES: Venue[] = [
     venueCode: "",
     chequeEnabled: true,
     chequeMode: "collector",
-    ...PAYOUT_TYPE_DEFAULTS,
+    ...NEW_VENUE_FIELD_DEFAULTS,
   },
 ];
 

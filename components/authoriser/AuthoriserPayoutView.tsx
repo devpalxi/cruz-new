@@ -34,6 +34,7 @@ import {
 import { saveReturnedPayout } from "@/lib/return-payout";
 import { DEFAULT_PAYOUT_TYPE, withPayoutTypeRows, type PayoutTypeId } from "@/lib/payout-types";
 import { REVIEW_VENUE } from "@/lib/venue-data";
+import { reviewIdvHistory } from "@/lib/returning-winner";
 import AuthorisationPanel from "./AuthorisationPanel";
 import ChequeDetailsEditor, { type ChequeEditorState } from "./ChequeDetailsEditor";
 
@@ -42,9 +43,12 @@ const CHEQUE_RESULT_TONE = { match: "success", "no-match": "danger", unable: "wa
 export default function AuthoriserPayoutView({
   scenario,
   payoutType = DEFAULT_PAYOUT_TYPE,
+  idvReused = false,
 }: {
   scenario: ReviewScenario;
   payoutType?: PayoutTypeId;
+  // CRP-186: this payout re-used a returning winner's identity check
+  idvReused?: boolean;
 }) {
   const router = useRouter();
   const data = MOCK_AUTHORISATION;
@@ -238,7 +242,7 @@ export default function AuthoriserPayoutView({
             {
               id: "idv",
               title: "Identity Verification (IDV) History",
-              content: <IdvHistoryTable rows={data.idvHistory} />,
+              content: <IdvHistoryTable {...reviewIdvHistory(data.idvHistory, idvReused)} />,
             },
             { id: "collector", title: "Collector", content: <CollectorInfo {...data.collector} /> },
             {

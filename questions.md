@@ -112,3 +112,148 @@ Answers below come from the call with Lee (head of finance at the customer) on 2
     - 🔴 **Unresolved**
 
 ---
+
+## CRP-186 - Re-using winner details
+
+_Started: 2026-11-19 · Status: Ready for review (draft, built with the defaults)_
+Jira: [CRP-186](https://cruzmoney.atlassian.net/browse/CRP-186) (Jira status: Blocked, waiting on CRP-216 Frankie Integration Review)
+
+### Is it already in the prototype?
+
+**No.** Today every payout makes the Collector type the winner's ID details again, and the identity check runs every time. The pieces that exist:
+
+- The Email Address step (`/collector/email-address`) already asks for **Membership #**, but nothing is looked up with it.
+- The Approver and Authoriser pages have an **Identity Verification (IDV) History** table, but it only shows the current payout's check.
+- `docs/cruz-money-system-overview.md` describes a "90-Day Returning Winner Policy" (skip the check for a repeat winner at the same venue within 90 days, Confirmation of Payee still required). Nothing in the prototype does this, and it doesn't match the newer Jira spec (a window each client sets, up to about 12 months).
+
+### What this feature is (plain explanation)
+
+When a winner is paid through Cruz, the Collector types their ID details (licence, passport and so on), and Cruz pays FrankieOne to check them. If the same person wins again next week, all of that happens again: the same typing, the same wait and another FrankieOne charge.
+
+This feature lets Cruz **recognise a winner it has already checked** and **re-use that earlier identity check**, instead of running a new one:
+
+1. The Collector enters the winner's **membership number**, as they do today.
+2. Cruz searches that client's earlier winners for the same membership number.
+3. If it finds them, and their last identity check **passed** and is **recent enough** (inside the client's re-use period, for example 12 months), the Collector sees the saved details: name, date of birth, ID document and the date of the last check.
+4. The Collector asks the winner whether anything has changed. If **nothing has changed**, the payout re-uses the earlier check and skips the ID screens, with no FrankieOne charge. If **something has changed**, or the old check was too old, failed or incomplete, the Collector goes through the normal ID screens.
+5. Every lookup and every re-use or re-check decision is recorded, so it can be audited later.
+
+**Why:** fewer FrankieOne charges, faster payouts for regulars, and less re-typing (which also means fewer typing mistakes).
+
+**What does not change:** the bank account check (Confirmation of Payee) still runs on every payout. Approval rules don't change, and no records are shared between different clients.
+
+### Two approaches in the Jira text
+
+The ticket holds two ideas, and they need a decision (question 1):
+
+- **A. Earlier idea (top of the ticket):** confirm it's really the same person by **sending the winner an email**. The winner clicks to approve, or reads a code back to the Collector. This idea also talks about re-using **personal, bank and ID** details.
+- **B. Later spec ("Returning Player Recognition & IDV Reuse", with the technical plan):** look up by **membership number** within the client. The **Collector confirms** the details are unchanged, and no email is sent. It re-uses **only the identity check**, not the bank account check. This is the more detailed and more recent version.
+
+### Details pulled from the ticket (relevant to the UI)
+
+- Re-use only a check that **passed and is complete**. Don't re-use failed checks, checks still processing, manual bypasses (No ID / Manual KYC) or checks where the service was unavailable.
+- The re-use period is **set per client, in days**, with a cap of about 12 months. If it isn't set, nothing is re-used.
+- The Collector **sees the saved record before re-using it**, and must confirm it is unchanged.
+- **Edge cases:**
+  - The ID document's expiry date. A review comment says the current design "won't check ID expiry date".
+  - Membership numbers written differently (spaces or punctuation).
+  - Existing winners with no membership number stored yet.
+  - Two records with the same membership number.
+- **Still open in Jira:**
+  - Can a failed PEP result that was manually accepted be re-used?
+  - Does the re-use period start from the date FrankieOne ran the check, or from the date Cruz assessed it?
+  - How are older winners without a membership number linked?
+- **Engineering only, not on screen:** hashed matching, database fields, audit records and data migration.
+
+### Simple flow
+
+```mermaid
+flowchart TD
+  A[Collector enters Membership # on Email Address step] --> B{Earlier winner found for this client?}
+  B -- No --> N[Normal ID screens and a new identity check]
+  B -- Yes --> C{Last check passed, recent enough, and ID document not expired?}
+  C -- No --> R[Show why it can't be re-used, then normal ID screens]
+  C -- Yes --> D[Show saved details and last check date]
+  D --> E{Winner says nothing has changed?}
+  E -- Yes --> S[Re-use the earlier check, skip ID screens]
+  E -- No --> N
+```
+
+### Words we're using
+
+- **Returning winner:** someone this client has paid through Cruz before. The ticket says "returning player" and "returning customer". The customer-facing word needs confirming (question 11).
+- **Identity check (IDV):** the FrankieOne check of the winner's ID document, plus the PEP and sanctions screening.
+- **Re-use period:** how long a passed identity check can be re-used, in days, set per client.
+- **Membership number:** the venue's member number, already captured on the Email Address step. For MyCash it is the same number (CRP-461).
+- **Saved record:** the winner's details from their last checked payout.
+
+### How we plan to build it
+
+- **Who uses it:**
+  - **Collector:** on the new screen after the Email Address step.
+  - **Approver and Authoriser:** see on the review pages that the identity check was re-used, and from when.
+  - **Admin (or Super Admin):** sets the re-use period.
+- **Where:**
+  - New Collector screen between `/collector/email-address` and `/collector/primary-id`, for example `/collector/returning-winner`.
+  - Review pages: `/approver/payout` and `/authoriser/payout`.
+  - Re-use period setting: Venue Settings or a client-level page (question 6).
+- **Reuse:**
+  - `StepFormLayout` and `DetailList` for the saved details.
+  - `VerificationPill` for the last check's result.
+  - `WarningAlert` for reasons a record can't be re-used.
+  - `IdvHistoryTable`, extended with a "Re-used from payout #… on …" row.
+  - `PaymentMethodRow` / `FormField` / `TextInput` for the setting.
+- **New (names to settle):**
+  - `lib/returning-winner.ts`: mock earlier winners and a lookup that returns found and re-usable / found but too old / found but failed / found but ID expired / not found.
+  - `components/collector/ReturningWinnerView.tsx`: the decision screen.
+  - A small "identity check re-used" note for the review pages.
+  - A re-use period field.
+  - A prototype-only scenario switcher, so reviewers can see each lookup result.
+  - `docs/design.md` updated.
+- **Mock data and scenarios** (click through each):
+  1. Found and re-usable.
+  2. Found, but the last check is older than the re-use period.
+  3. Found, but the ID document has expired.
+  4. Found, but the last check failed or was a No ID / Manual KYC exception.
+  5. Not found (first-time winner).
+  6. No membership number entered.
+  7. The winner says details changed.
+- **Wording to confirm:** the screen title and button labels, "Returning Winner", "Re-use period" and the reason messages.
+
+### Questions
+
+1. **Which approach should the prototype show: A (email or code sent to the winner) or B (membership number lookup, Collector confirms)?** B is the newer, detailed spec, and engineering's plan follows it. A adds a confirmation step from the winner. Default: **B**, with no email or code.
+   - Answer: Use the default (user, 2026-11-20).
+2. **What is re-used: only the identity check, or the bank details too?** Spec B re-uses only the identity check and runs the bank account check every time. Idea A mentions personal, bank and ID. Default: **identity details and the identity check only.** Bank details are entered as today.
+   - Answer: Use the default (user, 2026-11-20).
+3. **What should the Collector see in the saved record?** It is personal information shown on the gaming floor. Default:
+   - full name
+   - date of birth
+   - ID document type
+   - document number, masked to the last 3 digits
+   - document expiry date
+   - suburb and state
+   - last check date and result
+   - Answer: Use the default (user, 2026-11-20).
+4. **How does the Collector confirm "nothing has changed"?** Default: two buttons, **"Details Are the Same, Use These"** and **"Details Have Changed, Check Again"**, after the Collector asks the winner. No tick box.
+   - Answer: Use the default (user, 2026-11-20).
+5. **If the ID document has expired (or expires today), must the winner be checked again even inside the re-use period?** This is the edge case in the ticket. Default: **yes, a full check again.** The screen says the document has expired.
+   - Answer: Use the default (user, 2026-11-20).
+6. **Where is the re-use period set: per client (the spec) or per venue (the ticket summary)?** The prototype only has Venue Settings today; there is no client settings page. Default: **a "Re-use Identity Check For (days)" field on Venue Settings**, maximum 365. Blank means off. Say if it must be client-level instead.
+   - Answer: Use the default (user, 2026-11-20).
+7. **Which earlier results can be re-used?** Default: **only a clean pass.** Not a failed check, a manual bypass, No ID / Manual KYC, or "service unavailable". A failed PEP result that was manually accepted is treated as **not re-usable** until Compliance decides (it's open in Jira).
+   - Answer: Use the default (user, 2026-11-20).
+8. **Should the Approver and Authoriser see that the check was re-used?** Default: **yes.** The IDV History shows "Re-used from payout #<number>, checked <date>", and the Identity Verification section says the check was re-used.
+   - Answer: Use the default (user, 2026-11-20).
+9. **What happens when no membership number is entered, or two records share one?** Default:
+   - **No number:** skip the lookup and use the normal ID screens.
+   - **Duplicate:** treat it as not re-usable and use the normal ID screens. The Collector isn't shown the duplicate.
+   - Answer: Use the default (user, 2026-11-20).
+10. **Does the "90-Day Returning Winner Policy" in the system overview still apply?** Default: **no.** It is replaced by the per-client re-use period. The overview doc can be updated later if you want.
+    - Answer: Use the default (user, 2026-11-20).
+11. **What should it be called on screen?** Options: "Returning Winner", "Returning Member", "Previous Identity Check Found". Default: screen title **"Returning Winner"**, with a line such as "This member was identity checked on 12/08/2026."
+    - Answer: Use the default (user, 2026-11-20).
+12. **Should we wait for the Jira blockers?** The ticket is Blocked (CRP-216), and the technical plan says policy decisions come first (Phase 0). Default: **build the prototype now** with the defaults above, so it can help those decisions. Mark it as a draft.
+    - Answer: Use the default (user, 2026-11-20).
+
+---
