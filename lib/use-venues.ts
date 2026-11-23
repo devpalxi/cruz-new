@@ -1,15 +1,15 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { PAYOUT_TYPE_DEFAULTS, SEED_VENUES, type Venue } from "@/lib/venue-data";
+import { NEW_VENUE_FIELD_DEFAULTS, SEED_VENUES, type Venue } from "@/lib/venue-data";
 
 const KEY = "cruz-venues";
 
 function readSaved(): Venue[] {
   try {
     const raw = sessionStorage.getItem(KEY);
-    // Venues saved before the payout type fields existed get the defaults
-    if (raw) return (JSON.parse(raw) as Venue[]).map((v) => ({ ...PAYOUT_TYPE_DEFAULTS, ...v }));
+    // Venues saved before the newer fields existed get the defaults
+    if (raw) return (JSON.parse(raw) as Venue[]).map((v) => ({ ...NEW_VENUE_FIELD_DEFAULTS, ...v }));
   } catch {
     // Storage blocked: fall back to the mock data
   }

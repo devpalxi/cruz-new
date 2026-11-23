@@ -13,6 +13,7 @@ import {
 import { EMAIL_CAPTURE_KEY, ID_CAPTURE_KEY, buildMemberIdentificationRows } from "@/lib/id-document-config";
 import { evaluateNameMatch } from "@/lib/name-match";
 import { DEFAULT_PAYOUT_TYPE, PAYOUT_TYPE_KEY, getPayoutType } from "@/lib/payout-types";
+import { IDV_REUSE_KEY, formatDate, type IdvReuse } from "@/lib/returning-winner";
 import ChequeNameCheck from "@/components/payout-review/ChequeNameCheck";
 import CopValidationCard from "./CopValidationCard";
 
@@ -28,7 +29,23 @@ export default function SummaryView() {
     ...payment.filter((row) => payoutType.id === "egm" || row.label !== "Machine ID"),
   ];
 
+  // CRP-186: set when the Collector re-used a returning winner's identity check
+  const [idvReuse, setIdvReuse] = useState<IdvReuse | null>(null);
+  const identityRows = idvReuse
+    ? [
+        ...memberRows,
+        { label: "Identity Check", value: "Re-used" },
+        { label: "Checked On", value: formatDate(idvReuse.checkedAt) },
+      ]
+    : memberRows;
+
   useEffect(() => {
+    try {
+      const storedReuse = sessionStorage.getItem(IDV_REUSE_KEY);
+      if (storedReuse) setIdvReuse(JSON.parse(storedReuse));
+    } catch {
+      // No re-use note
+    }
     try {
       const storedType = sessionStorage.getItem(PAYOUT_TYPE_KEY);
       if (storedType) setPayoutType(JSON.parse(storedType));
@@ -76,7 +93,7 @@ export default function SummaryView() {
         <CollapsibleSections
           items={[
             { id: "payment", title: "Payment Breakdown", content: <DetailList rows={paymentRows} /> },
-            { id: "member", title: "Member Identification", content: <DetailList rows={memberRows} /> },
+            { id: "member", title: "Member Identification", content: <DetailList rows={identityRows} /> },
             {
               id: "destination",
               title: "Payment Method Details",
